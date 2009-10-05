@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+
+xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:oa="http://oss.dbc.dk/ns/openagency" 
+
+xmlns:oaw="http://oss.dbc.dk/ns/openagency_wsdl" targetNamespace="http://oss.dbc.dk/ns/openagency_wsdl">
+	<wsdl:documentation>Version 0.8</wsdl:documentation>
+	<wsdl:types>
+		<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+			<xs:import namespace="http://oss.dbc.dk/ns/openagency" schemaLocation="openagency.xsd"/>
+		</xs:schema>
+	</wsdl:types>
+	<wsdl:message name="openAgencyAutomationRequest">
+		<wsdl:part name="body" element="oa:openAgencyAutomationRequest"/>
+	</wsdl:message>
+	<wsdl:message name="openAgencyAutomationResponse">
+		<wsdl:part name="body" element="oa:openAgencyAutomationResponse"/>
+	</wsdl:message>
+		<wsdl:message name="openAgencyEncryptionRequest">
+		<wsdl:part name="body" element="oa:openAgencyEncryptionRequest"/>
+	</wsdl:message>
+	<wsdl:message name="openAgencyEncryptionResponse">
+		<wsdl:part name="body" element="oa:openAgencyEncryptionResponse"/>
+	</wsdl:message>
+	<wsdl:message name="openAgencyNameListRequest">
+		<wsdl:part name="body" element="oa:openAgencyNameListRequest"/>
+	</wsdl:message>
+	<wsdl:message name="openAgencyNameListResponse">
+		<wsdl:part name="body" element="oa:openAgencyNameListResponse"/>
+	</wsdl:message>
+	<wsdl:message name="openAgencyProxyDomainsRequest">
+		<wsdl:part name="body" element="oa:openAgencyProxyDomainsRequest"/>
+	</wsdl:message>
+	<wsdl:message name="openAgencyProxyDomainsResponse">
+		<wsdl:part name="body" element="oa:openAgencyProxyDomainsResponse"/>
+	</wsdl:message>
+	<wsdl:message name="openAgencyProxyIpRequest">
+		<wsdl:part name="body" element="oa:openAgencyProxyIpRequest"/>
+	</wsdl:message>
+	<wsdl:message name="openAgencyProxyIpResponse">
+		<wsdl:part name="body" element="oa:openAgencyProxyIpResponse"/>
+	</wsdl:message>
+	<wsdl:message name="openAgencyServiceRequest">
+		<wsdl:part name="body" element="oa:openAgencyServiceRequest"/>
+	</wsdl:message>
+	<wsdl:message name="openAgencyServiceResponse">
+		<wsdl:part name="body" element="oa:openAgencyServiceResponse"/>
+	</wsdl:message>
+	<wsdl:portType name="openAgencyAutomationPortType">
+		<wsdl:operation name="openAgencyAutomation">
+			<wsdl:input message="oaw:openAgencyAutomationRequest"/>
+			<wsdl:output message="oaw:openAgencyAutomationResponse"/>
+		</wsdl:operation>
+	</wsdl:portType>
+		<wsdl:portType name="openAgencyEncryptionPortType">
+		<wsdl:operation name="openAgencyEncryption">
+			<wsdl:input message="oaw:openAgencyEncryptionRequest"/>
+			<wsdl:output message="oaw:openAgencyEncryptionResponse"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:portType name="openAgencyServicePortType">
+		<wsdl:operation name="openAgencyService">
+			<wsdl:input message="oaw:openAgencyServiceRequest"/>
+			<wsdl:output message="oaw:openAgencyServiceResponse"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:portType name="openAgencyProxyDomainsPortType">
+		<wsdl:operation name="openAgencyProxyDomains">
+			<wsdl:input message="oaw:openAgencyProxyDomainsRequest"/>
+			<wsdl:output message="oaw:openAgencyProxyDomainsResponse"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:portType name="openAgencyNameListPortType">
+		<wsdl:operation name="openAgencyNameList">
+			<wsdl:input message="oaw:openAgencyNameListRequest"/>
+			<wsdl:output message="oaw:openAgencyNameListResponse"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:portType name="openAgencyProxyIpPortType">
+		<wsdl:operation name="openAgencyProxyIp">
+			<wsdl:input message="oaw:openAgencyProxyIpRequest"/>
+			<wsdl:output message="oaw:openAgencyProxyIpResponse"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="openAgencyAutomationBinding" type="oaw:openAgencyAutomationPortType">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="openAgencyAutomation">
+			<soap:operation soapAction="http://openagency.dbc.dk"/>
+			<wsdl:input name="openAgencyAutomationRequest">
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output name="openAgencyAutomationResponse">
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:binding name="openAgencyEncryptionBinding" type="oaw:openAgencyEncryptionPortType">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="openAgencyEncryption">
+			<soap:operation soapAction="http://openagency.dbc.dk"/>
+			<wsdl:input name="openAgencyEncryptionRequest">
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output name="openAgencyEncryptionResponse">
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:binding name="openAgencyServiceBinding" type="oaw:openAgencyServicePortType">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="openAgencyService">
+			<soap:operation soapAction="http://openagency.dbc.dk"/>
+			<wsdl:input name="openAgencyServiceRequest">
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output name="openAgencyServiceResponse">
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:binding name="openAgencyNameListBinding" type="oaw:openAgencyNameListPortType">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="openAgencyNameList">
+			<soap:operation soapAction="http://openagency.dbc.dk"/>
+			<wsdl:input name="openAgencyNameListRequest">
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output name="openAgencyNameListResponse">
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:binding name="openAgencyProxyDomainsBinding" type="oaw:openAgencyProxyDomainsPortType">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="openAgencyProxyDomains">
+			<soap:operation soapAction="http://openagency.dbc.dk"/>
+			<wsdl:input name="openAgencyProxyDomainsRequest">
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output name="openAgencyProxyDomainsResponse">
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:binding name="openAgencyProxyIpBinding" type="oaw:openAgencyProxyIpPortType">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="openAgencyProxyIp">
+			<soap:operation soapAction="http://openagency.dbc.dk"/>
+			<wsdl:input name="openAgencyProxyIpRequest">
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output name="openAgencyProxyIpResponse">
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="openAgency">
+		<wsdl:port binding="oaw:openAgencyAutomationBinding" name="openAgencyAutomationPortType">
+			<soap:address location="http://openagency.dbc.dk"/>
+		</wsdl:port>
+		<wsdl:port binding="oaw:openAgencyEncryptionBinding" name="openAgencyEncryptionPortType">
+			<soap:address location="http://openagency.dbc.dk"/>
+		</wsdl:port>
+		<wsdl:port binding="oaw:openAgencyServiceBinding" name="openAgencyServicePortType">
+			<soap:address location="http://openagency.dbc.dk"/>
+		</wsdl:port>
+		<wsdl:port binding="oaw:openAgencyNameListBinding" name="openAgencyNameListPortType">
+			<soap:address location="http://openagency.dbc.dk"/>
+		</wsdl:port>
+		<wsdl:port binding="oaw:openAgencyProxyDomainsBinding" name="openAgencyProxyDomainsPortType">
+			<soap:address location="http://openagency.dbc.dk"/>
+		</wsdl:port>
+		<wsdl:port binding="oaw:openAgencyProxyIpBinding" name="openAgencyProxyIpPortType">
+			<soap:address location="http://openagency.dbc.dk"/>
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

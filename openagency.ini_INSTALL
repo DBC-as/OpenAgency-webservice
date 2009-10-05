@@ -1,0 +1,70 @@
+; inifie for openagency
+
+[setup]
+
+version = 0.1
+
+; wsdl for service
+wsdl = openagency.wsdl
+
+; logfile for verbose output
+logfile = /tmp/nypunkt_fvs/openagency.log
+
+; set verboselevel
+;   WARNING - simple warnings
+;   ERROR   - errors in response
+;   FATAL   - major errors
+;   STAT    - Statístical logging
+;   TIMER   - timer logging
+;   TRACE   - program trace
+;   DEBUG   - debugging info
+;   Z3959   - calls to z3950 services
+;   OCI     - oracle
+verbose = WARNING+ERROR+FATAL+STAT+TIMER+TRACE+DEBUG+Z3950+OCI
+
+[rest]
+
+soap_header = <?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?><SOAP-ENV:Envelope xmlns:SOAP-ENV=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns=&quot;http://oss.dbc.dk/ns/openagency&quot;><SOAP-ENV:Body>
+
+soap_footer = </SOAP-ENV:Body></SOAP-ENV:Envelope>
+
+; REST parameters for SOAPactions
+;
+; use xml.path.to.par notation to solve name-conflicts
+; action[thisSoapAction][foo][] = some.number
+; action[thisSoapAction][bar][] = another.number
+; to build
+; <thisSoapAction>
+;   <foo>
+;     <number>nn</number>
+;   </foo>
+;   <bar>
+;     <number>mm</number>
+;   </bar>
+; </thisSoapAction>
+; from url: action=thisSoapAction&some.number=nn&another.number=mm
+;
+
+action[openAgencyAutomationRequest][] = agencyId
+action[openAgencyAutomationRequest][] = autService
+action[openAgencyAutomationRequest][] = materialeType
+
+action[openAgencyEncryptionRequest][] = email
+
+action[openAgencyServiceRequest][] = agencyId
+action[openAgencyServiceRequest][] = service
+
+action[openAgencyNameListRequest][] = UNKNOWN
+
+action[openAgencyProxyDomainsRequest][] = agencyId
+
+action[openAgencyProxyIpRequest][] = agencyId
+
+[howru]
+
+
+[debug]
+
+debug_info = <br/>Parameters:<ul><li>agencyId:</li>librarycode<li>outputType:</li> json, php, xml<li>callback:</li> for json-callback</ul><a href=&quot;openagency.wsdl&quot;>The WSDL is here</a>
+
+debug_request[] = <?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:ns1=&quot;http://oss.dbc.dk/ns/openagency&quot;><SOAP-ENV:Body>\n<ns1:openAgencyAutomationRequest>\n <ns1:agencyId>810010</ns1:agencyId>\n <ns1:autService></ns1:autService>\n <ns1:materialType>1</ns1:materialType>\n</ns1:openAgencyAutomationRequest>\n</SOAP-ENV:Body></SOAP-ENV:Envelope>
