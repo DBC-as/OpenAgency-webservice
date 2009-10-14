@@ -281,6 +281,7 @@
 			<xs:enumeration value="agency_not_found"/>
 			<xs:enumeration value="error_in_request"/>
 			<xs:enumeration value="no_agencies_found"/>
+			<xs:enumeration value="no_data_found"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="serviceType">
