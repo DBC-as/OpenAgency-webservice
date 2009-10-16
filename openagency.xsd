@@ -19,7 +19,7 @@
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
-		<xs:element name="openAgencyEncryptionRequest">
+	<xs:element name="openAgencyEncryptionRequest">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="oa:email"/>
@@ -29,14 +29,20 @@
 	<xs:element name="openAgencyEncryptionResponse">
 		<xs:complexType>
 			<xs:choice>
-			<xs:choice>
-				<xs:element ref="oa:encryption" maxOccurs="unbounded"/>
-				<xs:element ref="oa:error"/>
-			</xs:choice>
+				<xs:choice>
+					<xs:element ref="oa:encryption" maxOccurs="unbounded"/>
+					<xs:element ref="oa:error"/>
+				</xs:choice>
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="openAgencyNameListRequest"/>
+	<xs:element name="openAgencyNameListRequest">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="oa:libraryType" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="openAgencyNameListResponse">
 		<xs:complexType>
 			<xs:choice>
@@ -63,14 +69,14 @@
 	<xs:element name="openAgencyProxyIpRequest">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="oa:agencyId"/>
+				<xs:element ref="oa:ip"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="openAgencyProxyIpResponse">
 		<xs:complexType>
 			<xs:choice>
-				<xs:element ref="oa:ip" maxOccurs="unbounded"/>
+				<xs:element ref="oa:agencyId" maxOccurs="unbounded"/>
 				<xs:element ref="oa:error"/>
 			</xs:choice>
 		</xs:complexType>
@@ -154,10 +160,10 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-		<xs:element name="encryption">
+	<xs:element name="encryption">
 		<xs:complexType>
 			<xs:sequence>
-			<xs:element ref="oa:email"/>
+				<xs:element ref="oa:email"/>
 				<xs:element ref="oa:agencyId"/>
 				<xs:element ref="oa:key"/>
 				<xs:element ref="oa:base64"/>
@@ -242,6 +248,7 @@
 	<xs:element name="junction" type="xs:string"/>
 	<xs:element name="key" type="xs:string"/>
 	<xs:element name="kvik" type="xs:string"/>
+	<xs:element name="libraryType" type="oa:libraryTypeType"/>
 	<xs:element name="materialType" type="xs:integer"/>
 	<xs:element name="norfri" type="xs:string"/>
 	<xs:element name="passWord" type="xs:string"/>
@@ -281,17 +288,26 @@
 			<xs:enumeration value="agency_not_found"/>
 			<xs:enumeration value="error_in_request"/>
 			<xs:enumeration value="no_agencies_found"/>
-			<xs:enumeration value="no_data_found"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="libraryTypeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Folkebibliotek"/>
+			<xs:enumeration value="Forskningsbibliotek"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="serviceType">
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="answer"/>
-			<xs:enumeration value="serverInformation"/>
 			<xs:enumeration value="information"/>
-			<xs:enumeration value="itemRequest"/>
-			<xs:enumeration value="receipt"/>
-			<xs:enumeration value="shipping"/>
+			<xs:enumeration value="orsAnswer"/>
+			<xs:enumeration value="orsCancelRequestUser"/>
+			<xs:enumeration value="orsEndUserRequest"/>
+			<xs:enumeration value="orsItemRequest"/>
+			<xs:enumeration value="orsLookupUser"/>
+			<xs:enumeration value="orsReceipt"/>
+			<xs:enumeration value="orsRenewItemUser"/>
+			<xs:enumeration value="orsShipping"/>
+			<xs:enumeration value="serverInformation"/>
 		</xs:restriction>
 	</xs:simpleType>
 </xs:schema>
