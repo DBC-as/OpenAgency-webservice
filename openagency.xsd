@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2008 rel. 2 sp2 (http://www.altova.com) by Dansk BiblioteksCenter (Dansk BiblioteksCenter) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:oa="http://oss.dbc.dk/ns/openagency" targetNamespace="http://oss.dbc.dk/ns/openagency">
+	<xs:annotation>
+		<xs:documentation xml:lang="engg">Open Agency service</xs:documentation>
+		<xs:documentation xml:lang="engg">This XML Schema describes the data and structure of data of the Open Agency service.</xs:documentation>
+		<xs:documentation xml:lang="engg">This file is part of OpenSearch.
+Copyright © 2009, Dansk Bibliotekscenter a/s,  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+
+OpenSearch is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+OpenSearch is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with OpenSearch.  If not, see http://www.gnu.org/licenses/</xs:documentation>
+	</xs:annotation>
 	<xs:element name="openAgencyAutomationRequest">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="oa:agencyId"/>
 				<xs:element ref="oa:autService"/>
 				<xs:element ref="oa:materialType"/>
+				<xs:element ref="oa:callback" minOccurs="0"/>
+				<xs:element ref="oa:outputType" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -23,6 +38,8 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="oa:email"/>
+				<xs:element ref="oa:callback" minOccurs="0"/>
+				<xs:element ref="oa:outputType" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -40,6 +57,8 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="oa:libraryType" minOccurs="0"/>
+				<xs:element ref="oa:callback" minOccurs="0"/>
+				<xs:element ref="oa:outputType" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -55,6 +74,8 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="oa:agencyId"/>
+				<xs:element ref="oa:callback" minOccurs="0"/>
+				<xs:element ref="oa:outputType" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -70,6 +91,8 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="oa:ip"/>
+				<xs:element ref="oa:callback" minOccurs="0"/>
+				<xs:element ref="oa:outputType" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -86,6 +109,8 @@
 			<xs:sequence>
 				<xs:element ref="oa:agencyId"/>
 				<xs:element ref="oa:service"/>
+				<xs:element ref="oa:callback" minOccurs="0"/>
+				<xs:element ref="oa:outputType" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -146,6 +171,33 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="agencyEmail" type="xs:string"/>
+	<xs:element name="agencyFax" type="xs:string"/>
+	<xs:element name="agencyId" type="xs:string"/>
+	<xs:element name="agencyName" type="xs:string"/>
+	<xs:element name="agencyPhone" type="xs:string"/>
+	<xs:element name="agencyType" type="xs:string"/>
+	<xs:element name="address" type="xs:string"/>
+	<xs:element name="autChoice" type="xs:string"/>
+	<xs:element name="autId" type="xs:integer"/>
+	<xs:element name="autPeriod" type="xs:integer"/>
+	<xs:element name="autRes" type="xs:string"/>
+	<xs:element name="autService" type="oa:autServiceType"/>
+	<xs:element name="base64" type="xs:string"/>
+	<xs:element name="branchEmail" type="xs:string"/>
+	<xs:element name="branchFax" type="xs:string"/>
+	<xs:element name="branchId" type="xs:string"/>
+	<xs:element name="branchName" type="xs:string"/>
+	<xs:element name="branchPhone" type="xs:string"/>
+	<xs:element name="branchType" type="xs:string"/>
+	<xs:element name="callback" type="xs:string">
+		<xs:annotation>
+			<xs:documentation xml:lang="eng">If outputType=json.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="city" type="xs:string"/>
+	<xs:element name="date" type="xs:date"/>
+	<xs:element name="domain" type="xs:string"/>
 	<xs:element name="domains">
 		<xs:complexType>
 			<xs:sequence>
@@ -160,6 +212,7 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="email" type="xs:string"/>
 	<xs:element name="encryption">
 		<xs:complexType>
 			<xs:sequence>
@@ -171,6 +224,9 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="error" type="oa:errorType"/>
+	<xs:element name="format" type="xs:string"/>
+	<xs:element name="groupId" type="xs:string"/>
 	<xs:element name="information">
 		<xs:complexType>
 			<xs:sequence>
@@ -197,6 +253,35 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="ip" type="xs:string"/>
+	<xs:element name="isil" type="xs:string"/>
+	<xs:element name="junction" type="xs:string"/>
+	<xs:element name="key" type="xs:string"/>
+	<xs:element name="kvik" type="xs:string"/>
+	<xs:element name="libraryType" type="oa:libraryTypeType"/>
+	<xs:element name="materialType" type="xs:integer"/>
+	<xs:element name="norfri" type="xs:string"/>
+	<xs:element name="orsAnswer" type="oa:ors"/>
+	<xs:element name="orsCancelRequestUser" type="oa:ors"/>
+	<xs:element name="orsEndUserRequest" type="oa:ors"/>
+	<xs:element name="orsItemRequest" type="oa:ors"/>
+	<xs:element name="orsLookupUser" type="oa:ors"/>
+	<xs:element name="orsReceipt" type="oa:ors"/>
+	<xs:element name="orsRenewItemUser" type="oa:ors"/>
+	<xs:element name="orsShipping" type="oa:ors"/>
+	<xs:element name="outputType" type="oa:outputTypeType">
+		<xs:annotation>
+			<xs:documentation xml:lang="eng">E.g. xml, json or php.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="passWord" type="xs:string"/>
+	<xs:element name="postalAddress" type="xs:string"/>
+	<xs:element name="postalCode" type="xs:string"/>
+	<xs:element name="protocol" type="xs:string"/>
+	<xs:element name="provider" type="xs:string"/>
+	<xs:element name="requester" type="xs:string"/>
+	<xs:element name="responder" type="xs:string"/>
+	<xs:element name="sender" type="xs:string"/>
 	<xs:element name="serverInformation">
 		<xs:complexType>
 			<xs:sequence>
@@ -209,56 +294,6 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="orsAnswer" type="oa:ors"/>
-	<xs:element name="orsCancelRequestUser" type="oa:ors"/>
-	<xs:element name="orsEndUserRequest" type="oa:ors"/>
-	<xs:element name="orsItemRequest" type="oa:ors"/>
-	<xs:element name="orsLookupUser" type="oa:ors"/>
-	<xs:element name="orsReceipt" type="oa:ors"/>
-	<xs:element name="orsRenewItemUser" type="oa:ors"/>
-	<xs:element name="orsShipping" type="oa:ors"/>
-	<xs:element name="agencyEmail" type="xs:string"/>
-	<xs:element name="agencyFax" type="xs:string"/>
-	<xs:element name="agencyId" type="xs:string"/>
-	<xs:element name="agencyName" type="xs:string"/>
-	<xs:element name="agencyPhone" type="xs:string"/>
-	<xs:element name="agencyType" type="xs:string"/>
-	<xs:element name="address" type="xs:string"/>
-	<xs:element name="autChoice" type="xs:string"/>
-	<xs:element name="autId" type="xs:integer"/>
-	<xs:element name="autPeriod" type="xs:integer"/>
-	<xs:element name="autRes" type="xs:string"/>
-	<xs:element name="autService" type="oa:autServiceType"/>
-	<xs:element name="base64" type="xs:string"/>
-	<xs:element name="branchEmail" type="xs:string"/>
-	<xs:element name="branchFax" type="xs:string"/>
-	<xs:element name="branchId" type="xs:string"/>
-	<xs:element name="branchName" type="xs:string"/>
-	<xs:element name="branchPhone" type="xs:string"/>
-	<xs:element name="branchType" type="xs:string"/>
-	<xs:element name="city" type="xs:string"/>
-	<xs:element name="date" type="xs:date"/>
-	<xs:element name="domain" type="xs:string"/>
-	<xs:element name="email" type="xs:string"/>
-	<xs:element name="error" type="oa:errorType"/>
-	<xs:element name="format" type="xs:string"/>
-	<xs:element name="groupId" type="xs:string"/>
-	<xs:element name="ip" type="xs:string"/>
-	<xs:element name="isil" type="xs:string"/>
-	<xs:element name="junction" type="xs:string"/>
-	<xs:element name="key" type="xs:string"/>
-	<xs:element name="kvik" type="xs:string"/>
-	<xs:element name="libraryType" type="oa:libraryTypeType"/>
-	<xs:element name="materialType" type="xs:integer"/>
-	<xs:element name="norfri" type="xs:string"/>
-	<xs:element name="passWord" type="xs:string"/>
-	<xs:element name="postalAddress" type="xs:string"/>
-	<xs:element name="postalCode" type="xs:string"/>
-	<xs:element name="protocol" type="xs:string"/>
-	<xs:element name="provider" type="xs:string"/>
-	<xs:element name="requester" type="xs:string"/>
-	<xs:element name="responder" type="xs:string"/>
-	<xs:element name="sender" type="xs:string"/>
 	<xs:element name="service" type="oa:serviceType"/>
 	<xs:element name="userId" type="xs:string"/>
 	<xs:element name="willReceive" type="xs:string"/>
@@ -294,6 +329,16 @@
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="Folkebibliotek"/>
 			<xs:enumeration value="Forskningsbibliotek"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="outputTypeType">
+		<xs:annotation>
+			<xs:documentation xml:lang="eng">The types of output that can be returned by the service.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="xml"/>
+			<xs:enumeration value="json"/>
+			<xs:enumeration value="php"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="serviceType">
