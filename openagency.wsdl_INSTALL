@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:oa="http://oss.dbc.dk/ns/openagency" xmlns:oaw="http://oss.dbc.dk/ns/openagency_wsdl" targetNamespace="http://oss.dbc.dk/ns/openagency_wsdl">
-	<wsdl:documentation>This file is part of OpenSearch.
+	<wsdl:documentation>This file is part of OpenAgency.
 Copyright © 2009, Dansk Bibliotekscenter a/s,  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-OpenSearch is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+OpenAgency is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-OpenSearch is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+OpenAgency is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
 
-You should have received a copy of the GNU Affero General Public License along with OpenSearch.  If not, see http://www.gnu.org/licenses</wsdl:documentation>
+You should have received a copy of the GNU Affero General Public License along with OpenAgency.  If not, see http://www.gnu.org/licenses</wsdl:documentation>
 	<wsdl:types>
 		<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
 			<xs:import namespace="http://oss.dbc.dk/ns/openagency" schemaLocation="OpenAgency.xsd"/>
