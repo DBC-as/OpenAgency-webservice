@@ -8,7 +8,7 @@ version = 0.1
 wsdl = openagency.wsdl
 
 ; logfile for verbose output
-logfile = /tmp/nypunkt_fvs/openagency.log
+logfile = /tmp/openagency.log
 
 ; set verboselevel
 ;   WARNING - simple warnings
@@ -48,42 +48,34 @@ soap_footer = </SOAP-ENV:Body></SOAP-ENV:Envelope>
 ; from url: action=thisSoapAction&some.number=nn&another.number=mm
 ;
 
+action[openAgencyAutomationRequest][] = outputType
+action[openAgencyAutomationRequest][] = callback
 action[openAgencyAutomationRequest][] = agencyId
 action[openAgencyAutomationRequest][] = autService
-action[openAgencyAutomationRequest][] = materialeType
+action[openAgencyAutomationRequest][] = materialType
 
+action[openAgencyEncryptionRequest][] = outputType
+action[openAgencyEncryptionRequest][] = callback
 action[openAgencyEncryptionRequest][] = email
 
+action[openAgencyServiceRequest][] = outputType
+action[openAgencyServiceRequest][] = callback
 action[openAgencyServiceRequest][] = agencyId
 action[openAgencyServiceRequest][] = service
 
+action[openAgencyNameListRequest][] = outputType
+action[openAgencyNameListRequest][] = callback
 action[openAgencyNameListRequest][] = UNKNOWN
 
+action[openAgencyProxyDomainsRequest][] = outputType
+action[openAgencyProxyDomainsRequest][] = callback
 action[openAgencyProxyDomainsRequest][] = agencyId
 
+action[openAgencyProxyIpRequest][] = outputType
+action[openAgencyProxyIpRequest][] = callback
 action[openAgencyProxyIpRequest][] = agencyId
+
 
 [howru]
 
 
-[debug]
-
-debug_info = <br/>Parameters:<ul><li>agencyId:</li>librarycode<li>outputType:</li> json, php, xml<li>callback:</li> for json-callback</ul><a href=&quot;openagency.wsdl&quot;>The WSDL is here</a>
-
-debug_request[] = <?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:ns1=&quot;http://oss.dbc.dk/ns/openagency&quot;><SOAP-ENV:Body>\n<ns1:openAgencyAutomationRequest>\n <ns1:agencyId>810010</ns1:agencyId>\n <ns1:autService>autPotential</ns1:autService>\n <ns1:materialType>1</ns1:materialType>\n</ns1:openAgencyAutomationRequest>\n</SOAP-ENV:Body></SOAP-ENV:Envelope>
-
-debug_request[] = <?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:ns1=&quot;http://oss.dbc.dk/ns/openagency&quot;><SOAP-ENV:Body>\n<ns1:openAgencyAutomationRequest>\n <ns1:agencyId>820040</ns1:agencyId>\n <ns1:autService>autPotential</ns1:autService>\n <ns1:materialType>1</ns1:materialType>\n</ns1:openAgencyAutomationRequest>\n</SOAP-ENV:Body></SOAP-ENV:Envelope>
-
-debug_request[] = <?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:ns1=&quot;http://oss.dbc.dk/ns/openagency&quot;><SOAP-ENV:Body>\n<ns1:openAgencyAutomationRequest>\n <ns1:agencyId>810010</ns1:agencyId>\n <ns1:autService>autRequester</ns1:autService>\n <ns1:materialType>1</ns1:materialType>\n</ns1:openAgencyAutomationRequest>\n</SOAP-ENV:Body></SOAP-ENV:Envelope>
-
-debug_request[] = <?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:ns1=&quot;http://oss.dbc.dk/ns/openagency&quot;><SOAP-ENV:Body>\n<ns1:openAgencyAutomationRequest>\n <ns1:agencyId>820040</ns1:agencyId>\n <ns1:autService>autProvider</ns1:autService>\n <ns1:materialType>1</ns1:materialType>\n</ns1:openAgencyAutomationRequest>\n</SOAP-ENV:Body></SOAP-ENV:Envelope>
-
-debug_request[] = <?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:ns1=&quot;http://oss.dbc.dk/ns/openagency&quot;><SOAP-ENV:Body>\n<ns1:openAgencyEncryptionRequest>\n <ns1:email>bestil@gentofte.bibnet.dk</ns1:email>\n</ns1:openAgencyEncryptionRequest>\n</SOAP-ENV:Body></SOAP-ENV:Envelope>
-
-debug_request[] = <?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:ns1=&quot;http://oss.dbc.dk/ns/openagency&quot;><SOAP-ENV:Body>\n<ns1:openAgencyServiceRequest>\n <ns1:agencyId>810010</ns1:agencyId>\n <ns1:service>information</ns1:service>\n</ns1:openAgencyServiceRequest>\n</SOAP-ENV:Body></SOAP-ENV:Envelope>
-
-debug_request[] = <?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:ns1=&quot;http://oss.dbc.dk/ns/openagency&quot;><SOAP-ENV:Body>\n<ns1:openAgencyNameListRequest>\n  <ns1:libraryType>Folkebibliotek</ns1:libraryType>\n</ns1:openAgencyNameListRequest>\n</SOAP-ENV:Body></SOAP-ENV:Envelope>
-
-debug_request[] = <?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:ns1=&quot;http://oss.dbc.dk/ns/openagency&quot;><SOAP-ENV:Body>\n<ns1:openAgencyProxyDomainsRequest>\n <ns1:agencyId>810010</ns1:agencyId>\n</ns1:openAgencyProxyDomainsRequest>\n</SOAP-ENV:Body></SOAP-ENV:Envelope>
-
-debug_request[] = <?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:ns1=&quot;http://oss.dbc.dk/ns/openagency&quot;><SOAP-ENV:Body>\n<ns1:openAgencyProxyIpRequest>\n <ns1:agencyId>810010</ns1:agencyId>\n</ns1:openAgencyProxyIpRequest>\n</SOAP-ENV:Body></SOAP-ENV:Envelope>
