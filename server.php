@@ -25,7 +25,7 @@ require_once("OLS_class_lib/oci_class.php");
 
 class openAgency extends webServiceServer {
 
-  function handle_openAgencyAutomationRequest($param) {
+  function openAgencyAutomation($param) {
     $oci = new Oci($this->config->get_value("agency_credentials","setup"));
     $oci->set_charset("UTF8");
     $oci->connect();
@@ -74,7 +74,12 @@ class openAgency extends webServiceServer {
           if ($vf_row = $oci->fetch_into_assoc()) {
             $res->requester->_value = $vf_row["LAANTAGER"];
             $res->materialType->_value = $vf_row["MATERIALE_ID"];
-            $res->willSend->_value = ($vf_row["STATUS"] == "J" ? "YES" : "NO");
+            if ($vf_row["STATUS"] == "T")
+              $res->willSend->_value = "TEST";
+            elseif ($vf_row["STATUS"] == "J")
+              $res->willSend->_value = "YES";
+            else
+              $res->willSend->_value = "NO";
             $res->autPeriod->_value = $vf_row["PERIODE"];
             $res->autId->_value = $vf_row["ID_NR"];
             $res->autChoice->_value = $vf_row["VALG"];
@@ -106,7 +111,7 @@ class openAgency extends webServiceServer {
     return $ret;
   }
 
-  public function handle_openAgencyEncryptionRequest($param) {
+  public function openAgencyEncryption($param) {
     $oci = new Oci($this->config->get_value("agency_credentials","setup"));
     $oci->set_charset("UTF8");
     $oci->connect();
@@ -122,7 +127,7 @@ class openAgency extends webServiceServer {
         $o->key->_value = $vk_row["KEY"];
         $o->base64->_value = ($vk_row["NOTBASE64"] == "ja" ? "NO" : "YES");
         $o->date->_value = $vk_row["UDL_DATO"];
-        $res->encryption->_value = $o;
+        $res->encryption[]->_value = $o;
         unset($o);
       }
       if (empty($res))
@@ -134,7 +139,7 @@ class openAgency extends webServiceServer {
     return $ret;
   }
 
-  public function handle_openAgencyServiceRequest($param) {    // ???? param->service
+  public function openAgencyService($param) {    // ???? param->service
     $oci = new Oci($this->config->get_value("agency_credentials","setup"));
     $oci->set_charset("UTF8");
     $oci->connect();
@@ -144,6 +149,8 @@ class openAgency extends webServiceServer {
     } else {
       $tab_col["v"] = array("bib_nr", "navn", "tlf_nr", "fax_nr", "email", "badr", "bpostnr", "bcity", "type", "*");
       $tab_col["vv"] = array("bib_nr", "navn", "tlf_nr", "fax_nr", "email", "badr", "bpostnr", "bcity", "bib_type", "*");
+      $tab_col["vb"] = array("bib_nr", "*");
+      $tab_col["vbst"] = array("bib_nr", "*");
       $tab_col["vd"] = array("bib_nr", "*");
       $tab_col["vk"] = array("bib_nr", "*");
       $tab_col["oao"] = array("bib_nr", "*");
@@ -154,10 +161,12 @@ class openAgency extends webServiceServer {
                 ($col == "*" ? "" : ' "' . strtoupper($prefix . '.' . $col) . '"');
       $oci->bind("bind_id_nr", $param->agencyId->_value);
       $oci->set_query("SELECT " . $q . "
-                       FROM vip v, vip_vsn vv, vip_danbib vd, vip_kat vk, open_agency_ors oao
+                       FROM vip v, vip_vsn vv, vip_beh vb, vip_bestil vbst, vip_danbib vd, vip_kat vk, open_agency_ors oao
                        WHERE v.bib_nr = vd.bib_nr (+)
                          AND v.bib_vsn = vv.bib_nr
                          AND v.bib_nr = vk.bib_nr
+                         AND v.bib_nr = vb.bib_nr (+)
+                         AND v.bib_nr = vbst.bib_nr (+)
                          AND v.bib_nr = oao.bib_nr (+)
                          AND v.bib_nr = :bind_id_nr");
       $oa_row = $oci->fetch_into_assoc();
@@ -210,17 +219,21 @@ class openAgency extends webServiceServer {
           break;
         case "orsEndUserRequest":
           $orsER = &$res->orsEndUserRequest->_value;
-          $orsER->responder->_value = $oa_row["OAO.BIB_NR"];
-          $orsER->willReceive->_value = (in_array($oa_row["ANSWER"], array("z3950", "mail", "ors")) ? "YES" : "");
-          $orsER->protocol->_value = $oa_row["ANSWER"];
+          $orsER->responder->_value = $oa_row["VB.BIB_NR"];
+          $orsER->willReceive->_value = ($oa_row["BEST_MODT"] == "J" ? "YES" : "NO");
+          switch ($oa_row["BESTIL_VIA"]) {
+            case "A": 
+            case "B": $orsER->protocol->_value = "mail"; break;
+            case "C": $orsER->protocol->_value = "ors"; break;
+            case "D": $orsER->protocol->_value = "NCIP"; break;
+          }
+          if ($orsER->protocol->_value == "mail")
+            $orsER->address->value = $oa_row["EMAIL_BESTIL"];
           $orsER->userId->_value = $oa_row["ANSWER_Z3950_USER"];
           $orsER->groupId->_value = $oa_row["ANSWER_Z3950_GROUP"];
           $orsER->passWord->_value = ($oa_row["ANSWER"] == "z3950" ? $oa_row["ANSWER_Z3950_PASSWORD"] : $oa_row["ANSWER_NCIP_AUTH"]);
-          $orsER->format->_value = $oa_row["ANSWER_MAIL_FORMAT"];
-          if ($oa_row["ANSWER"] == "z3950")
-            $orsER->address->value = $oa_row["ANSWER_Z3950_ADDRESS"];
-          elseif ($oa_row["ANSWER"] == "mail")
-            $orsER->address->value = $oa_row["ANSWER_MAIL_ADDRESS"];
+          if ($orsER->protocol->_value == "mail")
+            $orsER->format->_value = ($oa_row["BESTIL_VIA"] == "A" ? "test" : "ill0");
           //var_dump($res->orsEndUserRequest->_value); die();
           break;
         case "orsItemRequest":
@@ -298,7 +311,7 @@ class openAgency extends webServiceServer {
     return $ret;
   }
 
-  public function handle_openAgencyNameListRequest($param) {
+  public function openAgencyNameList($param) {
     $oci = new Oci($this->config->get_value("agency_credentials","setup"));
     $oci->set_charset("UTF8");
     $oci->connect();
@@ -325,7 +338,7 @@ class openAgency extends webServiceServer {
     return $ret;
   }
 
-  public function handle_openAgencyProxyDomainsRequest($param) {  // ????
+  public function openAgencyProxyDomains($param) {  // ????
     $oci = new Oci($this->config->get_value("agency_credentials","setup"));
     $oci->set_charset("UTF8");
     $oci->connect();
@@ -350,7 +363,7 @@ class openAgency extends webServiceServer {
     return $ret;
   }
 
-  public function handle_openAgencyProxyIpRequest($param) {  // ????
+  public function openAgencyProxyIp($param) {  // ????
     $oci = new Oci($this->config->get_value("agency_credentials","setup"));
     $oci->set_charset("UTF8");
     $oci->connect();
