@@ -2,9 +2,9 @@
 <!-- edited with XMLSpy v2008 rel. 2 sp2 (http://www.altova.com) by Dansk BiblioteksCenter (Dansk BiblioteksCenter) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:oa="http://oss.dbc.dk/ns/openagency" targetNamespace="http://oss.dbc.dk/ns/openagency">
 	<xs:annotation>
-		<xs:documentation xml:lang="engg">Open Agency service</xs:documentation>
-		<xs:documentation xml:lang="engg">This XML Schema describes the data and structure of data of the Open Agency service.</xs:documentation>
-		<xs:documentation xml:lang="engg">This file is part of OpenAgency.
+		<xs:documentation xml:lang="eng">Open Agency service</xs:documentation>
+		<xs:documentation xml:lang="eng">This XML Schema describes the data and structure of data of the Open Agency service.</xs:documentation>
+		<xs:documentation xml:lang="eng">This file is part of OpenAgency.
 Copyright © 2009, Dansk Bibliotekscenter a/s,  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
 OpenAgency is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.

@@ -47,32 +47,24 @@ soap_footer = </SOAP-ENV:Body></SOAP-ENV:Envelope>
 ; </thisSoapAction>
 ; from url: action=thisSoapAction&some.number=nn&another.number=mm
 ;
+; action[ALL] defines parameter used in all defined soap-actions
+;
+action[ALL][] = outputType
+action[ALL][] = callback
 
-action[openAgencyAutomationRequest][] = outputType
-action[openAgencyAutomationRequest][] = callback
 action[openAgencyAutomationRequest][] = agencyId
 action[openAgencyAutomationRequest][] = autService
 action[openAgencyAutomationRequest][] = materialType
 
-action[openAgencyEncryptionRequest][] = outputType
-action[openAgencyEncryptionRequest][] = callback
 action[openAgencyEncryptionRequest][] = email
 
-action[openAgencyServiceRequest][] = outputType
-action[openAgencyServiceRequest][] = callback
 action[openAgencyServiceRequest][] = agencyId
 action[openAgencyServiceRequest][] = service
 
-action[openAgencyNameListRequest][] = outputType
-action[openAgencyNameListRequest][] = callback
 action[openAgencyNameListRequest][] = UNKNOWN
 
-action[openAgencyProxyDomainsRequest][] = outputType
-action[openAgencyProxyDomainsRequest][] = callback
 action[openAgencyProxyDomainsRequest][] = agencyId
 
-action[openAgencyProxyIpRequest][] = outputType
-action[openAgencyProxyIpRequest][] = callback
 action[openAgencyProxyIpRequest][] = agencyId
 
 
