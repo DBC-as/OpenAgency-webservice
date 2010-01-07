@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://oss.dbc.dk/ns/openagency"><SOAP-ENV:Body>
+<ns1:openAgencyAutomationRequest>
+ <ns1:agencyId>820040</ns1:agencyId>
+ <ns1:autService>autProvider</ns1:autService>
+ <ns1:materialType>1</ns1:materialType>
+</ns1:openAgencyAutomationRequest>
+</SOAP-ENV:Body></SOAP-ENV:Envelope>
