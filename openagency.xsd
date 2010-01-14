@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2008 rel. 2 sp2 (http://www.altova.com) by Dansk BiblioteksCenter (Dansk BiblioteksCenter) -->
+<!-- edited with XMLSpy v2009 sp1 (http://www.altova.com) by Dansk Bibliotekscenter A/S (Dansk Bibliotekscenter A/S) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:oa="http://oss.dbc.dk/ns/openagency" targetNamespace="http://oss.dbc.dk/ns/openagency">
 	<xs:annotation>
 		<xs:documentation xml:lang="eng">Open Agency service</xs:documentation>
 		<xs:documentation xml:lang="eng">This XML Schema describes the data and structure of data of the Open Agency service.</xs:documentation>
 		<xs:documentation xml:lang="eng">This file is part of OpenAgency.
-Copyright © 2009, Dansk Bibliotekscenter a/s,  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+Copyright © 20010, Dansk Bibliotekscenter a/s,  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
 OpenAgency is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
@@ -13,7 +13,7 @@ OpenAgency is distributed in the hope that it will be useful, but WITHOUT ANY WA
 
 You should have received a copy of the GNU Affero General Public License along with OpenAgency.  If not, see http://www.gnu.org/licenses/</xs:documentation>
 	</xs:annotation>
-	<xs:element name="openAgencyAutomationRequest">
+	<xs:element name="automationRequest">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="oa:agencyId"/>
@@ -24,7 +24,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="openAgencyAutomationResponse">
+	<xs:element name="automationResponse">
 		<xs:complexType>
 			<xs:choice>
 				<xs:element ref="oa:autPotential"/>
@@ -34,7 +34,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="openAgencyEncryptionRequest">
+	<xs:element name="encryptionRequest">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="oa:email"/>
@@ -43,7 +43,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="openAgencyEncryptionResponse">
+	<xs:element name="encryptionResponse">
 		<xs:complexType>
 			<xs:choice>
 				<xs:choice>
@@ -53,7 +53,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="openAgencyNameListRequest">
+	<xs:element name="nameListRequest">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="oa:libraryType" minOccurs="0"/>
@@ -62,7 +62,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="openAgencyNameListResponse">
+	<xs:element name="nameListResponse">
 		<xs:complexType>
 			<xs:choice>
 				<xs:element ref="oa:agency" maxOccurs="unbounded"/>
@@ -70,7 +70,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="openAgencyProxyDomainsRequest">
+	<xs:element name="proxyDomainsRequest">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="oa:agencyId"/>
@@ -79,7 +79,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="openAgencyProxyDomainsResponse">
+	<xs:element name="proxyDomainsResponse">
 		<xs:complexType>
 			<xs:choice>
 				<xs:element ref="oa:domains" maxOccurs="unbounded"/>
@@ -87,7 +87,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="openAgencyProxyIpRequest">
+	<xs:element name="proxyIpRequest">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="oa:ip"/>
@@ -96,7 +96,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="openAgencyProxyIpResponse">
+	<xs:element name="proxyIpResponse">
 		<xs:complexType>
 			<xs:choice>
 				<xs:element ref="oa:agencyId" maxOccurs="unbounded"/>
@@ -104,7 +104,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="openAgencyServiceRequest">
+	<xs:element name="serviceRequest">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="oa:agencyId"/>
@@ -114,7 +114,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="openAgencyServiceResponse">
+	<xs:element name="serviceResponse">
 		<xs:complexType>
 			<xs:choice>
 				<xs:element ref="oa:serverInformation"/>
