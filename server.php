@@ -25,7 +25,7 @@ require_once("OLS_class_lib/oci_class.php");
 
 class openAgency extends webServiceServer {
 
-  function openAgencyAutomation($param) {
+  function automation($param) {
     $oci = new Oci($this->config->get_value("agency_credentials","setup"));
     $oci->set_charset("UTF8");
     $oci->connect();
@@ -49,18 +49,20 @@ class openAgency extends webServiceServer {
                              FROM vip_fjernlaan
                              WHERE materiale_id = :bind_materiale_id
                                AND status = :bind_status");    // ??? NULL og DISTINCT
-            $res->materialType->_value = $param->materialType->_value;
+            $ap = &$res->autPotential->_value;
+            $ap->materialType->_value = $param->materialType->_value;
             while ($vf_row = $oci->fetch_into_assoc())
               if ($vf_row["LAANGIVER"])
-                $res->responder[]->_value = $vf_row["LAANGIVER"];
+                $ap->responder[]->_value = $vf_row["LAANGIVER"];
           } elseif ($vf_row["VALG"] == "l") {
             $oci->bind("bind_fjernlaan_id", $vf_row["ID_NR"]);
             $oci->set_query("SELECT bib_nr
                              FROM vip_fjernlaan_bibliotek
                              WHERE fjernlaan_id = :bind_fjernlaan_id");
-            $res->materialType->_value = $param->materialType->_value;
+            $ap = &$res->autPotential->_value;
+            $ap->materialType->_value = $param->materialType->_value;
             while ($vfb_row = $oci->fetch_into_assoc())
-              $res->responder[]->_value = $vfb_row["BIB_NR"];
+              $ap->responder[]->_value = $vfb_row["BIB_NR"];
           } else
             $res->error->_value = "no_agencies_found";
           break;
@@ -72,18 +74,19 @@ class openAgency extends webServiceServer {
                            WHERE laantager = :bind_laantager
                              AND materiale_id = :bind_materiale_id");
           if ($vf_row = $oci->fetch_into_assoc()) {
-            $res->requester->_value = $vf_row["LAANTAGER"];
-            $res->materialType->_value = $vf_row["MATERIALE_ID"];
+            $ar = &$res->autRequester->_value;
+            $ar->requester->_value = $vf_row["LAANTAGER"];
+            $ar->materialType->_value = $vf_row["MATERIALE_ID"];
             if ($vf_row["STATUS"] == "T")
-              $res->willSend->_value = "TEST";
+              $ar->willSend->_value = "TEST";
             elseif ($vf_row["STATUS"] == "J")
-              $res->willSend->_value = "YES";
+              $ar->willSend->_value = "YES";
             else
-              $res->willSend->_value = "NO";
-            $res->autPeriod->_value = $vf_row["PERIODE"];
-            $res->autId->_value = $vf_row["ID_NR"];
-            $res->autChoice->_value = $vf_row["VALG"];
-            $res->autRes->_value = ($vf_row["RESERVERING"] == "J" ? "YES" : "NO");
+              $ar->willSend->_value = "NO";
+            $ar->autPeriod->_value = $vf_row["PERIODE"];
+            $ar->autId->_value = $vf_row["ID_NR"];
+            $ar->autChoice->_value = $vf_row["VALG"];
+            $ar->autRes->_value = ($vf_row["RESERVERING"] == "J" ? "YES" : "NO");
           } else
             $res->error->_value = "no_agencies_found";
           break;
@@ -95,11 +98,12 @@ class openAgency extends webServiceServer {
                            WHERE laangiver = :bind_laangiver
                              AND materiale_id = :bind_materiale_id");
           if ($vf_row = $oci->fetch_into_assoc()) {
-            $res->provider->_value = $vf_row["LAANGIVER"];
-            $res->materialType->_value = $vf_row["MATERIALE_ID"];
-            $res->willReceive->_value = ($vf_row["STATUS"] == "J" ? "YES" : "NO");
-            $res->autPeriod->_value = $vf_row["PERIODE"];
-            $res->autId->_value = $vf_row["ID_NR"];
+            $ap = &$res->autProvider->_value;
+            $ap->provider->_value = $vf_row["LAANGIVER"];
+            $ap->materialType->_value = $vf_row["MATERIALE_ID"];
+            $ap->willReceive->_value = ($vf_row["STATUS"] == "J" ? "YES" : "NO");
+            $ap->autPeriod->_value = $vf_row["PERIODE"];
+            $ap->autId->_value = $vf_row["ID_NR"];
           } else
             $res->error->_value = "no_agencies_found";
           break;
@@ -107,11 +111,11 @@ class openAgency extends webServiceServer {
           $res->error->_value = "error_in_request";
       }
     //var_dump($res); var_dump($param); die();
-    $ret->openAgencyAutomationResponse->_value = $res;
+    $ret->automationResponse->_value = $res;
     return $ret;
   }
 
-  public function openAgencyEncryption($param) {
+  public function encryption($param) {
     $oci = new Oci($this->config->get_value("agency_credentials","setup"));
     $oci->set_charset("UTF8");
     $oci->connect();
@@ -135,11 +139,11 @@ class openAgency extends webServiceServer {
     }
 
     //var_dump($res); var_dump($param); die();
-    $ret->openAgencyEncryptionResponse->_value = $res;
+    $ret->encryptionResponse->_value = $res;
     return $ret;
   }
 
-  public function openAgencyService($param) {    // ???? param->service
+  public function service($param) {    // ???? param->service
     $oci = new Oci($this->config->get_value("agency_credentials","setup"));
     $oci->set_charset("UTF8");
     $oci->connect();
@@ -151,7 +155,7 @@ class openAgency extends webServiceServer {
       $tab_col["vv"] = array("bib_nr", "navn", "tlf_nr", "fax_nr", "email", "badr", "bpostnr", "bcity", "bib_type", "*");
       $tab_col["vb"] = array("bib_nr", "*");
       $tab_col["vbst"] = array("bib_nr", "*");
-      $tab_col["vd"] = array("bib_nr", "*");
+      $tab_col["vd"] = array("bib_nr", "svar_fax", "*");
       $tab_col["vk"] = array("bib_nr", "*");
       $tab_col["oao"] = array("bib_nr", "*");
       foreach ($tab_col as $prefix => $arr)
@@ -173,16 +177,16 @@ class openAgency extends webServiceServer {
       switch ($param->service->_value) {
         case "information":
           $inf = &$res->information->_value;
-          $inf->branchId->_value = $oa_row["V.BIB_NR"];
           $inf->agencyId->_value = $oa_row["VV.BIB_NR"];
           $inf->agencyName->_value = $oa_row["VV.NAVN"];
           $inf->agencyPhone->_value = $oa_row["VV.TLF_NR"];
           $inf->agencyFax->_value = $oa_row["VV.FAX_NR"];
           $inf->agencyEmail->_value = $oa_row["VV.EMAIL"];
           $inf->agencyType->_value = $oa_row["VV.BIB_TYPE"];
+          $inf->branchId->_value = $oa_row["V.BIB_NR"];
           $inf->branchName->_value = $oa_row["V.NAVN"];
           $inf->branchPhone->_value = $oa_row["V.TLF_NR"];
-          $inf->branchFax->_value = $oa_row["V.FAX_NR"];
+          $inf->branchFax->_value = $oa_row["VD.SVAR_FAX"];
           $inf->branchEmail->_value = $oa_row["V.EMAIL"];
           $inf->branchType->_value = $oa_row["V.TYPE"];
           $inf->postalAddress->_value = $oa_row["V.BADR"];
@@ -238,18 +242,33 @@ class openAgency extends webServiceServer {
           break;
         case "orsItemRequest":
           $orsIR = &$res->orsItemRequest->_value;
-          $orsIR->responder->_value = $oa_row["OAO.BIB_NR"];
-          $orsIR->willReceive->_value = (in_array($oa_row["REQUEST"], array("z3950", "mail", "ors")) ? "YES" : "");
-          $orsIR->protocol->_value = $oa_row["REQUEST"];
-          $orsIR->address->_value = "";
-          $orsIR->userId->_value = $oa_row["REQUEST_Z3950_USER"];
-          $orsIR->groupId->_value = $oa_row["REQUEST_Z3950_GROUP"];
-          $orsIR->passWord->_value = ($oa_row["REQUEST"] == "z3950" ? $oa_row["REQUEST_Z3950_PASSWORD"] : $oa_row["REQUEST_NCIP_AUTH"]);
-          $orsIR->format->_value = ($oa_row["REQUEST"] == "mail" ? $oa_row["REQUEST_MAIL_FORMAT"] : "");
-          if ($oa_row["REQUEST"] == "z3950")
-            $orsIR->address->_value = $oa_row["REQUEST_Z3950_ADDRESS"];
-          elseif ($oa_row["REQUEST"] == "mail")
-            $orsIR->address->_value = $oa_row["REQUEST_MAIL_ADDRESS"];
+          $orsIR->responder->_value = $oa_row["VD.BIB_NR"];
+          switch ($oa_row["MAILBESTIL_VIA"]) {
+            case "A": $orsIR->willReceive->_value = "YES";
+                      $orsIR->protocol->_value = "mail"; 
+                      $orsIR->address->_value = $oa_row["BEST_EMAIL"];
+                      break;
+            case "B": $orsIR->willReceive->_value = "YES";
+                      $orsIR->protocol->_value = "ors"; 
+                      break;
+            case "C": $orsIR->willReceive->_value = "YES";
+                      $orsIR->protocol->_value = "z3950"; 
+                      $orsIR->address->_value = $oa_row["URL_ITEMORDER_BESTIL"];
+                      break;
+            case "D": $orsIR->willReceive->_value = "NO"; 
+                      break;
+            default: $orsIR->willReceive->_value = "NO"; 
+                      break;
+          }
+          $orsIR->userId->_value = $oa_row["ZBESTIL_USERID"];
+          $orsIR->groupId->_value = $oa_row["ZBESTIL_GROUPID"];
+          $orsIR->passWord->_value = $oa_row["ZBESTIL_PASSW"];
+          if ($oa_row["MAILBESTIL_VIA"] == "A")
+            switch ($oa_row["FORMAT_BEST"]) {
+              case "illdanbest": $orsIR->format->_value = "text"; break;
+              case "ill0form": $orsIR->format->_value = "ill0"; break;
+              case "ill5form": $orsIR->format->_value = "ill0"; break;
+            }
           //var_dump($res->orsItemRequest->_value); die();
           break;
         case "orsLookupUser":
@@ -263,10 +282,12 @@ class openAgency extends webServiceServer {
         case "orsReceipt":
           $orsR = &$res->orsReceipt->_value;
           $orsR->responder->_value = $oa_row["OAO.BIB_NR"];
-          $orsR->willReceive->_value = (in_array($oa_row["RECEIPT"], array("mail", "ors")) ? "YES" : "");
-          $orsR->protocol->_value = $oa_row["RECEIPT"];
-          $orsR->address->_value = $oa_row["RECEIPT_MAIL_ADRESS"];
-          $orsR->format->_value = $oa_row["RECEIPT_MAIL_FORMAT"];
+          $orsR->willReceive->_value = (in_array($oa_row["MAILKVITTER_VIA"], array("A", "B")) ? "YES" : "NO");
+          $orsR->protocol->_value = (in_array($oa_row["MAILKVITTER_VIA"], array("A", "B")) ? "mail" : "");
+          $orsR->address->_value = $oa_row["KVIT_EMAIL"];
+          if ($oa_row["FORMAT_KVIT"] == "ill0form") $orsR->format->_value = "ill0";
+          elseif ($oa_row["FORMAT_KVIT"] == "ill5form") $orsR->format->_value = "ill0";
+          elseif ($oa_row["FORMAT_KVIT"] == "illdanbest") $orsR->format->_value = "text";
           //var_dump($res->orsReceipt->_value); die();
           break;
         case "orsRenewItemUser":
@@ -307,11 +328,11 @@ class openAgency extends webServiceServer {
 
 
     //var_dump($res); var_dump($param); die();
-    $ret->openAgencyServiceResponse->_value = $res;
+    $ret->serviceResponse->_value = $res;
     return $ret;
   }
 
-  public function openAgencyNameList($param) {
+  public function nameList($param) {
     $oci = new Oci($this->config->get_value("agency_credentials","setup"));
     $oci->set_charset("UTF8");
     $oci->connect();
@@ -326,7 +347,7 @@ class openAgency extends webServiceServer {
         $oci->set_query("SELECT bib_nr, navn FROM vip_vsn" . $add_bib_type);
         while ($vv_row = $oci->fetch_into_assoc()) {
           $o->agencyId->_value = $vv_row["BIB_NR"];;
-          $o->agencyName->_value = $vv_row["NAVN"];
+          $o->agencyName->_value = htmlspecialchars($vv_row["NAVN"]);
           $res->agency[]->_value = $o;
           unset($o);
         }
@@ -334,11 +355,11 @@ class openAgency extends webServiceServer {
         $res->error->_value = "error_in_request";
     }
     //var_dump($res); var_dump($param); die();
-    $ret->openAgencyNameListResponse->_value = $res;
+    $ret->nameListResponse->_value = $res;
     return $ret;
   }
 
-  public function openAgencyProxyDomains($param) {  // ????
+  public function proxyDomains($param) {  // ????
     $oci = new Oci($this->config->get_value("agency_credentials","setup"));
     $oci->set_charset("UTF8");
     $oci->connect();
@@ -359,11 +380,11 @@ class openAgency extends webServiceServer {
 */
     }
     //var_dump($res); var_dump($param); die();
-    $ret->openAgencyProxyDomainsResponse->_value = $res;
+    $ret->proxyDomainsResponse->_value = $res;
     return $ret;
   }
 
-  public function openAgencyProxyIp($param) {  // ????
+  public function proxyIp($param) {  // ????
     $oci = new Oci($this->config->get_value("agency_credentials","setup"));
     $oci->set_charset("UTF8");
     $oci->connect();
@@ -376,7 +397,7 @@ class openAgency extends webServiceServer {
     }
 
     //var_dump($res); var_dump($param); die();
-    $ret->openAgencyProxyIpResponse->_value = $res;
+    $ret->proxyIpResponse->_value = $res;
     return $ret;
   }
 
