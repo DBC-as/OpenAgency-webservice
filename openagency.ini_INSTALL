@@ -7,8 +7,26 @@ version = 0.1
 ; wsdl for service
 wsdl = openagency.wsdl
 
+; soapActions and their corresponding request structure
+; Can be found in the wsdl but is stated here for convenience
+soapAction[automation] = automationRequest
+soapAction[encryption] = encryptionRequest
+soapAction[service] = serviceRequest
+soapAction[nameList] = nameListRequest
+soapAction[proxyDomains] = proxyDomainsRequest
+soapAction[proxyIp] = proxyIpRequest
+
+; validate
+;validate[request] = openagency.xsd
+;validate[response] = openagency.xsd
+
+; prefixes and namespaces
+xmlns[NONE] = http://oss.dbc.dk/ns/openagency
+
+xmldir = ./xml
+
 ; logfile for verbose output
-logfile = /tmp/openagency.log
+logfile = /my-log-dir/openagency.log
 
 ; set verboselevel
 ;   WARNING - simple warnings
@@ -26,11 +44,6 @@ verbose = WARNING+ERROR+FATAL+STAT+TIMER+TRACE+DEBUG+Z3950+OCI
 agency_credentials = user/password@myoracle.server.dk
 
 [rest]
-
-soap_header = <?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?><SOAP-ENV:Envelope xmlns:SOAP-ENV=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns=&quot;http://oss.dbc.dk/ns/openagency&quot;><SOAP-ENV:Body>
-
-soap_footer = </SOAP-ENV:Body></SOAP-ENV:Envelope>
-
 ; REST parameters for SOAPactions
 ;
 ; use xml.path.to.par notation to solve name-conflicts
@@ -52,22 +65,24 @@ soap_footer = </SOAP-ENV:Body></SOAP-ENV:Envelope>
 action[ALL][] = outputType
 action[ALL][] = callback
 
-action[openAgencyAutomationRequest][] = agencyId
-action[openAgencyAutomationRequest][] = autService
-action[openAgencyAutomationRequest][] = materialType
+action[automation][] = agencyId
+action[automation][] = autService
+action[automation][] = materialType
 
-action[openAgencyEncryptionRequest][] = email
+action[encryption][] = email
 
-action[openAgencyServiceRequest][] = agencyId
-action[openAgencyServiceRequest][] = service
+action[service][] = agencyId
+action[service][] = service
 
-action[openAgencyNameListRequest][] = UNKNOWN
+action[nameList][] = UNKNOWN
 
-action[openAgencyProxyDomainsRequest][] = agencyId
+action[proxyDomains][] = agencyId
 
-action[openAgencyProxyIpRequest][] = agencyId
+action[proxyIp][] = agencyId
 
 
 [howru]
-
+test[] = service&agencyId=710100&service=orsItemRequest
+preg_match[] = <responder>710100
+error[] = ERROR - Cannot find 710100 in VIP
 
