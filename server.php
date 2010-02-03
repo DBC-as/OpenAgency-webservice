@@ -20,22 +20,31 @@
 */
 
 
+/** \brief
+ *
+ */
+
+
 require_once("OLS_class_lib/webServiceServer_class.php");
 require_once("OLS_class_lib/oci_class.php");
 
 class openAgency extends webServiceServer {
 
+ /** \brief
+  *
+  */
   function automation($param) {
     $oci = new Oci($this->config->get_value("agency_credentials","setup"));
     $oci->set_charset("UTF8");
     $oci->connect();
     if ($err = $oci->get_error_string()) {
-      $this->verbose->log(FATAL, "OpenAgency:: OCI connect error: " . $err);
+      verbose::log(FATAL, "OpenAgency:: OCI connect error: " . $err);
       $res->error->_value = "service_unavailable";
-    } else
+    } else {
+      $agency = $this->strip_agency($param->agencyId->_value);
       switch ($param->autService->_value) {
         case "autPotential":
-          $oci->bind("bind_laantager", $param->agencyId->_value);
+          $oci->bind("bind_laantager", $agency);
           $oci->bind("bind_materiale_id", $param->materialType->_value);
           $oci->set_query("SELECT id_nr, valg
                            FROM vip_fjernlaan
@@ -67,7 +76,7 @@ class openAgency extends webServiceServer {
             $res->error->_value = "no_agencies_found";
           break;
         case "autRequester":
-          $oci->bind("bind_laantager", $param->agencyId->_value);
+          $oci->bind("bind_laantager", $agency);
           $oci->bind("bind_materiale_id", $param->materialType->_value);
           $oci->set_query("SELECT *
                            FROM vip_fjernlaan
@@ -91,7 +100,7 @@ class openAgency extends webServiceServer {
             $res->error->_value = "no_agencies_found";
           break;
         case "autProvider":
-          $oci->bind("bind_laangiver", $param->agencyId->_value);
+          $oci->bind("bind_laangiver", $agency);
           $oci->bind("bind_materiale_id", $param->materialType->_value);
           $oci->set_query("SELECT *
                            FROM vip_fjernlaan
@@ -110,17 +119,21 @@ class openAgency extends webServiceServer {
         default:
           $res->error->_value = "error_in_request";
       }
+    }
     //var_dump($res); var_dump($param); die();
     $ret->automationResponse->_value = $res;
     return $ret;
   }
 
+ /** \brief
+  *
+  */
   public function encryption($param) {
     $oci = new Oci($this->config->get_value("agency_credentials","setup"));
     $oci->set_charset("UTF8");
     $oci->connect();
     if ($err = $oci->get_error_string()) {
-      $this->verbose->log(FATAL, "OpenAgency:: OCI connect error: " . $err);
+      verbose::log(FATAL, "OpenAgency:: OCI connect error: " . $err);
       $res->error->_value = "service_unavailable";
     } else {
       $oci->bind("bind_email", $param->email->_value);
@@ -143,12 +156,15 @@ class openAgency extends webServiceServer {
     return $ret;
   }
 
+ /** \brief
+  *
+  */
   public function service($param) {    // ???? param->service
     $oci = new Oci($this->config->get_value("agency_credentials","setup"));
     $oci->set_charset("UTF8");
     $oci->connect();
     if ($err = $oci->get_error_string()) {
-      $this->verbose->log(FATAL, "OpenAgency:: OCI connect error: " . $err);
+      verbose::log(FATAL, "OpenAgency:: OCI connect error: " . $err);
       $res->error->_value = "service_unavailable";
     } else {
       $tab_col["v"] = array("bib_nr", "navn", "tlf_nr", "fax_nr", "email", "badr", "bpostnr", "bcity", "type", "*");
@@ -163,7 +179,8 @@ class openAgency extends webServiceServer {
           $q .= (empty($q) ? "" : ", ") .
                 $prefix . '.' . $col .
                 ($col == "*" ? "" : ' "' . strtoupper($prefix . '.' . $col) . '"');
-      $oci->bind("bind_id_nr", $param->agencyId->_value);
+      $agency = $this->strip_agency($param->agencyId->_value);
+      $oci->bind("bind_bib_nr", $agency);
       $oci->set_query("SELECT " . $q . "
                        FROM vip v, vip_vsn vv, vip_beh vb, vip_bestil vbst, vip_danbib vd, vip_kat vk, open_agency_ors oao
                        WHERE v.bib_nr = vd.bib_nr (+)
@@ -172,7 +189,7 @@ class openAgency extends webServiceServer {
                          AND v.bib_nr = vb.bib_nr (+)
                          AND v.bib_nr = vbst.bib_nr (+)
                          AND v.bib_nr = oao.bib_nr (+)
-                         AND v.bib_nr = :bind_id_nr");
+                         AND v.bib_nr = :bind_bib_nr");
       $oa_row = $oci->fetch_into_assoc();
       switch ($param->service->_value) {
         case "information":
@@ -257,7 +274,7 @@ class openAgency extends webServiceServer {
                       break;
             case "D": $orsIR->willReceive->_value = "NO"; 
                       break;
-            default: $orsIR->willReceive->_value = "NO"; 
+            default:  $orsIR->willReceive->_value = "NO"; 
                       break;
           }
           $orsIR->userId->_value = $oa_row["ZBESTIL_USERID"];
@@ -332,12 +349,15 @@ class openAgency extends webServiceServer {
     return $ret;
   }
 
+ /** \brief
+  *
+  */
   public function nameList($param) {
     $oci = new Oci($this->config->get_value("agency_credentials","setup"));
     $oci->set_charset("UTF8");
     $oci->connect();
     if ($err = $oci->get_error_string()) {
-      $this->verbose->log(FATAL, "OpenAgency:: OCI connect error: " . $err);
+      verbose::log(FATAL, "OpenAgency:: OCI connect error: " . $err);
       $res->error->_value = "service_unavailable";
     } else {
       if ($param->libraryType->_value == "Folkebibliotek" ||
@@ -359,12 +379,15 @@ class openAgency extends webServiceServer {
     return $ret;
   }
 
+ /** \brief
+  *
+  */
   public function proxyDomains($param) {  // ????
     $oci = new Oci($this->config->get_value("agency_credentials","setup"));
     $oci->set_charset("UTF8");
     $oci->connect();
     if ($err = $oci->get_error_string()) {
-      $this->verbose->log(FATAL, "OpenAgency:: OCI connect error: " . $err);
+      verbose::log(FATAL, "OpenAgency:: OCI connect error: " . $err);
       $res->error->_value = "service_unavailable";
     } else {
 /* 2 come ...
@@ -384,12 +407,15 @@ class openAgency extends webServiceServer {
     return $ret;
   }
 
+ /** \brief
+  *
+  */
   public function proxyIp($param) {  // ????
     $oci = new Oci($this->config->get_value("agency_credentials","setup"));
     $oci->set_charset("UTF8");
     $oci->connect();
     if ($err = $oci->get_error_string()) {
-      $this->verbose->log(FATAL, "OpenAgency:: OCI connect error: " . $err);
+      verbose::log(FATAL, "OpenAgency:: OCI connect error: " . $err);
       $res->error->_value = "service_unavailable";
     } else {
       //$oci->set_query("SELECT bib_nr, navn FROM vip_vsn");
@@ -401,10 +427,16 @@ class openAgency extends webServiceServer {
     return $ret;
   }
 
+ /** \brief
+  *  return only digits, so something like DK-710100 returns 710100
+  */
+  private function strip_agency($id) {
+    return preg_replace('/\D/', '', $id);
+  }
 }
 
-/* 
- * MAIN 
+/**
+ *   MAIN 
  */
 
 $ws=new openAgency('openagency.ini');
