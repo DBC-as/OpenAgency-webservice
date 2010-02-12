@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2010 (http://www.altova.com) by Dansk Bibliotekscenter A/S (Dansk Bibliotekscenter A/S) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:oa="http://oss.dbc.dk/ns/openagency" targetNamespace="http://oss.dbc.dk/ns/openagency">
 	<xs:annotation>
 		<xs:documentation xml:lang="eng">Open Agency service</xs:documentation>
@@ -53,25 +52,25 @@ You should have received a copy of the GNU Affero General Public License along w
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="orderPolicyRequest">
-		<xs:annotation>
-			<xs:documentation>The service request for checking if an agency accepts requests for orders of a given type (eg. materialType)</xs:documentation>
-		</xs:annotation>
+	<xs:element name="endUserOrderPolicyRequest">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="oa:agencyId"/>
-				<xs:element ref="oa:materialType"/>
+				<xs:element ref="oa:orderMaterialType"/>
+				<xs:element ref="oa:ownedByAgency"/>
+				<xs:element ref="oa:callback" minOccurs="0"/>
+				<xs:element ref="oa:outputType" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="orderPolicyResponse">
-		<xs:annotation>
-			<xs:documentation>The service response</xs:documentation>
-		</xs:annotation>
+	<xs:element name="endUserOrderPolicyResponse">
 		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="oa:orderAccepted"/>
-			</xs:sequence>
+			<xs:choice>
+				<xs:choice>
+					<xs:element ref="oa:willReceive"/>
+					<xs:element ref="oa:error"/>
+				</xs:choice>
+			</xs:choice>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="nameListRequest">
@@ -282,11 +281,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="libraryType" type="oa:libraryTypeType"/>
 	<xs:element name="materialType" type="xs:integer"/>
 	<xs:element name="norfri" type="xs:string"/>
-	<xs:element name="orderAccepted" type="xs:boolean">
-		<xs:annotation>
-			<xs:documentation>Parameter whether an agency accepts an order of a given type (true or false)</xs:documentation>
-		</xs:annotation>
-	</xs:element>
+	<xs:element name="orderMaterialType" type="oa:orderMaterialTypeType"/>
 	<xs:element name="orsAnswer" type="oa:ors"/>
 	<xs:element name="orsCancelRequestUser" type="oa:ors"/>
 	<xs:element name="orsEndUserRequest" type="oa:ors"/>
@@ -300,6 +295,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:documentation xml:lang="eng">E.g. xml, json or php.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
+	<xs:element name="ownedByAgency" type="xs:boolean"/>
 	<xs:element name="passWord" type="xs:string"/>
 	<xs:element name="postalAddress" type="xs:string"/>
 	<xs:element name="postalCode" type="xs:string"/>
@@ -355,6 +351,16 @@ You should have received a copy of the GNU Affero General Public License along w
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="Folkebibliotek"/>
 			<xs:enumeration value="Forskningsbibliotek"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="orderMaterialTypeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="cdrom"/>
+			<xs:enumeration value="monograph"/>
+			<xs:enumeration value="music"/>
+			<xs:enumeration value="newspaper"/>
+			<xs:enumeration value="journal"/>
+			<xs:enumeration value="video"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="outputTypeType">
