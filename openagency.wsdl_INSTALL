@@ -31,6 +31,12 @@ You should have received a copy of the GNU Affero General Public License along w
 	<wsdl:message name="nameListResponse">
 		<wsdl:part name="body" element="oa:nameListResponse"/>
 	</wsdl:message>
+	<wsdl:message name="orderPolicyRequest">
+		<wsdl:part name="body" element="oa:orderPolicyRequest"/>
+	</wsdl:message>
+	<wsdl:message name="orderPolicyResponse">
+		<wsdl:part name="body" element="oa:orderPolicyResponse"/>
+	</wsdl:message>
 	<wsdl:message name="proxyDomainsRequest">
 		<wsdl:part name="body" element="oa:proxyDomainsRequest"/>
 	</wsdl:message>
@@ -59,6 +65,12 @@ You should have received a copy of the GNU Affero General Public License along w
 		<wsdl:operation name="encryption">
 			<wsdl:input message="oaw:encryptionRequest"/>
 			<wsdl:output message="oaw:encryptionResponse"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:portType name="orderPolicyPortType">
+		<wsdl:operation name="orderPolicy">
+			<wsdl:input message="oaw:orderPolicyRequest"/>
+			<wsdl:output message="oaw:orderPolicyResponse"/>
 		</wsdl:operation>
 	</wsdl:portType>
 	<wsdl:portType name="servicePortType">
@@ -105,6 +117,18 @@ You should have received a copy of the GNU Affero General Public License along w
 				<soap:body use="literal"/>
 			</wsdl:input>
 			<wsdl:output name="encryptionResponse">
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:binding name="orderPolicyBinding" type="oaw:orderPolicyPortType">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="orderPolicy">
+			<soap:operation soapAction="http://openagency.dbc.dk"/>
+			<wsdl:input name="orderPolicyRequest">
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output name="orderPolicyResponse">
 				<soap:body use="literal"/>
 			</wsdl:output>
 		</wsdl:operation>
@@ -162,6 +186,9 @@ You should have received a copy of the GNU Affero General Public License along w
 			<soap:address location="http://openagency.dbc.dk"/>
 		</wsdl:port>
 		<wsdl:port binding="oaw:encryptionBinding" name="encryptionPortType">
+			<soap:address location="http://openagency.dbc.dk"/>
+		</wsdl:port>
+		<wsdl:port binding="oaw:orderPolicyBinding" name="orderPolicyPortType">
 			<soap:address location="http://openagency.dbc.dk"/>
 		</wsdl:port>
 		<wsdl:port binding="oaw:serviceBinding" name="servicePortType">
