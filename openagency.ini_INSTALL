@@ -1,6 +1,8 @@
 ; inifie for openagency
 
 [setup]
+; servicename
+servicename=openagency
 
 version = 0.1
 
@@ -11,6 +13,7 @@ wsdl = openagency.wsdl
 ; Can be found in the wsdl but is stated here for convenience
 soapAction[automation] = automationRequest
 soapAction[encryption] = encryptionRequest
+soapAction[endUserOrderPolicy] = endUserOrderPolicyRequest
 soapAction[service] = serviceRequest
 soapAction[nameList] = nameListRequest
 soapAction[proxyDomains] = proxyDomainsRequest
@@ -26,7 +29,7 @@ xmlns[NONE] = http://oss.dbc.dk/ns/openagency
 xmldir = ./xml
 
 ; logfile for verbose output
-logfile = /my-log-dir/openagency.log
+logfile = /tmp/openagency.log
 
 ; set verboselevel
 ;   WARNING - simple warnings
@@ -40,10 +43,10 @@ logfile = /my-log-dir/openagency.log
 ;   OCI     - oracle
 verbose = WARNING+ERROR+FATAL+STAT+TIMER+TRACE+DEBUG+Z3950+OCI
 
-; oracle_loin
-agency_credentials = user/password@myoracle.server.dk
+agency_credentials = some_user/some_pwd@some.server.dbc.dk
 
 [rest]
+
 ; REST parameters for SOAPactions
 ;
 ; use xml.path.to.par notation to solve name-conflicts
@@ -71,6 +74,10 @@ action[automation][] = materialType
 
 action[encryption][] = email
 
+action[endUserOrderPolicy][] = agencyId
+action[endUserOrderPolicy][] = orderMaterialType
+action[endUserOrderPolicy][] = orderMaterialType
+
 action[service][] = agencyId
 action[service][] = service
 
@@ -80,9 +87,7 @@ action[proxyDomains][] = agencyId
 
 action[proxyIp][] = agencyId
 
-
 [howru]
 test[] = service&agencyId=710100&service=orsItemRequest
 preg_match[] = <responder>710100
 error[] = ERROR - Cannot find 710100 in VIP
-
