@@ -253,7 +253,9 @@ class openAgency extends webServiceServer {
           $inf->junction->_value = $oa_row["KNUDEPUNKT"];
           $inf->kvik->_value = ($oa_row["KVIK"] == "kvik" ? "YES" : "NO");
           $inf->norfri->_value = ($oa_row["NORFRI"] == "norfri" ? "YES" : "NO");
-          $inf->sender->_value = $oa_row["CHANGE_REQUESTER"];
+          $inf->requestOrder->_value = $oa_row["USE_LAANEVEJ"];
+          if (is_null($inf->sender->_value = $oa_row["CHANGE_REQUESTER"]))
+            $inf->sender->_value = $oa_row["V.BIB_NR"];
           //var_dump($res->information->_value); die();
           break;
         case "orsAnswer":
