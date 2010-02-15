@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://oss.dbc.dk/ns/openagency"><SOAP-ENV:Body>
+<ns1:endUserOrderPolicyRequest>
+ <ns1:agencyId>DK-710100</ns1:agencyId>
+ <ns1:orderMaterialType>monograph</ns1:orderMaterialType>
+ <ns1:ownedByAgency>true</ns1:ownedByAgency>
+</ns1:endUserOrderPolicyRequest>
+</SOAP-ENV:Body></SOAP-ENV:Envelope>
