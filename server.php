@@ -155,6 +155,46 @@ class openAgency extends webServiceServer {
     $ret->encryptionResponse->_value = $res;
     return $ret;
   }
+ /** \brief
+  *
+  */
+  public function endUserOrderPolicy($param) {
+    $oci = new Oci($this->config->get_value("agency_credentials","setup"));
+    $oci->set_charset("UTF8");
+    $oci->connect();
+    if ($err = $oci->get_error_string()) {
+      verbose::log(FATAL, "OpenAgency:: OCI connect error: " . $err);
+      $res->error->_value = "service_unavailable";
+    } else {
+      $assoc["cdrom"]     = array("CDROM_BEST_MODT", "CDROM_BEST_MODT_FJL");
+      $assoc["journal"]   = array("PER_BEST_MODT",   "PER_BEST_MODT_FJL");
+      $assoc["monograph"] = array("MONO_BEST_MODT",  "MONO_BEST_MODT_FJL");
+      $assoc["music"]     = array("MUSIK_BEST_MODT", "MUSIK_BEST_MODT_FJL");
+      $assoc["newspaper"] = array("AVIS_BEST_MODT",  "AVIS_BEST_MODT_FJL");
+      $assoc["video"]     = array("VIDEO_BEST_MODT", "VIDEO_BEST_MODT_FJL");
+      if (strtolower($param->ownedByAgency->_value) == "true"
+       || $param->ownedByAgency->_value == "1")
+        $owned_by_agency = 0;
+      elseif (strtolower($param->ownedByAgency->_value) == "false"
+       || $param->ownedByAgency->_value == "0")
+        $owned_by_agency = 1;
+      if (isset($owned_by_agency) 
+        && ($will_receive = $assoc[strtolower($param->orderMaterialType->_value)][$owned_by_agency])) {
+        $agency = $this->strip_agency($param->agencyId->_value);
+        $oci->bind("bind_bib_nr", $agency);
+        $oci->set_query("SELECT " . $will_receive . " \"WR\" FROM vip_beh WHERE bib_nr = :bind_bib_nr");
+        if ($vb_row = $oci->fetch_into_assoc())
+          $res->willReceive->_value = ($vb_row["WR"] == "J" ? "true" : "false");
+      } else
+        $res->error->_value = "error_in_request";
+    }
+    if (empty($res))
+      $res->error->_value = "no_agencies_found";
+
+    //var_dump($res); var_dump($param); die();
+    $ret->endUserOrderPolicyResponse->_value = $res;
+    return $ret;
+  }
 
  /** \brief
   *
