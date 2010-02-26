@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:oa="http://oss.dbc.dk/ns/openagency" targetNamespace="http://oss.dbc.dk/ns/openagency">
 	<xs:annotation>
-		<xs:documentation xml:lang="eng">Open Agency service</xs:documentation>
-		<xs:documentation xml:lang="eng">This XML Schema describes the data and structure of data of the Open Agency service.</xs:documentation>
-		<xs:documentation xml:lang="eng">This file is part of OpenAgency.
+		<xs:documentation xml:lang="en">Open Agency service</xs:documentation>
+		<xs:documentation xml:lang="en">This XML Schema describes the data and structure of data of the Open Agency service.</xs:documentation>
+		<xs:documentation xml:lang="en">This file is part of OpenAgency.
 Copyright © 20010, Dansk Bibliotekscenter a/s,  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
 OpenAgency is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License along w
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="oa:agencyId"/>
+				<xs:element ref="oa:authentication" minOccurs="0"/>
 				<xs:element ref="oa:autService"/>
 				<xs:element ref="oa:materialType"/>
 				<xs:element ref="oa:callback" minOccurs="0"/>
@@ -36,6 +37,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="encryptionRequest">
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element ref="oa:authentication" minOccurs="0"/>
 				<xs:element ref="oa:email"/>
 				<xs:element ref="oa:callback" minOccurs="0"/>
 				<xs:element ref="oa:outputType" minOccurs="0"/>
@@ -56,6 +58,7 @@ You should have received a copy of the GNU Affero General Public License along w
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="oa:agencyId"/>
+				<xs:element ref="oa:authentication" minOccurs="0"/>
 				<xs:element ref="oa:orderMaterialType"/>
 				<xs:element ref="oa:ownedByAgency"/>
 				<xs:element ref="oa:callback" minOccurs="0"/>
@@ -76,6 +79,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="nameListRequest">
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element ref="oa:authentication" minOccurs="0"/>
 				<xs:element ref="oa:libraryType" minOccurs="0"/>
 				<xs:element ref="oa:callback" minOccurs="0"/>
 				<xs:element ref="oa:outputType" minOccurs="0"/>
@@ -94,6 +98,7 @@ You should have received a copy of the GNU Affero General Public License along w
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="oa:agencyId"/>
+				<xs:element ref="oa:authentication" minOccurs="0"/>
 				<xs:element ref="oa:callback" minOccurs="0"/>
 				<xs:element ref="oa:outputType" minOccurs="0"/>
 			</xs:sequence>
@@ -110,6 +115,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="proxyIpRequest">
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element ref="oa:authentication" minOccurs="0"/>
 				<xs:element ref="oa:ip"/>
 				<xs:element ref="oa:callback" minOccurs="0"/>
 				<xs:element ref="oa:outputType" minOccurs="0"/>
@@ -128,6 +134,7 @@ You should have received a copy of the GNU Affero General Public License along w
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="oa:agencyId"/>
+				<xs:element ref="oa:authentication" minOccurs="0"/>
 				<xs:element ref="oa:service"/>
 				<xs:element ref="oa:callback" minOccurs="0"/>
 				<xs:element ref="oa:outputType" minOccurs="0"/>
@@ -183,6 +190,18 @@ You should have received a copy of the GNU Affero General Public License along w
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="authentication">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Parameters used for authentication purposes</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="oa:groupIdAut"/>
+				<xs:element ref="oa:passwordAut"/>
+				<xs:element ref="oa:userIdAut"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="agency">
 		<xs:complexType>
 			<xs:sequence>
@@ -212,7 +231,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="branchType" type="xs:string"/>
 	<xs:element name="callback" type="xs:string">
 		<xs:annotation>
-			<xs:documentation xml:lang="eng">If outputType=json.</xs:documentation>
+			<xs:documentation xml:lang="en">If outputType=json.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="city" type="xs:string"/>
@@ -247,6 +266,11 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="error" type="oa:errorType"/>
 	<xs:element name="format" type="xs:string"/>
 	<xs:element name="groupId" type="xs:string"/>
+	<xs:element name="groupIdAut">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Identifier of the group (most often a library number) the user belongs to (for authentication purposes)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<xs:element name="information">
 		<xs:complexType>
 			<xs:sequence>
@@ -292,11 +316,16 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="orsShipping" type="oa:ors"/>
 	<xs:element name="outputType" type="oa:outputTypeType">
 		<xs:annotation>
-			<xs:documentation xml:lang="eng">E.g. xml, json or php.</xs:documentation>
+			<xs:documentation xml:lang="en">E.g. xml, json or php.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="ownedByAgency" type="xs:boolean"/>
 	<xs:element name="passWord" type="xs:string"/>
+	<xs:element name="passwordAut">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Password (for authentication purposes)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<xs:element name="postalAddress" type="xs:string"/>
 	<xs:element name="postalCode" type="xs:string"/>
 	<xs:element name="protocol" type="xs:string"/>
@@ -318,6 +347,11 @@ You should have received a copy of the GNU Affero General Public License along w
 	</xs:element>
 	<xs:element name="service" type="oa:serviceType"/>
 	<xs:element name="userId" type="xs:string"/>
+	<xs:element name="userIdAut">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">User identifier (for authentication purposes)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<xs:element name="willReceive" type="xs:string"/>
 	<xs:element name="willSend" type="xs:string"/>
 	<xs:complexType name="ors">
@@ -365,7 +399,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	</xs:simpleType>
 	<xs:simpleType name="outputTypeType">
 		<xs:annotation>
-			<xs:documentation xml:lang="eng">The types of output that can be returned by the service.</xs:documentation>
+			<xs:documentation xml:lang="en">The types of output that can be returned by the service.</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="xml"/>
