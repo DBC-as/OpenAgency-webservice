@@ -224,13 +224,14 @@ class openAgency extends webServiceServer {
       $oci->set_query("SELECT " . $q . "
                        FROM vip v, vip_vsn vv, vip_beh vb, vip_bestil vbst, vip_danbib vd, vip_kat vk, open_agency_ors oao
                        WHERE v.bib_nr = vd.bib_nr (+)
-                         AND v.bib_vsn = vv.bib_nr
+                         AND v.bib_vsn = vv.bib_nr (+)
                          AND v.bib_nr = vk.bib_nr
                          AND v.bib_nr = vb.bib_nr (+)
                          AND v.bib_nr = vbst.bib_nr (+)
                          AND v.bib_nr = oao.bib_nr (+)
                          AND v.bib_nr = :bind_bib_nr");
       $oa_row = $oci->fetch_into_assoc();
+      $this->sanitize_array($oa_row);
       switch ($param->service->_value) {
         case "information":
           $inf = &$res->information->_value;
@@ -252,6 +253,7 @@ class openAgency extends webServiceServer {
           $inf->isil->_value = $oa_row["ISIL"];
           $inf->junction->_value = $oa_row["KNUDEPUNKT"];
           $inf->kvik->_value = ($oa_row["KVIK"] == "kvik" ? "YES" : "NO");
+          $inf->lookupUrl->_value = $oa_row["URL_VIDERESTIL"];
           $inf->norfri->_value = ($oa_row["NORFRI"] == "norfri" ? "YES" : "NO");
           $inf->requestOrder->_value = $oa_row["USE_LAANEVEJ"];
           if (is_null($inf->sender->_value = $oa_row["CHANGE_REQUESTER"]))
@@ -286,17 +288,20 @@ class openAgency extends webServiceServer {
           $orsER->willReceive->_value = ($oa_row["BEST_MODT"] == "J" ? "YES" : "NO");
           switch ($oa_row["BESTIL_VIA"]) {
             case "A": 
-            case "B": $orsER->protocol->_value = "mail"; break;
-            case "C": $orsER->protocol->_value = "ors"; break;
-            case "D": $orsER->protocol->_value = "NCIP"; break;
+            case "B": 
+              $orsER->protocol->_value = "mail"; 
+              $orsER->address->value = $oa_row["EMAIL_BESTIL"];
+              $orsER->format->_value = ($oa_row["BESTIL_VIA"] == "A" ? "text" : "ill0");
+              break;
+            case "C": 
+              $orsER->protocol->_value = "ors"; 
+              break;
+            case "D": 
+              $orsER->protocol->_value = "ncip"; 
+              $orsER->address->value = $oa_row["NCIP_ADDRESS"];
+              $orsER->passWord->_value = $oa_row["NCIP_PASSWORD"];
+              break;
           }
-          if ($orsER->protocol->_value == "mail")
-            $orsER->address->value = $oa_row["EMAIL_BESTIL"];
-          $orsER->userId->_value = $oa_row["ANSWER_Z3950_USER"];
-          $orsER->groupId->_value = $oa_row["ANSWER_Z3950_GROUP"];
-          $orsER->passWord->_value = ($oa_row["ANSWER"] == "z3950" ? $oa_row["ANSWER_Z3950_PASSWORD"] : $oa_row["ANSWER_NCIP_AUTH"]);
-          if ($orsER->protocol->_value == "mail")
-            $orsER->format->_value = ($oa_row["BESTIL_VIA"] == "A" ? "test" : "ill0");
           //var_dump($res->orsEndUserRequest->_value); die();
           break;
         case "orsItemRequest":
@@ -340,7 +345,7 @@ class openAgency extends webServiceServer {
           break;
         case "orsReceipt":
           $orsR = &$res->orsReceipt->_value;
-          $orsR->responder->_value = $oa_row["OAO.BIB_NR"];
+          $orsR->responder->_value = $oa_row["VD.BIB_NR"];
           $orsR->willReceive->_value = (in_array($oa_row["MAILKVITTER_VIA"], array("A", "B")) ? "YES" : "NO");
           $orsR->protocol->_value = (in_array($oa_row["MAILKVITTER_VIA"], array("A", "B")) ? "mail" : "");
           $orsR->address->_value = $oa_row["KVIT_EMAIL"];
@@ -409,7 +414,7 @@ class openAgency extends webServiceServer {
         $oci->set_query("SELECT bib_nr, navn FROM vip_vsn" . $add_bib_type);
         while ($vv_row = $oci->fetch_into_assoc()) {
           $o->agencyId->_value = $vv_row["BIB_NR"];;
-          $o->agencyName->_value = htmlspecialchars($vv_row["NAVN"]);
+          $o->agencyName->_value = $vv_row["NAVN"];
           $res->agency[]->_value = $o;
           unset($o);
         }
@@ -475,6 +480,16 @@ class openAgency extends webServiceServer {
   private function strip_agency($id) {
     return preg_replace('/\D/', '', $id);
   }
+
+ /** \brief
+  *  removes chr-10 and chr-13
+  */
+  private function sanitize_array(&$arr) {
+    foreach ($arr as $key => $val)
+      if (is_scalar($val))
+        $arr[$key] = str_replace("\r", " ", str_replace("\n", " ", $val));
+  }
+
 }
 
 /**
