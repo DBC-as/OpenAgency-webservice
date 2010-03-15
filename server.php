@@ -30,6 +30,11 @@ require_once("OLS_class_lib/oci_class.php");
 
 class openAgency extends webServiceServer {
 
+  public function __construct() {
+    webServiceServer::__construct('openagency.ini');
+  }
+
+
  /** \brief
   *
   */
@@ -210,7 +215,7 @@ class openAgency extends webServiceServer {
       $tab_col["v"] = array("bib_nr", "navn", "tlf_nr", "fax_nr", "email", "badr", "bpostnr", "bcity", "type", "*");
       $tab_col["vv"] = array("bib_nr", "navn", "tlf_nr", "fax_nr", "email", "badr", "bpostnr", "bcity", "bib_type", "*");
       $tab_col["vb"] = array("bib_nr", "*");
-      $tab_col["vbst"] = array("bib_nr", "*");
+      $tab_col["vbst"] = array("bib_nr", "ncip_address", "*");
       $tab_col["vd"] = array("bib_nr", "svar_fax", "*");
       $tab_col["vk"] = array("bib_nr", "*");
       $tab_col["oao"] = array("bib_nr", "*");
@@ -290,7 +295,7 @@ class openAgency extends webServiceServer {
             case "A": 
             case "B": 
               $orsER->protocol->_value = "mail"; 
-              $orsER->address->value = $oa_row["EMAIL_BESTIL"];
+              $orsER->address->_value = $oa_row["EMAIL_BESTIL"];
               $orsER->format->_value = ($oa_row["BESTIL_VIA"] == "A" ? "text" : "ill0");
               break;
             case "C": 
@@ -298,7 +303,7 @@ class openAgency extends webServiceServer {
               break;
             case "D": 
               $orsER->protocol->_value = "ncip"; 
-              $orsER->address->value = $oa_row["NCIP_ADDRESS"];
+              $orsER->address->_value = $oa_row["VBST.NCIP_ADDRESS"];
               $orsER->passWord->_value = $oa_row["NCIP_PASSWORD"];
               break;
           }
@@ -400,26 +405,31 @@ class openAgency extends webServiceServer {
   *
   */
   public function nameList($param) {
-    $oci = new Oci($this->config->get_value("agency_credentials","setup"));
-    $oci->set_charset("UTF8");
-    $oci->connect();
-    if ($err = $oci->get_error_string()) {
-      verbose::log(FATAL, "OpenAgency:: OCI connect error: " . $err);
-      $res->error->_value = "service_unavailable";
+    if (TRUE || $this->aaa->has_right("openagency", 500)) {
+      //var_dump($this->aaa->get_rights()); die();
+      $oci = new Oci($this->config->get_value("agency_credentials","setup"));
+      $oci->set_charset("UTF8");
+      $oci->connect();
+      if ($err = $oci->get_error_string()) {
+        verbose::log(FATAL, "OpenAgency:: OCI connect error: " . $err);
+        $res->error->_value = "service_unavailable";
+      } else {
+        if ($param->libraryType->_value == "Folkebibliotek" ||
+            $param->libraryType->_value == "Forskningsbibliotek") {
+          $oci->bind("bind_bib_type", $param->libraryType->_value);
+          $add_bib_type = " WHERE bib_type = :bind_bib_type";
+          $oci->set_query("SELECT bib_nr, navn FROM vip_vsn" . $add_bib_type);
+          while ($vv_row = $oci->fetch_into_assoc()) {
+            $o->agencyId->_value = $vv_row["BIB_NR"];;
+            $o->agencyName->_value = $vv_row["NAVN"];
+            $res->agency[]->_value = $o;
+            unset($o);
+          }
+        } else
+          $res->error->_value = "error_in_request";
+      }
     } else {
-      if ($param->libraryType->_value == "Folkebibliotek" ||
-          $param->libraryType->_value == "Forskningsbibliotek") {
-        $oci->bind("bind_bib_type", $param->libraryType->_value);
-        $add_bib_type = " WHERE bib_type = :bind_bib_type";
-        $oci->set_query("SELECT bib_nr, navn FROM vip_vsn" . $add_bib_type);
-        while ($vv_row = $oci->fetch_into_assoc()) {
-          $o->agencyId->_value = $vv_row["BIB_NR"];;
-          $o->agencyName->_value = $vv_row["NAVN"];
-          $res->agency[]->_value = $o;
-          unset($o);
-        }
-      } else
-        $res->error->_value = "error_in_request";
+      $res->error->_value = "authentication_error";
     }
     //var_dump($res); var_dump($param); die();
     $ret->nameListResponse->_value = $res;
@@ -485,9 +495,10 @@ class openAgency extends webServiceServer {
   *  removes chr-10 and chr-13
   */
   private function sanitize_array(&$arr) {
-    foreach ($arr as $key => $val)
-      if (is_scalar($val))
-        $arr[$key] = str_replace("\r", " ", str_replace("\n", " ", $val));
+    if (is_array($arr))
+      foreach ($arr as $key => $val)
+        if (is_scalar($val))
+          $arr[$key] = str_replace("\r", " ", str_replace("\n", " ", $val));
   }
 
 }
@@ -496,7 +507,7 @@ class openAgency extends webServiceServer {
  *   MAIN 
  */
 
-$ws=new openAgency('openagency.ini');
+$ws=new openAgency();
 $ws->handle_request();
 
 ?>
