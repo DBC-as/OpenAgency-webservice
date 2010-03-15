@@ -375,6 +375,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	</xs:simpleType>
 	<xs:simpleType name="errorType">
 		<xs:restriction base="xs:string">
+			<xs:enumeration value="authentication_error"/>
 			<xs:enumeration value="service_unavailable"/>
 			<xs:enumeration value="agency_not_found"/>
 			<xs:enumeration value="error_in_request"/>
