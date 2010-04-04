@@ -149,6 +149,7 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="oa:orsAnswer"/>
 				<xs:element ref="oa:orsCancelRequestUser"/>
 				<xs:element ref="oa:orsEndUserRequest"/>
+				<xs:element ref="oa:orsEndUserIllRequest"/>
 				<xs:element ref="oa:orsItemRequest"/>
 				<xs:element ref="oa:orsLookupUser"/>
 				<xs:element ref="oa:orsReceipt"/>
@@ -309,6 +310,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="orsAnswer" type="oa:ors"/>
 	<xs:element name="orsCancelRequestUser" type="oa:ors"/>
 	<xs:element name="orsEndUserRequest" type="oa:ors"/>
+	<xs:element name="orsEndUserIllRequest" type="oa:ors"/>
 	<xs:element name="orsItemRequest" type="oa:ors"/>
 	<xs:element name="orsLookupUser" type="oa:ors"/>
 	<xs:element name="orsReceipt" type="oa:ors"/>
@@ -414,6 +416,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:enumeration value="orsAnswer"/>
 			<xs:enumeration value="orsCancelRequestUser"/>
 			<xs:enumeration value="orsEndUserRequest"/>
+			<xs:enumeration value="orsEndUserIllRequest"/>
 			<xs:enumeration value="orsItemRequest"/>
 			<xs:enumeration value="orsLookupUser"/>
 			<xs:enumeration value="orsReceipt"/>
