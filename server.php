@@ -288,26 +288,50 @@ class openAgency extends webServiceServer {
           //var_dump($res->orsCancelRequestUser->_value); die();
           break;
         case "orsEndUserRequest":
-          $orsER = &$res->orsEndUserRequest->_value;
-          $orsER->responder->_value = $oa_row["VB.BIB_NR"];
-          $orsER->willReceive->_value = ($oa_row["BEST_MODT"] == "J" ? "YES" : "NO");
+          $orsEUR = &$res->orsEndUserRequest->_value;
+          $orsEUR->responder->_value = $oa_row["VB.BIB_NR"];
+          $orsEUR->willReceive->_value = ($oa_row["BEST_MODT"] == "J" ? "YES" : "NO");
           switch ($oa_row["BESTIL_VIA"]) {
             case "A": 
+              $orsEUR->protocol->_value = "mail"; 
+              $orsEUR->address->_value = $oa_row["EMAIL_BESTIL"];
+              $orsEUR->format->_value = "text";
+              break;
             case "B": 
-              $orsER->protocol->_value = "mail"; 
-              $orsER->address->_value = $oa_row["EMAIL_BESTIL"];
-              $orsER->format->_value = ($oa_row["BESTIL_VIA"] == "A" ? "text" : "ill0");
+              $orsEUR->protocol->_value = "mail"; 
+              $orsEUR->address->_value = $oa_row["EMAIL_BESTIL"];
+              $orsEUR->format->_value = "ill0";
               break;
             case "C": 
-              $orsER->protocol->_value = "ors"; 
+              $orsEUR->protocol->_value = "ors"; 
               break;
             case "D": 
-              $orsER->protocol->_value = "ncip"; 
-              $orsER->address->_value = $oa_row["VBST.NCIP_ADDRESS"];
-              $orsER->passWord->_value = $oa_row["NCIP_PASSWORD"];
+              $orsEUR->protocol->_value = "ncip"; 
+              $orsEUR->address->_value = $oa_row["VBST.NCIP_ADDRESS"];
+              $orsEUR->passWord->_value = $oa_row["NCIP_PASSWORD"];
               break;
           }
           //var_dump($res->orsEndUserRequest->_value); die();
+          break;
+        case "orsEndUserIllRequest":
+          $orsEUIR = &$res->orsEndUserIllRequest->_value;
+          $orsEUIR->responder->_value = $oa_row["VB.BIB_NR"];
+          $orsEUIR->willReceive->_value = ($oa_row["BEST_MODT"] == "J" ? "YES" : "NO");
+          switch ($oa_row["BESTIL_FJL_VIA"]) {
+            case "A": 
+              $orsEUIR->protocol->_value = "mail"; 
+              $orsEUIR->address->_value = $oa_row["EMAIL_FJL_BESTIL"];
+              $orsEUIR->format->_value = "text";
+              break;
+            case "B": 
+              $orsEUIR->protocol->_value = "mail"; 
+              $orsEUIR->address->_value = $oa_row["EMAIL_FJL_BESTIL"];
+              $orsEUIR->format->_value = "ill0";
+              break;
+            case "C": 
+              $orsEUIR->protocol->_value = "ors"; 
+              break;
+          }
           break;
         case "orsItemRequest":
           $orsIR = &$res->orsItemRequest->_value;
