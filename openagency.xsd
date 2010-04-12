@@ -253,14 +253,16 @@ You should have received a copy of the GNU Affero General Public License along w
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="email" type="xs:string"/>
+	<xs:element name="encrypt" type="xs:string"/>
 	<xs:element name="encryption">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="oa:email"/>
-				<xs:element ref="oa:agencyId"/>
-				<xs:element ref="oa:key"/>
-				<xs:element ref="oa:base64"/>
-				<xs:element ref="oa:date"/>
+				<xs:element ref="oa:encrypt"/>
+				<xs:element ref="oa:email" minOccurs="0"/>
+				<xs:element ref="oa:agencyId" minOccurs="0"/>
+				<xs:element ref="oa:key" minOccurs="0"/>
+				<xs:element ref="oa:base64" minOccurs="0"/>
+				<xs:element ref="oa:date" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
