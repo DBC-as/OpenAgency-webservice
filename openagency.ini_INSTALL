@@ -1,13 +1,17 @@
 ; inifie for openagency
 
 [setup]
-; servicename
-servicename=openagency
-
-version = 0.1
+;version
+version = 0.2
 
 ; wsdl for service
 wsdl = openagency.wsdl
+
+; in_house_domain may use ?ShowInfo and use create_sample form
+;in_house_domain = .dbc.dk
+
+; set to TRUE to expose the create_sample form
+;show_samples = 1
 
 ; soapActions and their corresponding request structure
 ; Can be found in the wsdl but is stated here for convenience
@@ -35,7 +39,7 @@ logfile = /tmp/openagency.log
 ;   WARNING - simple warnings
 ;   ERROR   - errors in response
 ;   FATAL   - major errors
-;   STAT    - Statístical logging
+;   STAT    - Statistical logging
 ;   TIMER   - timer logging
 ;   TRACE   - program trace
 ;   DEBUG   - debugging info
@@ -76,7 +80,7 @@ action[encryption][] = email
 
 action[endUserOrderPolicy][] = agencyId
 action[endUserOrderPolicy][] = orderMaterialType
-action[endUserOrderPolicy][] = orderMaterialType
+action[endUserOrderPolicy][] = ownedByAgency
 
 action[service][] = agencyId
 action[service][] = service
