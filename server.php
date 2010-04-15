@@ -199,9 +199,10 @@ class openAgency extends webServiceServer {
           && ($will_receive = $assoc[strtolower($param->orderMaterialType->_value)][$owned_by_agency])) {
           $agency = $this->strip_agency($param->agencyId->_value);
           $oci->bind("bind_bib_nr", $agency);
-          $oci->set_query("SELECT " . $will_receive . " \"WR\" FROM vip_beh WHERE bib_nr = :bind_bib_nr");
+          $oci->set_query("SELECT best_modt, " . $will_receive . " \"WR\" FROM vip_beh WHERE bib_nr = :bind_bib_nr");
           if ($vb_row = $oci->fetch_into_assoc())
-            $res->willReceive->_value = ($vb_row["WR"] == "J" ? "true" : "false");
+            $res->willReceive->_value = 
+              ($vb_row["BEST_MODT"] == "J" && $vb_row["WR"] == "J" ? "true" : "false");
         } else
           $res->error->_value = "error_in_request";
       }
@@ -232,7 +233,7 @@ class openAgency extends webServiceServer {
         $tab_col["vv"] = array("bib_nr", "navn", "tlf_nr", "fax_nr", "email", "badr", "bpostnr", "bcity", "bib_type", "*");
         $tab_col["vb"] = array("bib_nr", "*");
         $tab_col["vbst"] = array("bib_nr", "ncip_address", "*");
-        $tab_col["vd"] = array("bib_nr", "svar_fax", "*");
+        $tab_col["vd"] = array("bib_nr", "svar_fax", "svar_email", "*");
         $tab_col["vk"] = array("bib_nr", "*");
         $tab_col["oao"] = array("bib_nr", "*");
         foreach ($tab_col as $prefix => $arr)
@@ -279,6 +280,7 @@ class openAgency extends webServiceServer {
             $inf->requestOrder->_value = $oa_row["USE_LAANEVEJ"];
             if (is_null($inf->sender->_value = $oa_row["CHANGE_REQUESTER"]))
               $inf->sender->_value = $oa_row["V.BIB_NR"];
+            $inf->replyToEmail->_value = $oa_row["VD.SVAR_EMAIL"];
             //var_dump($res->information->_value); die();
             break;
           case "orsAnswer":
