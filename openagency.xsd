@@ -297,6 +297,7 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="oa:kvik" minOccurs="0"/>
 				<xs:element ref="oa:norfri" minOccurs="0"/>
 				<xs:element ref="oa:sender" minOccurs="0"/>
+				<xs:element ref="oa:replyToEmail" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -334,6 +335,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="postalCode" type="xs:string"/>
 	<xs:element name="protocol" type="xs:string"/>
 	<xs:element name="provider" type="xs:string"/>
+	<xs:element name="replyToEmail" type="xs:string"/>
 	<xs:element name="requester" type="xs:string"/>
 	<xs:element name="responder" type="xs:string"/>
 	<xs:element name="sender" type="xs:string"/>
