@@ -47,6 +47,9 @@ logfile = /tmp/openagency.log
 ;   OCI     - oracle
 verbose = WARNING+ERROR+FATAL+STAT+TIMER+TRACE+DEBUG+Z3950+OCI
 
+; format for automatic timer dump %s is the soap-action used
+dump_timer = openAgency(%s)
+
 agency_credentials = some_user/some_pwd@some.server.dbc.dk
 
 [aaa]
@@ -87,29 +90,37 @@ aaa_credentials = some_user/some_pwd@some.server.dbc.dk
 ; </thisSoapAction>
 ; from url: action=thisSoapAction&some.number=nn&another.number=mm
 ;
-; action[ALL] defines parameter used in all defined soap-actions
-;
-action[ALL][] = outputType
-action[ALL][] = callback
-
 action[automation][] = agencyId
 action[automation][] = autService
 action[automation][] = materialType
+action[automation][] = outputType
+action[automation][] = callback
 
 action[encryption][] = email
+action[encryption][] = outputType
+action[encryption][] = callback
 
 action[endUserOrderPolicy][] = agencyId
 action[endUserOrderPolicy][] = orderMaterialType
 action[endUserOrderPolicy][] = ownedByAgency
+action[endUserOrderPolicy][] = outputType
+action[endUserOrderPolicy][] = callback
 
 action[service][] = agencyId
 action[service][] = service
+action[service][] = outputType
+action[service][] = callback
 
-action[nameList][] = UNKNOWN
+action[nameList][] = outputType
+action[nameList][] = callback
 
 action[proxyDomains][] = agencyId
+action[proxyDomains][] = outputType
+action[proxyDomains][] = callback
 
 action[proxyIp][] = agencyId
+action[proxyIp][] = outputType
+action[proxyIp][] = callback
 
 [howru]
 test[] = service&agencyId=710100&service=orsItemRequest
