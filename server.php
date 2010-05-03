@@ -247,7 +247,7 @@ class openAgency extends webServiceServer {
                          FROM vip v, vip_vsn vv, vip_beh vb, vip_bestil vbst, vip_danbib vd, vip_kat vk, open_agency_ors oao
                          WHERE v.bib_nr = vd.bib_nr (+)
                            AND v.bib_vsn = vv.bib_nr (+)
-                           AND v.bib_nr = vk.bib_nr
+                           AND v.bib_nr = vk.bib_nr (+)
                            AND v.bib_nr = vb.bib_nr (+)
                            AND v.bib_nr = vbst.bib_nr (+)
                            AND v.bib_nr = oao.bib_nr (+)
