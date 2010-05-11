@@ -184,10 +184,10 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="oa:requester"/>
 				<xs:element ref="oa:materialType"/>
 				<xs:element ref="oa:willSend"/>
-				<xs:element ref="oa:autPeriod"/>
-				<xs:element ref="oa:autId"/>
-				<xs:element ref="oa:autChoice"/>
-				<xs:element ref="oa:autRes"/>
+				<xs:element ref="oa:autPeriod" minOccurs="0"/>
+				<xs:element ref="oa:autId" minOccurs="0"/>
+				<xs:element ref="oa:autChoice" minOccurs="0"/>
+				<xs:element ref="oa:autRes" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
