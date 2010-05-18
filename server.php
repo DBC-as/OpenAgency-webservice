@@ -90,10 +90,10 @@ class openAgency extends webServiceServer {
                              FROM vip_fjernlaan
                              WHERE laantager = :bind_laantager
                                AND materiale_id = :bind_materiale_id");
+            $ar = &$res->autRequester->_value;
+            $ar->requester->_value = $agency;
+            $ar->materialType->_value = $param->materialType->_value;
             if ($vf_row = $oci->fetch_into_assoc()) {
-              $ar = &$res->autRequester->_value;
-              $ar->requester->_value = $vf_row["LAANTAGER"];
-              $ar->materialType->_value = $vf_row["MATERIALE_ID"];
               if ($vf_row["STATUS"] == "T")
                 $ar->willSend->_value = "TEST";
               elseif ($vf_row["STATUS"] == "J")
@@ -105,7 +105,7 @@ class openAgency extends webServiceServer {
               $ar->autChoice->_value = $vf_row["VALG"];
               $ar->autRes->_value = ($vf_row["RESERVERING"] == "J" ? "YES" : "NO");
             } else
-              $res->error->_value = "no_agencies_found";
+              $ar->willSend->_value = "NO";
             break;
           case "autProvider":
             $oci->bind("bind_laangiver", $agency);
@@ -114,15 +114,15 @@ class openAgency extends webServiceServer {
                              FROM vip_fjernlaan
                              WHERE laangiver = :bind_laangiver
                                AND materiale_id = :bind_materiale_id");
+            $ap = &$res->autProvider->_value;
+            $ap->provider->_value = $agency;
+            $ap->materialType->_value = $param->materialType->_value;
             if ($vf_row = $oci->fetch_into_assoc()) {
-              $ap = &$res->autProvider->_value;
-              $ap->provider->_value = $vf_row["LAANGIVER"];
-              $ap->materialType->_value = $vf_row["MATERIALE_ID"];
               $ap->willReceive->_value = ($vf_row["STATUS"] == "J" ? "YES" : "NO");
               $ap->autPeriod->_value = $vf_row["PERIODE"];
               $ap->autId->_value = $vf_row["ID_NR"];
             } else
-              $res->error->_value = "no_agencies_found";
+              $ap->willReceive->_value = "NO";
             break;
           default:
             $res->error->_value = "error_in_request";
@@ -534,6 +534,28 @@ class openAgency extends webServiceServer {
     $ret->proxyIpResponse->_value = $res;
     return $ret;
   }
+
+  /** \brief Echos config-settings
+   *
+   */
+  public function show_info() {
+    echo "<pre>";
+    echo "version             " . $this->config->get_value("version", "setup") . "<br/>";
+    echo "logfile             " . $this->config->get_value("logfile", "setup") . "<br/>";
+    echo "verbose             " . $this->config->get_value("verbose", "setup") . "<br/>";
+    echo "agency_credentials  " . $this->strip_oci_pwd($this->config->get_value("agency_credentials", "setup")) . "<br/>";
+    echo "aaa_credentials     " . $this->strip_oci_pwd($this->config->get_value("aaa_credentials", "aaa")) . "<br/>";
+    echo "</pre>";
+    die();
+  }
+
+  private function strip_oci_pwd($cred) {
+    if (($p1 = strpos($cred, "/")) && ($p2 = strpos($cred, "@")))
+      return substr($cred, 0, $p1) . "/********" . substr($cred, $p2);
+    else
+      return $cred;
+  }
+
 
  /** \brief
   *  return only digits, so something like DK-710100 returns 710100
