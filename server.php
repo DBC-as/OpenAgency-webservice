@@ -394,7 +394,9 @@ class openAgency extends webServiceServer {
             $orsR = &$res->orsReceipt->_value;
             $orsR->responder->_value = $oa_row["VD.BIB_NR"];
             $orsR->willReceive->_value = (in_array($oa_row["MAILKVITTER_VIA"], array("A", "B")) ? "YES" : "NO");
-            $orsR->protocol->_value = (in_array($oa_row["MAILKVITTER_VIA"], array("A", "B")) ? "mail" : "");
+            if ($oa_row["MAILKVITTER_VIA"] == "A") $orsR->protocol->_value = "mail";
+            elseif ($oa_row["MAILKVITTER_VIA"] == "B") $orsR->protocol->_value = "ors";
+            else $orsR->protocol->_value = "";
             $orsR->address->_value = $oa_row["KVIT_EMAIL"];
             if ($oa_row["FORMAT_KVIT"] == "ill0form") $orsR->format->_value = "ill0";
             elseif ($oa_row["FORMAT_KVIT"] == "ill5form") $orsR->format->_value = "ill0";
