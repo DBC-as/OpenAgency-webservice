@@ -49,6 +49,12 @@ You should have received a copy of the GNU Affero General Public License along w
 	<wsdl:message name="proxyIpResponse">
 		<wsdl:part name="body" element="oa:proxyIpResponse"/>
 	</wsdl:message>
+	<wsdl:message name="remoteAccessRequest">
+		<wsdl:part name="body" element="oa:remoteAccessRequest"/>
+	</wsdl:message>
+	<wsdl:message name="remoteAccessResponse">
+		<wsdl:part name="body" element="oa:remoteAccessResponse"/>
+	</wsdl:message>
 	<wsdl:message name="serviceRequest">
 		<wsdl:part name="body" element="oa:serviceRequest"/>
 	</wsdl:message>
@@ -95,6 +101,12 @@ You should have received a copy of the GNU Affero General Public License along w
 		<wsdl:operation name="proxyIp">
 			<wsdl:input message="oaw:proxyIpRequest"/>
 			<wsdl:output message="oaw:proxyIpResponse"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:portType name="remoteAccessPortType">
+		<wsdl:operation name="remoteAccess">
+			<wsdl:input message="oaw:remoteAccessRequest"/>
+			<wsdl:output message="oaw:remoteAccessResponse"/>
 		</wsdl:operation>
 	</wsdl:portType>
 	<wsdl:binding name="automationBinding" type="oaw:automationPortType">
@@ -181,6 +193,18 @@ You should have received a copy of the GNU Affero General Public License along w
 			</wsdl:output>
 		</wsdl:operation>
 	</wsdl:binding>
+	<wsdl:binding name="remoteAccessBinding" type="oaw:remoteAccessPortType">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="remoteAccess">
+			<soap:operation soapAction="http://openagency.addi.dk"/>
+			<wsdl:input name="remoteAccessRequest">
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output name="remoteAccessResponse">
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
 	<wsdl:service name="openAgencyService">
 		<wsdl:port binding="oaw:automationBinding" name="automationPortType">
 			<soap:address location="http://openagency.addi.dk"/>
@@ -201,6 +225,9 @@ You should have received a copy of the GNU Affero General Public License along w
 			<soap:address location="http://openagency.addi.dk"/>
 		</wsdl:port>
 		<wsdl:port binding="oaw:proxyIpBinding" name="proxyIpPortType">
+			<soap:address location="http://openagency.addi.dk"/>
+		</wsdl:port>
+		<wsdl:port binding="oaw:remoteAccessBinding" name="remoteAccessPortType">
 			<soap:address location="http://openagency.addi.dk"/>
 		</wsdl:port>
 	</wsdl:service>
