@@ -601,6 +601,73 @@ class openAgency extends webServiceServer {
     return $ret;
   }
 
+ /** \brief
+  *
+  */
+  public function remoteAccess($param) { 
+    if (!$this->aaa->has_right("openagency", 550))
+      $res->error->_value = "authentication_error";
+    else {
+      $oci = new Oci($this->config->get_value("agency_credentials","setup"));
+      $oci->set_charset("UTF8");
+      try { $oci->connect(); }
+      catch (ociException $e) {
+        verbose::log(FATAL, "OpenAgency(".__LINE__."):: OCI connect error: " . $oci->get_error_string());
+        $res->error->_value = "service_unavailable";
+      }
+      if (empty($res->error)) {
+        $agency = $this->strip_agency($param->agencyId->_value);
+        try {
+          $oci->bind("bind_agency", $agency);
+          $oci->bind("bind_har_adgang", "1");
+          $oci->set_query("SELECT fjernadgang_licenser.navn \"licens_navn\",
+                                  fjernadgang_licenser.url \"licens_url\",
+                                  fjernadgang_dbc.navn \"dbc_navn\",
+                                  fjernadgang_dbc.url \"dbc_url\",
+                                  fjernadgang_dbc.har_fjernadgang \"dbc_har_fjernadgang\",
+                                  fjernadgang_andre.navn \"andre_navn\",
+                                  fjernadgang_andre.url \"andre_url\",
+                                  fjernadgang_andre.har_fjernadgang \"andre_har_fjernadgang\",
+                                  fjernadgang.har_adgang,
+                                  fjernadgang.faust,
+                                  fjernadgang.url,
+                                  autolink
+                           FROM fjernadgang, fjernadgang_licenser, fjernadgang_dbc, fjernadgang_andre, licensguide
+                           WHERE fjernadgang.bib_nr = :bind_agency
+                             AND fjernadgang.type = :bind_har_adgang
+                             AND fjernadgang.faust = fjernadgang_licenser.faust (+)
+                             AND fjernadgang.faust = fjernadgang_dbc.faust (+)
+                             AND fjernadgang.faust = fjernadgang_andre.faust (+)
+                             AND fjernadgang.bib_nr = licensguide.bib_nr (+)");
+          $buf = $oci->fetch_all_into_assoc();
+//if ($_GET["debug"]) die("<pre>" . print_r($buf, TRUE));
+          $res->agencyId->_value = $param->agencyId->_value;
+          foreach ($buf as $val) {
+            if ($s->name->_value = $val["licens_navn"])
+              if ($val["AUTOLINK"])
+                $s->url->_value = $val["AUTOLINK"] . $val["FAUST"];
+              else
+                $s->url->_value = ($val["URL"] ? $val["URL"] : $val["licens_url"]);
+            elseif ($s->name->_value = $val["dbc_navn"])
+              $s->url->_value = ($val["URL"] ? $val["URL"] : $val["dbc_url"]);
+            elseif ($s->name->_value = $val["andre_navn"])
+              $s->url->_value = ($val["URL"] ? $val["URL"] : $val["andre_url"]);
+            if ($s->url->_value && $val["FAUST"] <> 1234567)     // drop eBib
+              $res->subscription[]->_value = $s;
+            unset($s);
+          }
+        } catch (ociException $e) {
+          verbose::log(FATAL, "OpenAgency(".__LINE__."):: OCI select error: " . $oci->get_error_string());
+          $res->error->_value = "service_unavailable";
+        }
+      }
+    }
+    //var_dump($res); var_dump($param); die();
+    $ret->remoteAccessResponse->_value = $res;
+    return $ret;
+  }
+
+
   /** \brief Echos config-settings
    *
    */
