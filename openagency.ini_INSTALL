@@ -2,7 +2,7 @@
 
 [setup]
 ;version
-version = 0.4
+version = 0.5
 
 ; wsdl for service
 wsdl = openagency.wsdl
@@ -22,13 +22,14 @@ soapAction[service] = serviceRequest
 soapAction[nameList] = nameListRequest
 soapAction[proxyDomains] = proxyDomainsRequest
 soapAction[proxyIp] = proxyIpRequest
+soapAction[remoteAccess] = remoteAccessRequest
 
 ; validate
 ;validate[request] = openagency.xsd
 ;validate[response] = openagency.xsd
 
 ; prefixes and namespaces
-xmlns[NONE] = http://oss.dbc.dk/ns/openagency
+xmlns[] = http://oss.dbc.dk/ns/openagency
 
 xmldir = ./xml
 
@@ -58,7 +59,7 @@ agency_credentials = some_user/some_pwd@some.server.dbc.dk
 ; the FORS-server or aaa_ip_rights below
 ;
 ; oci credentials for FORS server
-aaa_credentials = some_user/some_pwd@some.server.dbc.dk
+;aaa_credentials = some_user/some_pwd@some.server.dbc.dk
 ; memcache server - use localhost in one-webserver environment
 ;aaa_cache_address = localhost:11211
 ; number of seconds to cache authentication and access rights info
@@ -71,6 +72,7 @@ aaa_credentials = some_user/some_pwd@some.server.dbc.dk
 ;
 ;aaa_ip_rights[dbc][ip_list] = 172.16.0.0-172.31.255.255;193.111.162.0-193.111.162.255
 ;aaa_ip_rights[dbc][ressource][openagency] = 500
+;aaa_ip_rights[dbc][ressource][openagency] = 550
 
 [rest]
 
@@ -121,6 +123,10 @@ action[proxyDomains][] = callback
 action[proxyIp][] = agencyId
 action[proxyIp][] = outputType
 action[proxyIp][] = callback
+
+action[remoteAccess][] = agencyId
+action[remoteAccess][] = outputType
+action[remoteAccess][] = callback
 
 [howru]
 test[] = service&agencyId=710100&service=orsItemRequest
