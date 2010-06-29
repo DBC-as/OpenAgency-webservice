@@ -426,6 +426,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:enumeration value="agency_not_found"/>
 			<xs:enumeration value="error_in_request"/>
 			<xs:enumeration value="no_agencies_found"/>
+			<xs:enumeration value="no_userid_selected"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="libraryTypeType">
