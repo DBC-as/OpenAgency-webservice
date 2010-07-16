@@ -480,6 +480,20 @@ class openAgency extends webServiceServer {
               $serI->passWord->_value = $oa_row["ZBESTIL_PASSW"];
               //var_dump($res->serverInformation->_value); die();
               break;
+            case "userParameters":
+              $usrP = &$res->userParameters->_value;
+              $get_obl = array("LD_CPR" => "cpr", 
+                               "LD_ID" => "common", 
+                               "LD_LKST" => "barcode", 
+                               "LD_KLNR" => "cardno", 
+                               "LD_TXT" => "optional");
+              $usrP->userIdType->_value = "no_userid_selected";
+              foreach ($get_obl as $key => $val)
+                if (substr($oa_row[$key],0,1) == "O") {
+                  $usrP->userIdType->_value = $val;
+                  break;
+                }
+              break;
             default:
               $res->error->_value = "error_in_request";
           }
