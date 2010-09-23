@@ -449,6 +449,32 @@ class openAgency extends webServiceServer {
               elseif ($oa_row["FORMAT_KVIT"] == "illdanbest") $orsR->format->_value = "text";
               //var_dump($res->orsReceipt->_value); die();
               break;
+            case "orsRenew":
+              $orsR = &$res->orsRenew->_value;
+              $orsR->responder->_value = $oa_row["OAO.BIB_NR"];
+              if ($oa_row["RENEW"] == "z3950") $orsR->willReceive->_value = "YES";
+              elseif ($oa_row["RENEW"] == "ors") $orsR->willReceive->_value = "YES";
+              else $orsR->willReceive->_value = "NO";
+              $orsR->protocol->_value = $oa_row["RENEW"];
+              if ($oa_row["RENEW"] == "z3950") $orsR->address->_value = $oa_row["RENEW_Z3950_ADDRESS"];
+              $orsR->userId->_value = $oa_row["RENEW_Z3950_USER"];
+              $orsR->groupId->_value = $oa_row["RENEW_Z3950_GROUP"];
+              $orsR->passWord->_value = $oa_row["RENEW_Z3950_PASSWORD"];
+              //var_dump($res->orsRenew->_value); die();
+              break;
+            case "orsRenewAnswer":
+              $orsRA = &$res->orsRenewAnswer->_value;
+              $orsRA->responder->_value = $oa_row["OAO.BIB_NR"];
+              if ($oa_row["RENEWANSWER"] == "z3950") $orsRA->willReceive->_value = "YES";
+              elseif ($oa_row["RENEWANSWER"] == "ors") $orsRA->willReceive->_value = "YES";
+              else $orsRA->willReceive->_value = "NO";
+              $orsRA->protocol->_value = $oa_row["RENEWANSWER"];
+              if ($oa_row["RENEWANSWER"] == "z3950") $orsRA->address->_value = $oa_row["RENEWANSWER_Z3950_ADDRESS"];
+              $orsRA->userId->_value = $oa_row["RENEWANSWER_Z3950_USER"];
+              $orsRA->groupId->_value = $oa_row["RENEWANSWER_Z3950_GROUP"];
+              $orsRA->passWord->_value = $oa_row["RENEWANSWER_Z3950_PASSWORD"];
+              //var_dump($res->orsRenewAnswer->_value); die();
+              break;
             case "orsRenewItemUser":
               $orsRIU = &$res->orsRenewItemUser->_value;
               $orsRIU->responder->_value = $oa_row["VK.BIB_NR"];
@@ -659,15 +685,21 @@ class openAgency extends webServiceServer {
           foreach ($buf as $val) {
             if ($s->name->_value = $val["licens_navn"])
               if ($val["AUTOLINK"])
-                $s->url->_value = $val["AUTOLINK"] . $val["FAUST"];
+                $s->url->_value = $val["AUTOLINK"];
               else
                 $s->url->_value = ($val["URL"] ? $val["URL"] : $val["licens_url"]);
             elseif ($s->name->_value = $val["dbc_navn"])
               $s->url->_value = ($val["URL"] ? $val["URL"] : $val["dbc_url"]);
             elseif ($s->name->_value = $val["andre_navn"])
               $s->url->_value = ($val["URL"] ? $val["URL"] : $val["andre_url"]);
-            if ($s->url->_value && $val["FAUST"] <> 1234567)     // drop eBib
+            if ($s->url->_value && $val["FAUST"] <> 1234567) {    // drop eBib
+              if ($val["URL"]) 
+                $s->url->_value = str_replace("[URL_FJERNADGANG]", $val["URL"], $s->url->_value);
+              else 
+                $s->url->_value = str_replace("[URL_FJERNADGANG]", $val["licens_url"], $s->url->_value);
+              $s->url->_value = str_replace("[LICENS_ID]", $val["FAUST"], $s->url->_value);
               $res->subscription[]->_value = $s;
+            }
             unset($s);
           }
         } catch (ociException $e) {
