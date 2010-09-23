@@ -452,27 +452,33 @@ class openAgency extends webServiceServer {
             case "orsRenew":
               $orsR = &$res->orsRenew->_value;
               $orsR->responder->_value = $oa_row["OAO.BIB_NR"];
-              if ($oa_row["RENEW"] == "z3950") $orsR->willReceive->_value = "YES";
-              elseif ($oa_row["RENEW"] == "ors") $orsR->willReceive->_value = "YES";
-              else $orsR->willReceive->_value = "NO";
-              $orsR->protocol->_value = $oa_row["RENEW"];
-              if ($oa_row["RENEW"] == "z3950") $orsR->address->_value = $oa_row["RENEW_Z3950_ADDRESS"];
-              $orsR->userId->_value = $oa_row["RENEW_Z3950_USER"];
-              $orsR->groupId->_value = $oa_row["RENEW_Z3950_GROUP"];
-              $orsR->passWord->_value = $oa_row["RENEW_Z3950_PASSWORD"];
+              if ($oa_row["RENEW"] == "z3950" || $oa_row["RENEW"] == "ors") {
+                $orsR->willReceive->_value = "YES";
+                $orsR->protocol->_value = $oa_row["RENEW"];
+                if ($oa_row["RENEW"] == "z3950") {
+                  $orsR->address->_value = $oa_row["RENEW_Z3950_ADDRESS"];
+                  $orsR->userId->_value = $oa_row["RENEW_Z3950_USER"];
+                  $orsR->groupId->_value = $oa_row["RENEW_Z3950_GROUP"];
+                  $orsR->passWord->_value = $oa_row["RENEW_Z3950_PASSWORD"];
+                }
+              } else 
+                $orsR->willReceive->_value = "NO";
               //var_dump($res->orsRenew->_value); die();
               break;
             case "orsRenewAnswer":
               $orsRA = &$res->orsRenewAnswer->_value;
               $orsRA->responder->_value = $oa_row["OAO.BIB_NR"];
-              if ($oa_row["RENEWANSWER"] == "z3950") $orsRA->willReceive->_value = "YES";
-              elseif ($oa_row["RENEWANSWER"] == "ors") $orsRA->willReceive->_value = "YES";
-              else $orsRA->willReceive->_value = "NO";
-              $orsRA->protocol->_value = $oa_row["RENEWANSWER"];
-              if ($oa_row["RENEWANSWER"] == "z3950") $orsRA->address->_value = $oa_row["RENEWANSWER_Z3950_ADDRESS"];
-              $orsRA->userId->_value = $oa_row["RENEWANSWER_Z3950_USER"];
-              $orsRA->groupId->_value = $oa_row["RENEWANSWER_Z3950_GROUP"];
-              $orsRA->passWord->_value = $oa_row["RENEWANSWER_Z3950_PASSWORD"];
+              if ($oa_row["RENEWANSWER"] == "z3950" || $oa_row["RENEWANSWER"] == "ors") {
+                $orsRA->willReceive->_value = "YES";
+                $orsRA->protocol->_value = $oa_row["RENEWANSWER"];
+                if ($oa_row["RENEWANSWER"] == "z3950") {
+                  $orsRA->address->_value = $oa_row["RENEWANSWER_Z3950_ADDRESS"];
+                  $orsRA->userId->_value = $oa_row["RENEWANSWER_Z3950_USER"];
+                  $orsRA->groupId->_value = $oa_row["RENEWANSWER_Z3950_GROUP"];
+                  $orsRA->passWord->_value = $oa_row["RENEWANSWER_Z3950_PASSWORD"];
+                }
+              } else 
+                $orsRA->willReceive->_value = "NO";
               //var_dump($res->orsRenewAnswer->_value); die();
               break;
             case "orsRenewItemUser":
