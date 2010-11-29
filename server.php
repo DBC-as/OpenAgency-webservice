@@ -299,17 +299,19 @@ class openAgency extends webServiceServer {
           verbose::log(FATAL, "OpenAgency(".__LINE__."):: OCI select error: " . $oci->get_error_string());
           $res->error->_value = "service_unavailable";
         }
+        if (empty($oa_row))
+          $res->error->_value = "agency_not_found";
         if (empty($res->error))
           switch ($param->service->_value) {
             case "information":
               $inf = &$res->information->_value;
-              $inf->agencyId->_value = $oa_row["VV.BIB_NR"];
+              $inf->agencyId->_value = $this->normalize_agency($oa_row["VV.BIB_NR"]);
               $inf->agencyName->_value = $oa_row["VV.NAVN"];
               $inf->agencyPhone->_value = $oa_row["VV.TLF_NR"];
               $inf->agencyFax->_value = $oa_row["VV.FAX_NR"];
               $inf->agencyEmail->_value = $oa_row["VV.EMAIL"];
               $inf->agencyType->_value = $oa_row["VV.BIB_TYPE"];
-              $inf->branchId->_value = $oa_row["V.BIB_NR"];
+              $inf->branchId->_value = $this->normalize_agency($oa_row["V.BIB_NR"]);
               $inf->branchName->_value = $oa_row["V.NAVN"];
               $inf->branchPhone->_value = $oa_row["V.TLF_NR"];
               $inf->branchFax->_value = $oa_row["VD.SVAR_FAX"];
@@ -318,16 +320,16 @@ class openAgency extends webServiceServer {
               $inf->postalAddress->_value = $oa_row["V.BADR"];
               $inf->postalCode->_value = $oa_row["V.BPOSTNR"];
               $inf->city->_value = $oa_row["V.BCITY"];
-              $inf->isil->_value = $oa_row["ISIL"];
+              $inf->isil->_value = $this->normalize_agency($oa_row["ISIL"]);
               $inf->junction->_value = $oa_row["KNUDEPUNKT"];
               $inf->kvik->_value = ($oa_row["KVIK"] == "kvik" ? "YES" : "NO");
               $inf->lookupUrl->_value = $oa_row["URL_VIDERESTIL"];
               $inf->norfri->_value = ($oa_row["NORFRI"] == "norfri" ? "YES" : "NO");
               $inf->requestOrder->_value = $oa_row["USE_LAANEVEJ"];
-              if (is_null($inf->sender->_value = $oa_row["CHANGE_REQUESTER"]))
-                $inf->sender->_value = $oa_row["V.BIB_NR"];
+              if (is_null($inf->sender->_value = $this->normalize_agency($oa_row["CHANGE_REQUESTER"])))
+                $inf->sender->_value = $this->normalize_agency($oa_row["V.BIB_NR"]);
               $inf->replyToEmail->_value = $oa_row["VD.SVAR_EMAIL"];
-              //var_dump($res->information->_value); die();
+              //print_r($oa_row); var_dump($res->information->_value); die();
               break;
             case "orsAnswer":
               $orsA = &$res->orsAnswer->_value;
@@ -741,6 +743,16 @@ class openAgency extends webServiceServer {
       return $cred;
   }
 
+
+ /** \brief
+  *  return libraryno - align to 6 digits
+  */
+  private function normalize_agency($id) {
+    if (is_numeric($id))
+      return sprintf("%06s", $id);
+    else
+      return $id;
+  }
 
  /** \brief
   *  return only digits, so something like DK-710100 returns 710100
