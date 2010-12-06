@@ -362,6 +362,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="postalCode" type="xs:string"/>
 	<xs:element name="protocol" type="xs:string"/>
 	<xs:element name="provider" type="xs:string"/>
+	<xs:element name="renewAnswerSynchronic" type="xs:boolean"/>
 	<xs:element name="replyToEmail" type="xs:string"/>
 	<xs:element name="requester" type="xs:string"/>
 	<xs:element name="responder" type="xs:string"/>
@@ -408,6 +409,7 @@ You should have received a copy of the GNU Affero General Public License along w
 		<xs:sequence>
 			<xs:element ref="oa:responder"/>
 			<xs:element ref="oa:willReceive"/>
+			<xs:element ref="oa:renewAnswerSynchronic"/>
 			<xs:element ref="oa:protocol" minOccurs="0"/>
 			<xs:element ref="oa:address" minOccurs="0"/>
 			<xs:element ref="oa:userId" minOccurs="0"/>
