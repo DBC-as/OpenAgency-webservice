@@ -287,7 +287,7 @@ class openAgency extends webServiceServer {
           $oci->set_query('SELECT ' . $q . '
                            FROM vip v, vip_vsn vv, vip_beh vb, vip_bestil vbst, vip_danbib vd, vip_kat vk, open_agency_ors oao
                            WHERE v.bib_nr = vd.bib_nr (+)
-                             AND v.bib_vsn = vv.bib_nr (+)
+                             AND v.kmd_nr = vv.bib_nr (+)
                              AND v.bib_nr = vk.bib_nr (+)
                              AND v.bib_nr = vb.bib_nr (+)
                              AND v.bib_nr = vbst.bib_nr (+)
