@@ -69,7 +69,8 @@ class openAgency extends webServiceServer {
               if ($vf_row['VALG'] == 'a') {
                 try {
                   $oci->bind('bind_materiale_id', $param->materialType->_value);
-                  $oci->bind('bind_status', 'J');
+                  $J = 'J';
+                  $oci->bind('bind_status', $J);
                   $oci->set_query('SELECT laangiver
                                    FROM vip_fjernlaan
                                    WHERE materiale_id = :bind_materiale_id
@@ -671,7 +672,8 @@ class openAgency extends webServiceServer {
         $agency = $this->strip_agency($param->agencyId->_value);
         try {
           $oci->bind('bind_agency', $agency);
-          $oci->bind('bind_har_adgang', '1');
+          $uno = '1';
+          $oci->bind('bind_har_adgang', $uno);
           $oci->set_query('SELECT fjernadgang_licenser.navn "licens_navn",
                                   fjernadgang_licenser.url "licens_url",
                                   fjernadgang_dbc.navn "dbc_navn",
