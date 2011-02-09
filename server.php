@@ -303,8 +303,7 @@ class openAgency extends webServiceServer {
         if (empty($oa_row))
           $res->error->_value = 'agency_not_found';
         if (empty($res->error)) {
-          verbose::log(TRACE, 'OpenAgency('.__LINE__.'):: action=service&agencyId=' . $param->agencyId->_value . 
-                              '&service=' . $param->service->_value);
+//        verbose::log(TRACE, 'OpenAgency('.__LINE__.'):: action=service&agencyId=' . $param->agencyId->_value .  '&service=' . $param->service->_value);
           switch ($param->service->_value) {
             case 'information':
               $inf = &$res->information->_value;
