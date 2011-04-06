@@ -337,20 +337,22 @@ class openAgency extends webServiceServer {
               $orsA = &$res->orsAnswer->_value;
               $orsA->responder->_value = $this->normalize_agency($oa_row['OAO.BIB_NR']);
               $orsA->willReceive->_value = (in_array($oa_row['ANSWER'], array('z3950', 'mail', 'ors')) ? 'YES' : '');
+              $orsA->synchronous->_value = 'false';
               $orsA->protocol->_value = $oa_row['ANSWER'];
-              $orsA->userId->_value = $oa_row['ANSWER_Z3950_USER'];
-              $orsA->groupId->_value = $oa_row['ANSWER_Z3950_GROUP'];
-              $orsA->passWord->_value = ($oa_row['ANSWER'] == 'z3950' ? $oa_row['ANSWER_Z3950_PASSWORD'] : $oa_row['ANSWER_NCIP_AUTH']);
               if ($oa_row['ANSWER'] == 'z3950')
                 $orsA->address->_value = $oa_row['ANSWER_Z3950_ADDRESS'];
               elseif ($oa_row['ANSWER'] == 'mail')
                 $orsA->address->_value = $oa_row['ANSWER_MAIL_ADDRESS'];
+              $orsA->userId->_value = $oa_row['ANSWER_Z3950_USER'];
+              $orsA->groupId->_value = $oa_row['ANSWER_Z3950_GROUP'];
+              $orsA->passWord->_value = ($oa_row['ANSWER'] == 'z3950' ? $oa_row['ANSWER_Z3950_PASSWORD'] : $oa_row['ANSWER_NCIP_AUTH']);
               //var_dump($res->orsAnswer->_value); die();
               break;
             case 'orsCancelRequestUser':
               $orsCRU = &$res->orsCancelRequestUser->_value;
               $orsCRU->responder->_value = $this->normalize_agency($oa_row['VK.BIB_NR']);
               $orsCRU->willReceive->_value = ($oa_row['NCIP_CANCEL'] == 'J' ? 'YES' : 'NO');
+              $orsCRU->synchronous->_value = 'false';
               $orsCRU->address->_value = $oa_row['NCIP_CANCEL_ADDRESS'];
               $orsCRU->passWord->_value = $oa_row['NCIP_CANCEL_PASSWORD'];
               //var_dump($res->orsCancelRequestUser->_value); die();
@@ -359,6 +361,7 @@ class openAgency extends webServiceServer {
               $orsEUR = &$res->orsEndUserRequest->_value;
               $orsEUR->responder->_value = $this->normalize_agency($oa_row['VB.BIB_NR']);
               $orsEUR->willReceive->_value = ($oa_row['BEST_MODT'] == 'J' ? 'YES' : 'NO');
+              $orsEUR->synchronous->_value = 'false';
               switch ($oa_row['BESTIL_VIA']) {
                 case 'A': 
                   $orsEUR->protocol->_value = 'mail'; 
@@ -385,6 +388,7 @@ class openAgency extends webServiceServer {
               $orsEUIR = &$res->orsEndUserIllRequest->_value;
               $orsEUIR->responder->_value = $this->normalize_agency($oa_row['VB.BIB_NR']);
               $orsEUIR->willReceive->_value = ($oa_row['BEST_MODT'] == 'J' ? 'YES' : 'NO');
+              $orsEUIR->synchronous->_value = 'false';
               switch ($oa_row['BESTIL_FJL_VIA']) {
                 case 'A': 
                   $orsEUIR->protocol->_value = 'mail'; 
@@ -406,19 +410,24 @@ class openAgency extends webServiceServer {
               $orsIR->responder->_value = $this->normalize_agency($oa_row['VD.BIB_NR']);
               switch ($oa_row['MAILBESTIL_VIA']) {
                 case 'A': $orsIR->willReceive->_value = 'YES';
+                					$orsIR->synchronous->_value = 'false';
                           $orsIR->protocol->_value = 'mail'; 
                           $orsIR->address->_value = $oa_row['BEST_EMAIL'];
                           break;
                 case 'B': $orsIR->willReceive->_value = 'YES';
+                					$orsIR->synchronous->_value = 'false';
                           $orsIR->protocol->_value = 'ors'; 
                           break;
                 case 'C': $orsIR->willReceive->_value = 'YES';
+                					$orsIR->synchronous->_value = 'false';
                           $orsIR->protocol->_value = 'z3950'; 
                           $orsIR->address->_value = $oa_row['URL_ITEMORDER_BESTIL'];
                           break;
                 case 'D': $orsIR->willReceive->_value = 'NO'; 
+                					$orsIR->synchronous->_value = 'false';
                           break;
                 default:  $orsIR->willReceive->_value = 'NO'; 
+                					$orsIR->synchronous->_value = 'false';
                           break;
               }
               $orsIR->userId->_value = $oa_row['ZBESTIL_USERID'];
@@ -436,6 +445,7 @@ class openAgency extends webServiceServer {
               $orsLU = &$res->orsLookupUser->_value;
               $orsLU->responder->_value = $this->normalize_agency($oa_row['VK.BIB_NR']);
               $orsLU->willReceive->_value = ($oa_row['NCIP_LOOKUP_USER'] == 'J' ? 'YES' : 'NO');
+              $orsLU->synchronous->_value = 'false';
               $orsLU->address->_value = $oa_row['NCIP_LOOKUP_USER_ADDRESS'];
               $orsLU->passWord->_value = $oa_row['NCIP_LOOKUP_USER_PASSWORD'];
               //var_dump($res->orsLookupUser->_value); die();
@@ -444,6 +454,7 @@ class openAgency extends webServiceServer {
               $orsR = &$res->orsReceipt->_value;
               $orsR->responder->_value = $this->normalize_agency($oa_row['VD.BIB_NR']);
               $orsR->willReceive->_value = (in_array($oa_row['MAILKVITTER_VIA'], array('A', 'B')) ? 'YES' : 'NO');
+              $orsR->synchronous->_value = 'false';
               if ($oa_row['MAILKVITTER_VIA'] == 'A') $orsR->protocol->_value = 'mail';
               elseif ($oa_row['MAILKVITTER_VIA'] == 'B') $orsR->protocol->_value = 'ors';
               else $orsR->protocol->_value = '';
@@ -458,6 +469,7 @@ class openAgency extends webServiceServer {
               $orsR->responder->_value = $this->normalize_agency($oa_row['OAO.BIB_NR']);
               if ($oa_row['RENEW'] == 'z3950' || $oa_row['RENEW'] == 'ors') {
                 $orsR->willReceive->_value = 'YES';
+                $orsR->synchronous->_value = 'false';
                 $orsR->protocol->_value = $oa_row['RENEW'];
                 if ($oa_row['RENEW'] == 'z3950') {
                   $orsR->address->_value = $oa_row['RENEW_Z3950_ADDRESS'];
@@ -465,8 +477,10 @@ class openAgency extends webServiceServer {
                   $orsR->groupId->_value = $oa_row['RENEW_Z3950_GROUP'];
                   $orsR->passWord->_value = $oa_row['RENEW_Z3950_PASSWORD'];
                 }
-              } else 
+              } else {
                 $orsR->willReceive->_value = 'NO';
+                $orsR->synchronous->_value = 'false';
+              }
               //var_dump($res->orsRenew->_value); die();
               break;
             case 'orsRenewAnswer':
@@ -474,7 +488,7 @@ class openAgency extends webServiceServer {
               $orsRA->responder->_value = $this->normalize_agency($oa_row['OAO.BIB_NR']);
               if ($oa_row['RENEWANSWER'] == 'z3950' || $oa_row['RENEWANSWER'] == 'ors') {
                 $orsRA->willReceive->_value = 'YES';
-                $orsRA->renewAnswerSynchronic->_value = $oa_row['RENEW_ANSWER_SYNCHRONIC'] == 'J' ? 'true' : 'false';
+                $orsRA->synchronous->_value = $oa_row['RENEW_ANSWER_SYNCHRONIC'] == 'J' ? 'true' : 'false';
                 $orsRA->protocol->_value = $oa_row['RENEWANSWER'];
                 if ($oa_row['RENEWANSWER'] == 'z3950') {
                   $orsRA->address->_value = $oa_row['RENEWANSWER_Z3950_ADDRESS'];
@@ -482,14 +496,55 @@ class openAgency extends webServiceServer {
                   $orsRA->groupId->_value = $oa_row['RENEWANSWER_Z3950_GROUP'];
                   $orsRA->passWord->_value = $oa_row['RENEWANSWER_Z3950_PASSWORD'];
                 }
-              } else 
+              } else {
                 $orsRA->willReceive->_value = 'NO';
+                $orsRA->synchronous->_value = 'false';
+              }
+              //var_dump($res->orsRenewAnswer->_value); die();
+              break;
+            case 'orsCancel':
+              $orsR = &$res->orsCancel->_value;
+              $orsR->responder->_value = $this->normalize_agency($oa_row['OAO.BIB_NR']);
+              if ($oa_row['CANCEL'] == 'z3950' || $oa_row['CANCEL'] == 'ors') {
+                $orsR->willReceive->_value = 'YES';
+                $orsR->synchronous->_value = 'false';
+                $orsR->protocol->_value = $oa_row['CANCEL'];
+                if ($oa_row['CANCEL'] == 'z3950') {
+                  $orsR->address->_value = $oa_row['CANCEL_Z3950_ADDRESS'];
+                  $orsR->userId->_value = $oa_row['CANCEL_Z3950_USER'];
+                  $orsR->groupId->_value = $oa_row['CANCEL_Z3950_GROUP'];
+                  $orsR->passWord->_value = $oa_row['CANCEL_Z3950_PASSWORD'];
+                }
+              } else {
+                $orsR->willReceive->_value = 'NO';
+                $orsR->synchronous->_value = 'false';
+              }
+              //var_dump($res->orsRenew->_value); die();
+              break;
+            case 'orsCancelReply':
+              $orsRA = &$res->orsRenewAnswer->_value;
+              $orsRA->responder->_value = $this->normalize_agency($oa_row['OAO.BIB_NR']);
+              if ($oa_row['CANCELREPLY'] == 'z3950' || $oa_row['CANCELREPLY'] == 'ors') {
+                $orsRA->willReceive->_value = 'YES';
+                $orsRA->synchronous->_value = $oa_row['CANCEL_ANSWER_SYNCHRONIC'] == 'J' ? 'true' : 'false';
+                $orsRA->protocol->_value = $oa_row['CANCELREPLY'];
+                if ($oa_row['CANCELREPLY'] == 'z3950') {
+                  $orsRA->address->_value = $oa_row['CANCELREPLY_Z3950_ADDRESS'];
+                  $orsRA->userId->_value = $oa_row['CANCELREPLY_Z3950_USER'];
+                  $orsRA->groupId->_value = $oa_row['CANCELREPLY_Z3950_GROUP'];
+                  $orsRA->passWord->_value = $oa_row['CANCELREPLY_Z3950_PASSWORD'];
+                }
+              } else {
+                $orsRA->willReceive->_value = 'NO';
+                $orsRA->synchronous->_value = 'false';
+              }
               //var_dump($res->orsRenewAnswer->_value); die();
               break;
             case 'orsRenewItemUser':
               $orsRIU = &$res->orsRenewItemUser->_value;
               $orsRIU->responder->_value = $this->normalize_agency($oa_row['VK.BIB_NR']);
               $orsRIU->willReceive->_value = ($oa_row['NCIP_RENEW'] == 'J' ? 'YES' : 'NO');
+              $orsRIU->synchronous->_value = 'false';
               $orsRIU->address->_value = $oa_row['NCIP_RENEW_ADDRESS'];
               $orsRIU->passWord->_value = $oa_row['NCIP_RENEW_PASSWORD'];
               //var_dump($res->orsRenewItemUser->_value); die();
@@ -498,6 +553,7 @@ class openAgency extends webServiceServer {
               $orsS = &$res->orsShipping->_value;
               $orsS->responder->_value = $this->normalize_agency($oa_row['OAO.BIB_NR']);
               $orsS->willReceive->_value = (in_array($oa_row['SHIPPING'], array('z3950', 'mail', 'ors')) ? 'YES' : '');
+              $orsS->synchronous->_value = 'false';
               $orsS->protocol->_value = $oa_row['SHIPPING'];
               $orsS->address->_value = '';
               $orsS->userId->_value = $oa_row['SHIPPING_Z3950_USER'];

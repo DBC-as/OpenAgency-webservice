@@ -107,7 +107,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="proxyDomainsResponse">
 		<xs:complexType>
 			<xs:choice>
-				<xs:element ref="oa:domains" maxOccurs="unbounded"/>
+				<xs:element ref="oa:domains" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="oa:error"/>
 			</xs:choice>
 		</xs:complexType>
@@ -125,7 +125,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="proxyIpResponse">
 		<xs:complexType>
 			<xs:choice>
-				<xs:element ref="oa:agencyId" maxOccurs="unbounded"/>
+				<xs:element ref="oa:agencyId" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="oa:error"/>
 			</xs:choice>
 		</xs:complexType>
@@ -168,6 +168,8 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="oa:serverInformation"/>
 				<xs:element ref="oa:information"/>
 				<xs:element ref="oa:orsAnswer"/>
+				<xs:element ref="oa:orsCancel"/>
+				<xs:element ref="oa:orsCancelReply"/>
 				<xs:element ref="oa:orsCancelRequestUser"/>
 				<xs:element ref="oa:orsEndUserRequest"/>
 				<xs:element ref="oa:orsEndUserIllRequest"/>
@@ -260,7 +262,7 @@ You should have received a copy of the GNU Affero General Public License along w
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="city" type="xs:string"/>
-	<xs:element name="date" type="xs:date"/>
+	<xs:element name="date" type="xs:string"/>
 	<xs:element name="domain" type="xs:string"/>
 	<xs:element name="domains">
 		<xs:complexType>
@@ -319,7 +321,9 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="oa:isil" minOccurs="0"/>
 				<xs:element ref="oa:junction" minOccurs="0"/>
 				<xs:element ref="oa:kvik" minOccurs="0"/>
+				<xs:element ref="oa:lookupUrl" minOccurs="0"/>
 				<xs:element ref="oa:norfri" minOccurs="0"/>
+				<xs:element ref="oa:requestOrder" minOccurs="0"/>
 				<xs:element ref="oa:sender" minOccurs="0"/>
 				<xs:element ref="oa:replyToEmail" minOccurs="0"/>
 			</xs:sequence>
@@ -331,11 +335,14 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="key" type="xs:string"/>
 	<xs:element name="kvik" type="xs:string"/>
 	<xs:element name="libraryType" type="oa:libraryTypeType"/>
+	<xs:element name="lookupUrl" type="xs:string"/>
 	<xs:element name="materialType" type="xs:integer"/>
 	<xs:element name="name" type="xs:string"/>
 	<xs:element name="norfri" type="xs:string"/>
 	<xs:element name="orderMaterialType" type="oa:orderMaterialTypeType"/>
 	<xs:element name="orsAnswer" type="oa:ors"/>
+	<xs:element name="orsCancel" type="oa:ors"/>
+	<xs:element name="orsCancelReply" type="oa:ors"/>
 	<xs:element name="orsCancelRequestUser" type="oa:ors"/>
 	<xs:element name="orsEndUserRequest" type="oa:ors"/>
 	<xs:element name="orsEndUserIllRequest" type="oa:ors"/>
@@ -362,9 +369,10 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="postalCode" type="xs:string"/>
 	<xs:element name="protocol" type="xs:string"/>
 	<xs:element name="provider" type="xs:string"/>
-	<xs:element name="renewAnswerSynchronic" type="xs:boolean"/>
+	<xs:element name="synchronous" type="xs:boolean"/>
 	<xs:element name="replyToEmail" type="xs:string"/>
 	<xs:element name="requester" type="xs:string"/>
+	<xs:element name="requestOrder" type="xs:string"/>
 	<xs:element name="responder" type="xs:string"/>
 	<xs:element name="sender" type="xs:string"/>
 	<xs:element name="serverInformation">
@@ -409,7 +417,7 @@ You should have received a copy of the GNU Affero General Public License along w
 		<xs:sequence>
 			<xs:element ref="oa:responder"/>
 			<xs:element ref="oa:willReceive"/>
-			<xs:element ref="oa:renewAnswerSynchronic"/>
+			<xs:element ref="oa:synchronous"/>
 			<xs:element ref="oa:protocol" minOccurs="0"/>
 			<xs:element ref="oa:address" minOccurs="0"/>
 			<xs:element ref="oa:userId" minOccurs="0"/>
@@ -465,6 +473,8 @@ You should have received a copy of the GNU Affero General Public License along w
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="information"/>
 			<xs:enumeration value="orsAnswer"/>
+			<xs:enumeration value="orsCancel"/>
+			<xs:enumeration value="orsCancelReply"/>
 			<xs:enumeration value="orsCancelRequestUser"/>
 			<xs:enumeration value="orsEndUserRequest"/>
 			<xs:enumeration value="orsEndUserIllRequest"/>
