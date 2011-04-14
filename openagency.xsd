@@ -94,42 +94,6 @@ You should have received a copy of the GNU Affero General Public License along w
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="proxyDomainsRequest">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="oa:agencyId"/>
-				<xs:element ref="oa:authentication" minOccurs="0"/>
-				<xs:element ref="oa:callback" minOccurs="0"/>
-				<xs:element ref="oa:outputType" minOccurs="0"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="proxyDomainsResponse">
-		<xs:complexType>
-			<xs:choice>
-				<xs:element ref="oa:domains" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="oa:error"/>
-			</xs:choice>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="proxyIpRequest">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="oa:authentication" minOccurs="0"/>
-				<xs:element ref="oa:ip"/>
-				<xs:element ref="oa:callback" minOccurs="0"/>
-				<xs:element ref="oa:outputType" minOccurs="0"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="proxyIpResponse">
-		<xs:complexType>
-			<xs:choice>
-				<xs:element ref="oa:agencyId" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="oa:error"/>
-			</xs:choice>
-		</xs:complexType>
-	</xs:element>
 	<xs:element name="remoteAccessRequest">
 		<xs:complexType>
 			<xs:sequence>
@@ -263,21 +227,6 @@ You should have received a copy of the GNU Affero General Public License along w
 	</xs:element>
 	<xs:element name="city" type="xs:string"/>
 	<xs:element name="date" type="xs:string"/>
-	<xs:element name="domain" type="xs:string"/>
-	<xs:element name="domains">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="oa:domain" maxOccurs="unbounded"/>
-				<xs:choice>
-					<xs:element ref="oa:ip"/>
-					<xs:sequence>
-						<xs:element ref="oa:userId"/>
-						<xs:element ref="oa:passWord"/>
-					</xs:sequence>
-				</xs:choice>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
 	<xs:element name="email" type="xs:string"/>
 	<xs:element name="encrypt" type="xs:string"/>
 	<xs:element name="encryption">
@@ -329,7 +278,6 @@ You should have received a copy of the GNU Affero General Public License along w
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="ip" type="xs:string"/>
 	<xs:element name="isil" type="xs:string"/>
 	<xs:element name="junction" type="xs:string"/>
 	<xs:element name="key" type="xs:string"/>

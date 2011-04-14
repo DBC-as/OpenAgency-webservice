@@ -37,18 +37,6 @@ You should have received a copy of the GNU Affero General Public License along w
 	<wsdl:message name="nameListResponse">
 		<wsdl:part name="body" element="oa:nameListResponse"/>
 	</wsdl:message>
-	<wsdl:message name="proxyDomainsRequest">
-		<wsdl:part name="body" element="oa:proxyDomainsRequest"/>
-	</wsdl:message>
-	<wsdl:message name="proxyDomainsResponse">
-		<wsdl:part name="body" element="oa:proxyDomainsResponse"/>
-	</wsdl:message>
-	<wsdl:message name="proxyIpRequest">
-		<wsdl:part name="body" element="oa:proxyIpRequest"/>
-	</wsdl:message>
-	<wsdl:message name="proxyIpResponse">
-		<wsdl:part name="body" element="oa:proxyIpResponse"/>
-	</wsdl:message>
 	<wsdl:message name="remoteAccessRequest">
 		<wsdl:part name="body" element="oa:remoteAccessRequest"/>
 	</wsdl:message>
@@ -85,22 +73,10 @@ You should have received a copy of the GNU Affero General Public License along w
 			<wsdl:output message="oaw:serviceResponse"/>
 		</wsdl:operation>
 	</wsdl:portType>
-	<wsdl:portType name="proxyDomainsPortType">
-		<wsdl:operation name="proxyDomains">
-			<wsdl:input message="oaw:proxyDomainsRequest"/>
-			<wsdl:output message="oaw:proxyDomainsResponse"/>
-		</wsdl:operation>
-	</wsdl:portType>
 	<wsdl:portType name="nameListPortType">
 		<wsdl:operation name="nameList">
 			<wsdl:input message="oaw:nameListRequest"/>
 			<wsdl:output message="oaw:nameListResponse"/>
-		</wsdl:operation>
-	</wsdl:portType>
-	<wsdl:portType name="proxyIpPortType">
-		<wsdl:operation name="proxyIp">
-			<wsdl:input message="oaw:proxyIpRequest"/>
-			<wsdl:output message="oaw:proxyIpResponse"/>
 		</wsdl:operation>
 	</wsdl:portType>
 	<wsdl:portType name="remoteAccessPortType">
@@ -169,30 +145,6 @@ You should have received a copy of the GNU Affero General Public License along w
 			</wsdl:output>
 		</wsdl:operation>
 	</wsdl:binding>
-	<wsdl:binding name="proxyDomainsBinding" type="oaw:proxyDomainsPortType">
-		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
-		<wsdl:operation name="proxyDomains">
-			<soap:operation soapAction="http://openagency.addi.dk"/>
-			<wsdl:input name="proxyDomainsRequest">
-				<soap:body use="literal"/>
-			</wsdl:input>
-			<wsdl:output name="proxyDomainsResponse">
-				<soap:body use="literal"/>
-			</wsdl:output>
-		</wsdl:operation>
-	</wsdl:binding>
-	<wsdl:binding name="proxyIpBinding" type="oaw:proxyIpPortType">
-		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
-		<wsdl:operation name="proxyIp">
-			<soap:operation soapAction="http://openagency.addi.dk"/>
-			<wsdl:input name="proxyIpRequest">
-				<soap:body use="literal"/>
-			</wsdl:input>
-			<wsdl:output name="proxyIpResponse">
-				<soap:body use="literal"/>
-			</wsdl:output>
-		</wsdl:operation>
-	</wsdl:binding>
 	<wsdl:binding name="remoteAccessBinding" type="oaw:remoteAccessPortType">
 		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
 		<wsdl:operation name="remoteAccess">
@@ -219,12 +171,6 @@ You should have received a copy of the GNU Affero General Public License along w
 			<soap:address location="http://openagency.addi.dk"/>
 		</wsdl:port>
 		<wsdl:port binding="oaw:nameListBinding" name="nameListPortType">
-			<soap:address location="http://openagency.addi.dk"/>
-		</wsdl:port>
-		<wsdl:port binding="oaw:proxyDomainsBinding" name="proxyDomainsPortType">
-			<soap:address location="http://openagency.addi.dk"/>
-		</wsdl:port>
-		<wsdl:port binding="oaw:proxyIpBinding" name="proxyIpPortType">
 			<soap:address location="http://openagency.addi.dk"/>
 		</wsdl:port>
 		<wsdl:port binding="oaw:remoteAccessBinding" name="remoteAccessPortType">
