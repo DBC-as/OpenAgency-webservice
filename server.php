@@ -264,7 +264,7 @@ class openAgency extends webServiceServer {
     /** \brief
      *
      */
-    public function service($param) {    // ???? param->service
+    public function service($param) { 
         if (!$this->aaa->has_right('openagency', 500))
             $res->error->_value = 'authentication_error';
         else {
@@ -538,7 +538,7 @@ class openAgency extends webServiceServer {
                             $orsC->willReceive->_value = 'NO';
                             $orsC->synchronous->_value = 'false';
                         }
-                        //var_dump($res->orsRenew->_value); die();
+                        //var_dump($res->orsCancel->_value); die();
                         break;
                     case 'orsCancelReply':
                         $orsCR = &$res->orsRenewAnswer->_value;
@@ -557,7 +557,7 @@ class openAgency extends webServiceServer {
                             $orsCR->willReceive->_value = 'NO';
                             $orsCR->synchronous->_value = 'false';
                         }
-                        //var_dump($res->orsRenewAnswer->_value); die();
+                        //var_dump($res->orsCancelReply->_value); die();
                         break;
                     case 'orsRenewItemUser':
                         $orsRIU = &$res->orsRenewItemUser->_value;
