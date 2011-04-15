@@ -1,8 +1,14 @@
 ; inifie for openagency
 
 [setup]
+; To close a service, set service_http_error
+; service status - values:
+;service_http_error = HTTP/1.0 404 Not Found
+;service_http_error = HTTP/1.1 410 Gone
+;service_http_error = HTTP/1.0 503 Service Unavailable
+
 ;version
-version = 0.7
+version = 1.0
 
 ; wsdl for service
 wsdl = openagency.wsdl
