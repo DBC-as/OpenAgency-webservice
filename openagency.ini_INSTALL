@@ -8,7 +8,7 @@
 ;service_http_error = HTTP/1.0 503 Service Unavailable
 
 ;version
-version = 1.0
+version = 1.1
 
 ; wsdl for service
 wsdl = openagency.wsdl
@@ -103,38 +103,39 @@ agency_credentials = some_user/some_pwd@some.server.dbc.dk
 action[automation][] = agencyId
 action[automation][] = autService
 action[automation][] = materialType
-action[automation][] = outputType
 action[automation][] = callback
+action[automation][] = outputType
 
 action[encryption][] = email
-action[encryption][] = outputType
 action[encryption][] = callback
+action[encryption][] = outputType
 
 action[endUserOrderPolicy][] = agencyId
 action[endUserOrderPolicy][] = orderMaterialType
 action[endUserOrderPolicy][] = ownedByAgency
-action[endUserOrderPolicy][] = outputType
 action[endUserOrderPolicy][] = callback
+action[endUserOrderPolicy][] = outputType
 
 action[service][] = agencyId
 action[service][] = service
-action[service][] = outputType
 action[service][] = callback
+action[service][] = outputType
 
-action[nameList][] = outputType
+action[nameList][] = libraryType
 action[nameList][] = callback
+action[nameList][] = outputType
 
 action[proxyDomains][] = agencyId
-action[proxyDomains][] = outputType
 action[proxyDomains][] = callback
+action[proxyDomains][] = outputType
 
 action[proxyIp][] = agencyId
-action[proxyIp][] = outputType
 action[proxyIp][] = callback
+action[proxyIp][] = outputType
 
 action[remoteAccess][] = agencyId
-action[remoteAccess][] = outputType
 action[remoteAccess][] = callback
+action[remoteAccess][] = outputType
 
 [howru]
 test[] = service&agencyId=710100&service=orsItemRequest
