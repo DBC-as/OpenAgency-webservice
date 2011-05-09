@@ -641,8 +641,13 @@ class openAgency extends webServiceServer {
                         $param->libraryType->_value == 'Forskningsbibliotek') {
                     try {
                         $oci->bind('bind_bib_type', $param->libraryType->_value);
-                        $add_bib_type = ' WHERE bib_type = :bind_bib_type';
-                        $oci->set_query('SELECT bib_nr, navn FROM vip_vsn' . $add_bib_type);
+                        $u = 'U';
+                        $oci->bind('bind_u', $u);
+                        $oci->set_query('SELECT vsn.bib_nr, vsn.navn 
+                                         FROM vip v, vip_vsn vsn 
+                                         WHERE vsn.bib_type = :bind_bib_type 
+                                           AND v.bib_nr = vsn.bib_nr 
+                                           AND (v.delete_mark is null or v.delete_mark = :bind_u)');
                         while ($vv_row = $oci->fetch_into_assoc()) {
                             $o->agencyId->_value = $this->normalize_agency($vv_row['BIB_NR']);
                             $o->agencyName->_value = $vv_row['NAVN'];
