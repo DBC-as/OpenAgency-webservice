@@ -79,8 +79,9 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="nameListRequest">
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element ref="oa:agencyId"/>
 				<xs:element ref="oa:authentication" minOccurs="0"/>
-				<xs:element ref="oa:libraryType" minOccurs="0"/>
+				<xs:element ref="oa:profile" minOccurs="0"/>
 				<xs:element ref="oa:callback" minOccurs="0"/>
 				<xs:element ref="oa:outputType" minOccurs="0"/>
 			</xs:sequence>
@@ -90,6 +91,25 @@ You should have received a copy of the GNU Affero General Public License along w
 		<xs:complexType>
 			<xs:choice>
 				<xs:element ref="oa:agency" maxOccurs="unbounded"/>
+				<xs:element ref="oa:error"/>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="openSearchProfileRequest">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="oa:agencyId"/>
+				<xs:element ref="oa:authentication" minOccurs="0"/>
+				<xs:element ref="oa:profile" minOccurs="0"/>
+				<xs:element ref="oa:callback" minOccurs="0"/>
+				<xs:element ref="oa:outputType" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="openSearchProfileResponse">
+		<xs:complexType>
+			<xs:choice>
+				<xs:element ref="oa:source" maxOccurs="unbounded"/>
 				<xs:element ref="oa:error"/>
 			</xs:choice>
 		</xs:complexType>
@@ -316,6 +336,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="postalAddress" type="xs:string"/>
 	<xs:element name="postalCode" type="xs:string"/>
 	<xs:element name="protocol" type="xs:string"/>
+	<xs:element name="profile" type="xs:string"/>
 	<xs:element name="provider" type="xs:string"/>
 	<xs:element name="synchronous" type="xs:boolean"/>
 	<xs:element name="replyToEmail" type="xs:string"/>
@@ -336,6 +357,18 @@ You should have received a copy of the GNU Affero General Public License along w
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="service" type="oa:serviceType"/>
+	<xs:element name="source">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="oa:sourceName"/>
+				<xs:element ref="oa:sourceOwner"/>
+				<xs:element ref="oa:sourceFormat"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="sourceFormat" type="xs:string"/>
+	<xs:element name="sourceName" type="xs:string"/>
+	<xs:element name="sourceOwner" type="xs:string"/>
 	<xs:element name="subscription">
 		<xs:complexType>
 			<xs:sequence>
