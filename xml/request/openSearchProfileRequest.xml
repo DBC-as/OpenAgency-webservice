@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://oss.dbc.dk/ns/openagency"><SOAP-ENV:Body>
+<ns1:openSearchProfileRequest>
+  <ns1:agencyId>716700</ns1:agencyId>
+  <ns1:profile>Lorem ipsum</ns1:profile>
+</ns1:openSearchProfileRequest>
+</SOAP-ENV:Body></SOAP-ENV:Envelope>
