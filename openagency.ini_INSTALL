@@ -8,7 +8,7 @@
 ;service_http_error = HTTP/1.0 503 Service Unavailable
 
 ;version
-version = 1.1
+version = 1.2
 
 ; wsdl for service
 wsdl = openagency.wsdl
@@ -24,11 +24,12 @@ wsdl = openagency.wsdl
 soapAction[automation] = automationRequest
 soapAction[encryption] = encryptionRequest
 soapAction[endUserOrderPolicy] = endUserOrderPolicyRequest
-soapAction[service] = serviceRequest
 soapAction[nameList] = nameListRequest
-soapAction[proxyDomains] = proxyDomainsRequest
-soapAction[proxyIp] = proxyIpRequest
+soapAction[openSearchProfile] = openSearchProfileRequest
 soapAction[remoteAccess] = remoteAccessRequest
+soapAction[service] = serviceRequest
+;soapAction[proxyDomains] = proxyDomainsRequest
+;soapAction[proxyIp] = proxyIpRequest
 
 ; validate
 ;validate[request] = openagency.xsd
@@ -116,26 +117,32 @@ action[endUserOrderPolicy][] = ownedByAgency
 action[endUserOrderPolicy][] = callback
 action[endUserOrderPolicy][] = outputType
 
+action[nameList][] = libraryType
+action[nameList][] = callback
+action[nameList][] = outputType
+
+action[openSearchProfile][] = agencyId
+action[openSearchProfile][] = profile
+action[openSearchProfile][] = callback
+action[openSearchProfile][] = outputType
+
+action[remoteAccess][] = agencyId
+action[remoteAccess][] = callback
+action[remoteAccess][] = outputType
+
 action[service][] = agencyId
 action[service][] = service
 action[service][] = callback
 action[service][] = outputType
 
-action[nameList][] = libraryType
-action[nameList][] = callback
-action[nameList][] = outputType
+;action[proxyDomains][] = agencyId
+;action[proxyDomains][] = callback
+;action[proxyDomains][] = outputType
 
-action[proxyDomains][] = agencyId
-action[proxyDomains][] = callback
-action[proxyDomains][] = outputType
+;action[proxyIp][] = agencyId
+;action[proxyIp][] = callback
+;action[proxyIp][] = outputType
 
-action[proxyIp][] = agencyId
-action[proxyIp][] = callback
-action[proxyIp][] = outputType
-
-action[remoteAccess][] = agencyId
-action[remoteAccess][] = callback
-action[remoteAccess][] = outputType
 
 [howru]
 test[] = service&agencyId=710100&service=orsItemRequest

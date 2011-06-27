@@ -670,7 +670,7 @@ class openAgency extends webServiceServer {
     /** \brief
      *
      */
-    public function proxyDomains($param) {  // ????
+    public function openSearchProfile($param) {
         if (!$this->aaa->has_right('openagency', 500))
             $res->error->_value = 'authentication_error';
         else {
@@ -684,60 +684,35 @@ class openAgency extends webServiceServer {
                 $res->error->_value = 'service_unavailable';
             }
             if (empty($res->error)) {
-                /* 2 come ...
-                        try {
-                          //$oci->set_query('SELECT bib_nr, navn FROM vip_vsn');
-                          while ($vv_row = $oci->fetch_into_assoc()) {
-                            $o->domain->_value =
-                            $o->ip->_value =
-                            $o->userId->_value =
-                            $o->passWord->_value =
-                            $res->domains[]->_value = $o;
-                            unset($o);
-                          }
-                        } catch (ociException $e) {
-                          verbose::log(FATAL, 'OpenAgency('.__LINE__.'):: OCI select error: ' . $oci->get_error_string());
-                          $res->error->_value = 'service_unavailable';
-                        }
-                */
-            }
-        }
-        //var_dump($res); var_dump($param); die();
-        $ret->proxyDomainsResponse->_value = $res;
-        return $ret;
-    }
-
-    /** \brief
-     *
-     */
-    public function proxyIp($param) {  // ????
-        if (!$this->aaa->has_right('openagency', 500))
-            $res->error->_value = 'authentication_error';
-        else {
-            $oci = new Oci($this->config->get_value('agency_credentials','setup'));
-            $oci->set_charset('UTF8');
-            try {
-                $oci->connect();
-            }
-            catch (ociException $e) {
-                verbose::log(FATAL, 'OpenAgency('.__LINE__.'):: OCI connect error: ' . $oci->get_error_string());
-                $res->error->_value = 'service_unavailable';
-            }
-            if (empty($res->error)) {
+                $agency = $this->strip_agency($param->agencyId->_value);
+                $oci->bind('bind_agency', $agency);
+                $profile = strtolower($param->profile->_value);
+                $oci->bind('bind_profile', $profile);
                 try {
-                    //$oci->set_query('SELECT bib_nr, navn FROM vip_vsn');
-                    $res = '';
+                    $oci->set_query('SELECT broendkilder.name, submitter, format 
+                                     FROM broendkilder, broendprofil_kilder, broendprofiler
+                                     WHERE broendkilder.id_nr = broendprofil_kilder.broendkilde_id
+                                       AND broendprofil_kilder.profil_id = broendprofiler.id_nr
+                                       AND broendprofiler.bib_nr = :bind_agency 
+                                       AND lower(broendprofiler.name) = :bind_profile');
+                    while ($s_row = $oci->fetch_into_assoc()) {
+                        $s->sourceName->_value = $s_row['NAME'];
+                        $s->sourceOwner->_value = $s_row['SUBMITTER'];
+                        $s->sourceFormat->_value = $s_row['FORMAT'];
+                        $res->source[]->_value = $s;
+                        unset($o);
+                    }
                 } catch (ociException $e) {
                     verbose::log(FATAL, 'OpenAgency('.__LINE__.'):: OCI select error: ' . $oci->get_error_string());
                     $res->error->_value = 'service_unavailable';
                 }
             }
         }
-
         //var_dump($res); var_dump($param); die();
-        $ret->proxyIpResponse->_value = $res;
+        $ret->openSearchProfileResponse->_value = $res;
         return $ret;
     }
+
 
     /** \brief
      *
