@@ -686,15 +686,16 @@ class openAgency extends webServiceServer {
             if (empty($res->error)) {
                 $agency = $this->strip_agency($param->agencyId->_value);
                 $oci->bind('bind_agency', $agency);
-                $profile = strtolower($param->profile->_value);
-                $oci->bind('bind_profile', $profile);
+                if ($profile = strtolower($param->profile->_value)) {
+                    $oci->bind('bind_profile', $profile);
+                    $sql_add = ' AND lower(broendprofiler.name) = :bind_profile';
+                }
                 try {
                     $oci->set_query('SELECT broendkilder.name, submitter, format 
                                      FROM broendkilder, broendprofil_kilder, broendprofiler
                                      WHERE broendkilder.id_nr = broendprofil_kilder.broendkilde_id
                                        AND broendprofil_kilder.profil_id = broendprofiler.id_nr
-                                       AND broendprofiler.bib_nr = :bind_agency 
-                                       AND lower(broendprofiler.name) = :bind_profile');
+                                       AND broendprofiler.bib_nr = :bind_agency' . $sql_add);
                     while ($s_row = $oci->fetch_into_assoc()) {
                         $s->sourceName->_value = $s_row['NAME'];
                         $s->sourceOwner->_value = $s_row['SUBMITTER'];
