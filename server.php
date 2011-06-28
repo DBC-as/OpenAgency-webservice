@@ -691,7 +691,7 @@ class openAgency extends webServiceServer {
                     $sql_add = ' AND lower(broendprofiler.name) = :bind_profile';
                 }
                 try {
-                    $oci->set_query('SELECT broendkilder.name, submitter, format 
+                    $oci->set_query('SELECT DISTINCT broendkilder.name, submitter, format 
                                      FROM broendkilder, broendprofil_kilder, broendprofiler
                                      WHERE broendkilder.id_nr = broendprofil_kilder.broendkilde_id
                                        AND broendprofil_kilder.profil_id = broendprofiler.id_nr
@@ -701,7 +701,7 @@ class openAgency extends webServiceServer {
                         $s->sourceOwner->_value = $s_row['SUBMITTER'];
                         $s->sourceFormat->_value = $s_row['FORMAT'];
                         $res->source[]->_value = $s;
-                        unset($o);
+                        unset($s);
                     }
                 } catch (ociException $e) {
                     verbose::log(FATAL, 'OpenAgency('.__LINE__.'):: OCI select error: ' . $oci->get_error_string());
