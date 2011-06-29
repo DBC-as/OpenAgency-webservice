@@ -4,7 +4,7 @@
 		<xs:documentation xml:lang="en">Open Agency service</xs:documentation>
 		<xs:documentation xml:lang="en">This XML Schema describes the data and structure of data of the Open Agency service.</xs:documentation>
 		<xs:documentation xml:lang="en">This file is part of OpenAgency.
-Copyright Â© 20010, Dansk Bibliotekscenter a/s,  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+Copyright © 20010, Dansk Bibliotekscenter a/s,  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
 OpenAgency is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
@@ -99,7 +99,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:sequence>
 				<xs:element ref="oa:agencyId"/>
 				<xs:element ref="oa:authentication" minOccurs="0"/>
-				<xs:element ref="oa:profile" minOccurs="0"/>
+				<xs:element ref="oa:profileName" minOccurs="0"/>
 				<xs:element ref="oa:callback" minOccurs="0"/>
 				<xs:element ref="oa:outputType" minOccurs="0"/>
 			</xs:sequence>
@@ -108,7 +108,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="openSearchProfileResponse">
 		<xs:complexType>
 			<xs:choice>
-				<xs:element ref="oa:source" maxOccurs="unbounded"/>
+				<xs:element ref="oa:profile" maxOccurs="unbounded"/>
 				<xs:element ref="oa:error"/>
 			</xs:choice>
 		</xs:complexType>
@@ -335,7 +335,15 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="postalAddress" type="xs:string"/>
 	<xs:element name="postalCode" type="xs:string"/>
 	<xs:element name="protocol" type="xs:string"/>
-	<xs:element name="profile" type="xs:string"/>
+	<xs:element name="profile">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="oa:profileName"/>
+				<xs:element ref="oa:source" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="profileName" type="xs:string"/>
 	<xs:element name="provider" type="xs:string"/>
 	<xs:element name="synchronous" type="xs:boolean"/>
 	<xs:element name="replyToEmail" type="xs:string"/>
