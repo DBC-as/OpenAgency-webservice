@@ -686,12 +686,15 @@ class openAgency extends webServiceServer {
             if (empty($res->error)) {
                 $agency = $this->strip_agency($param->agencyId->_value);
                 $oci->bind('bind_agency', $agency);
-                if ($profile = strtolower($param->profile->_value)) {
+                if ($profile = strtolower($param->profileName->_value)) {
                     $oci->bind('bind_profile', $profile);
                     $sql_add = ' AND lower(broendprofiler.name) = :bind_profile';
                 }
                 try {
-                    $oci->set_query('SELECT DISTINCT broendkilder.name, submitter, format 
+                    $oci->set_query('SELECT DISTINCT broendprofiler.name bp_name, 
+                                                     broendkilder.name, 
+                                                     submitter, 
+                                                     format 
                                      FROM broendkilder, broendprofil_kilder, broendprofiler
                                      WHERE broendkilder.id_nr = broendprofil_kilder.broendkilde_id
                                        AND broendprofil_kilder.profil_id = broendprofiler.id_nr
@@ -700,7 +703,8 @@ class openAgency extends webServiceServer {
                         $s->sourceName->_value = $s_row['NAME'];
                         $s->sourceOwner->_value = $s_row['SUBMITTER'];
                         $s->sourceFormat->_value = $s_row['FORMAT'];
-                        $res->source[]->_value = $s;
+                        $res->profile[$s_row['BP_NAME']]->_value->profileName->_value = $s_row['BP_NAME'];
+                        $res->profile[$s_row['BP_NAME']]->_value->source[]->_value = $s;
                         unset($s);
                     }
                 } catch (ociException $e) {
