@@ -701,7 +701,7 @@ class openAgency extends webServiceServer {
                                        AND broendprofiler.bib_nr = :bind_agency' . $sql_add);
                     while ($s_row = $oci->fetch_into_assoc()) {
                         $s->sourceName->_value = $s_row['NAME'];
-                        $s->sourceOwner->_value = $s_row['SUBMITTER'];
+                        $s->sourceOwner->_value = (strtolower($s_row['SUBMITTER']) == 'agency' ? $agency : $s_row['SUBMITTER']);
                         $s->sourceFormat->_value = $s_row['FORMAT'];
                         $res->profile[$s_row['BP_NAME']]->_value->profileName->_value = $s_row['BP_NAME'];
                         $res->profile[$s_row['BP_NAME']]->_value->source[]->_value = $s;
