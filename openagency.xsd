@@ -94,6 +94,23 @@ You should have received a copy of the GNU Affero General Public License along w
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="pickupAgencyListRequest">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="oa:authentication" minOccurs="0"/>
+				<xs:element ref="oa:libraryType" minOccurs="0"/>
+				<xs:element ref="oa:callback" minOccurs="0"/>
+				<xs:element ref="oa:outputType" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="pickupAgencyListResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="oa:library" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="openSearchProfileRequest">
 		<xs:complexType>
 			<xs:sequence>
@@ -225,6 +242,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="agencyId" type="xs:string"/>
 	<xs:element name="agencyName" type="xs:string"/>
 	<xs:element name="agencyPhone" type="xs:string"/>
+	<xs:element name="agencySubdivision" type="xs:string"/>
 	<xs:element name="agencyType" type="xs:string"/>
 	<xs:element name="address" type="xs:string"/>
 	<xs:element name="autChoice" type="xs:string"/>
@@ -301,11 +319,38 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="junction" type="xs:string"/>
 	<xs:element name="key" type="xs:string"/>
 	<xs:element name="kvik" type="xs:string"/>
+	<xs:element name="library">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element ref="oa:agencyId"/>
+					<xs:element ref="oa:agencyName"/>
+					<xs:element ref="oa:agencyPhone" minOccurs="0"/>
+					<xs:element ref="oa:agencyEmail" minOccurs="0"/>
+					<xs:element ref="oa:postalAddress" minOccurs="0"/>
+					<xs:element ref="oa:postalCode" minOccurs="0"/>
+					<xs:element ref="oa:city" minOccurs="0"/>
+					<xs:element ref="oa:isil" minOccurs="0"/>
+					<xs:element ref="oa:pickupAgency" maxOccurs="unbounded"/>
+				</xs:sequence>
+				<xs:element ref="oa:error"/>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="libraryType" type="oa:libraryTypeType"/>
 	<xs:element name="lookupUrl" type="xs:string"/>
 	<xs:element name="materialType" type="xs:integer"/>
 	<xs:element name="name" type="xs:string"/>
 	<xs:element name="norfri" type="xs:string"/>
+	<xs:element name="openingHours">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute ref="oa:language"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="orderMaterialType" type="oa:orderMaterialTypeType"/>
 	<xs:element name="orsAnswer" type="oa:ors"/>
 	<xs:element name="orsCancel" type="oa:ors"/>
@@ -331,6 +376,22 @@ You should have received a copy of the GNU Affero General Public License along w
 		<xs:annotation>
 			<xs:documentation xml:lang="en">Password (for authentication purposes)</xs:documentation>
 		</xs:annotation>
+	</xs:element>
+	<xs:element name="pickupAgency">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="oa:branchId"/>
+				<xs:element ref="oa:branchName"/>
+				<xs:element ref="oa:branchPhone"/>
+				<xs:element ref="oa:branchEmail"/>
+				<xs:element ref="oa:postalAddress" minOccurs="0"/>
+				<xs:element ref="oa:postalCode" minOccurs="0"/>
+				<xs:element ref="oa:city" minOccurs="0"/>
+				<xs:element ref="oa:isil" minOccurs="0"/>
+				<xs:element ref="oa:agencySubdivision" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="oa:openingHours" minOccurs="0" maxOccurs="2"/>
+			</xs:sequence>
+		</xs:complexType>
 	</xs:element>
 	<xs:element name="postalAddress" type="xs:string"/>
 	<xs:element name="postalCode" type="xs:string"/>
@@ -401,6 +462,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	</xs:element>
 	<xs:element name="willReceive" type="xs:string"/>
 	<xs:element name="willSend" type="xs:string"/>
+	<xs:attribute name="language" type="oa:languageType"/>
 	<xs:complexType name="ors">
 		<xs:sequence>
 			<xs:element ref="oa:responder"/>
@@ -431,8 +493,15 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:enumeration value="no_userid_selected"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:simpleType name="languageType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="dan"/>
+			<xs:enumeration value="eng"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:simpleType name="libraryTypeType">
 		<xs:restriction base="xs:string">
+			<xs:enumeration value="Alle"/>
 			<xs:enumeration value="Folkebibliotek"/>
 			<xs:enumeration value="Forskningsbibliotek"/>
 		</xs:restriction>

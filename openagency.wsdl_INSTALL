@@ -37,6 +37,12 @@ You should have received a copy of the GNU Affero General Public License along w
 	<wsdl:message name="nameListResponse">
 		<wsdl:part name="body" element="oa:nameListResponse"/>
 	</wsdl:message>
+	<wsdl:message name="pickupAgencyListRequest">
+		<wsdl:part name="body" element="oa:pickupAgencyListRequest"/>
+	</wsdl:message>
+	<wsdl:message name="pickupAgencyListResponse">
+		<wsdl:part name="body" element="oa:pickupAgencyListResponse"/>
+	</wsdl:message>
 	<wsdl:message name="openSearchProfileRequest">
 		<wsdl:part name="body" element="oa:openSearchProfileRequest"/>
 	</wsdl:message>
@@ -83,6 +89,12 @@ You should have received a copy of the GNU Affero General Public License along w
 		<wsdl:operation name="nameList">
 			<wsdl:input message="oaw:nameListRequest"/>
 			<wsdl:output message="oaw:nameListResponse"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:portType name="pickupAgencyListPortType">
+		<wsdl:operation name="pickupAgencyList">
+			<wsdl:input message="oaw:pickupAgencyListRequest"/>
+			<wsdl:output message="oaw:pickupAgencyListResponse"/>
 		</wsdl:operation>
 	</wsdl:portType>
 	<wsdl:portType name="openSearchProfilePortType">
@@ -157,6 +169,18 @@ You should have received a copy of the GNU Affero General Public License along w
 			</wsdl:output>
 		</wsdl:operation>
 	</wsdl:binding>
+	<wsdl:binding name="pickupAgencyListBinding" type="oaw:pickupAgencyListPortType">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="pickupAgencyList">
+			<soap:operation soapAction="http://openagency.addi.dk"/>
+			<wsdl:input name="pickupAgencyListRequest">
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output name="pickupAgencyListResponse">
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
 	<wsdl:binding name="openSearchProfileBinding" type="oaw:openSearchProfilePortType">
 		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
 		<wsdl:operation name="openSearchProfile">
@@ -195,6 +219,9 @@ You should have received a copy of the GNU Affero General Public License along w
 			<soap:address location="http://openagency.addi.dk/1.1"/>
 		</wsdl:port>
 		<wsdl:port binding="oaw:nameListBinding" name="nameListPortType">
+			<soap:address location="http://openagency.addi.dk/1.1"/>
+		</wsdl:port>
+		<wsdl:port binding="oaw:pickupAgencyListBinding" name="nameListPortType">
 			<soap:address location="http://openagency.addi.dk/1.1"/>
 		</wsdl:port>
 		<wsdl:port binding="oaw:openSearchProfileBinding" name="openSearchProfilePortType">
