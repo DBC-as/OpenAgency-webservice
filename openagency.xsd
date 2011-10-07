@@ -390,6 +390,8 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="oa:isil" minOccurs="0"/>
 				<xs:element ref="oa:agencySubdivision" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="oa:openingHours" minOccurs="0" maxOccurs="2"/>
+				<xs:element ref="oa:temporarilyClosed"/>
+				<xs:element ref="oa:temporarilyClosedReason" minOccurs="0" maxOccurs="2"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -443,6 +445,16 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="oa:name"/>
 				<xs:element ref="oa:url"/>
 			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="temporarilyClosed" type="xs:boolean"/>
+	<xs:element name="temporarilyClosedReason">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute ref="oa:language"/>
+				</xs:extension>
+			</xs:simpleContent>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="url" type="xs:string"/>
