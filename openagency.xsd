@@ -330,7 +330,6 @@ You should have received a copy of the GNU Affero General Public License along w
 					<xs:element ref="oa:postalAddress" minOccurs="0"/>
 					<xs:element ref="oa:postalCode" minOccurs="0"/>
 					<xs:element ref="oa:city" minOccurs="0"/>
-					<xs:element ref="oa:isil" minOccurs="0"/>
 					<xs:element ref="oa:pickupAgency" maxOccurs="unbounded"/>
 				</xs:sequence>
 				<xs:element ref="oa:error"/>
