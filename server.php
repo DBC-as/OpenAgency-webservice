@@ -799,9 +799,9 @@ class openAgency extends webServiceServer {
                                 $pickupAgency->city->_value = $row['BCITY'];
                                 $pickupAgency->isil->_value = $row['ISIL'];
                             }
-                            if (FALSE && $row['HOLDEPLADS'])
+                            if ($row['HOLDEPLADS'])
                                 $pickupAgency->agencySubdivision[]->_value = $row['HOLDEPLADS'];
-                            if (FALSE && empty($pickupAgency->openingHours) 
+                            if (empty($pickupAgency->openingHours) 
                               && ($row['AABN_TID'] || $row['AABN_TID_E'])) {
                                 if ($row['AABN_TID']) {
                                     $help->_value = $row['AABN_TID'];
@@ -817,9 +817,9 @@ class openAgency extends webServiceServer {
                                 }
                             }
                             $pickupAgency->temporarilyClosed->_value = ($row['BEST_MODT'] == 'J' ? 'false' : 'true');
-                            if (FALSE && $row['BEST_MODT'] == 'L'
+                            if ($row['BEST_MODT'] == 'L'
                               && empty($pickupAgency->temporarilyClosedReason) 
-                              && ($row['AABN_TID'] || $row['AABN_TID_E'])) {
+                              && ($row['BEST_MODT_LUK'] || $row['BEST_MODT_LUK_ENG'])) {
                                 if ($row['BEST_MODT_LUK']) {
                                     $help->_value = $row['BEST_MODT_LUK'];
                                     $help->_attributes->language->_value = 'dan';
@@ -829,7 +829,7 @@ class openAgency extends webServiceServer {
                                 if ($row['BEST_MODT_LUK_ENG']) {
                                     $help->_value = $row['BEST_MODT_LUK_ENG'];
                                     $help->_attributes->language->_value = 'eng';
-                                    $pickupAgency->temporarilyClosedReason->_value[] = $help;
+                                    $pickupAgency->temporarilyClosedReason[] = $help;
                                     unset($help);
                                 }
                             }
