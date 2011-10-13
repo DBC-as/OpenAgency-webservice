@@ -8,7 +8,7 @@
 ;service_http_error = HTTP/1.0 503 Service Unavailable
 
 ;version
-version = 1.2
+version = 1.3
 
 ; wsdl for service
 wsdl = openagency.wsdl
@@ -25,6 +25,7 @@ soapAction[automation] = automationRequest
 soapAction[encryption] = encryptionRequest
 soapAction[endUserOrderPolicy] = endUserOrderPolicyRequest
 soapAction[nameList] = nameListRequest
+soapAction[pickupAgencyList] = pickupAgencyListRequest
 soapAction[openSearchProfile] = openSearchProfileRequest
 soapAction[remoteAccess] = remoteAccessRequest
 soapAction[service] = serviceRequest
@@ -120,6 +121,10 @@ action[endUserOrderPolicy][] = outputType
 action[nameList][] = libraryType
 action[nameList][] = callback
 action[nameList][] = outputType
+
+action[pickupAgencyList][] = libraryType
+action[pickupAgencyList][] = callback
+action[pickupAgencyList][] = outputType
 
 action[openSearchProfile][] = agencyId
 action[openSearchProfile][] = profile
