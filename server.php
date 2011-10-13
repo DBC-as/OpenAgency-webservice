@@ -27,11 +27,17 @@
 
 require_once('OLS_class_lib/webServiceServer_class.php');
 require_once('OLS_class_lib/oci_class.php');
+require_once 'OLS_class_lib/memcache_class.php';
 
 class openAgency extends webServiceServer {
+    protected $cache;
 
     public function __construct() {
         webServiceServer::__construct('openagency.ini');
+            $this->cache = new cache($this->config->get_value('cache_host', 'setup'),
+                                     $this->config->get_value('cache_port', 'setup'),
+                                     $this->config->get_value('cache_expire', 'setup'));
+
     }
 
 
@@ -42,6 +48,12 @@ class openAgency extends webServiceServer {
         if (!$this->aaa->has_right('openagency', 500))
             $res->error->_value = 'authentication_error';
         else {
+            $agency = $this->strip_agency($param->agencyId->_value);
+            $cache_key = 'OA_aut_' . md5($agency . $param->autService->_value . $param->materialType->_value);
+            if ($ret = $this->cache->get($cache_key)) {
+                verbose::log(STAT, 'Cache hit');
+                return $ret;
+            }
             $oci = new Oci($this->config->get_value('agency_credentials','setup'));
             $oci->set_charset('UTF8');
             try {
@@ -52,7 +64,6 @@ class openAgency extends webServiceServer {
                 $res->error->_value = 'service_unavailable';
             }
             if (empty($res->error)) {
-                $agency = $this->strip_agency($param->agencyId->_value);
                 switch ($param->autService->_value) {
                 case 'autPotential':
                     try {
@@ -161,6 +172,7 @@ class openAgency extends webServiceServer {
         }
         //var_dump($res); var_dump($param); die();
         $ret->automationResponse->_value = $res;
+        if (empty($res->error)) $this->cache->set($cache_key, $ret);
         return $ret;
     }
 
@@ -171,6 +183,11 @@ class openAgency extends webServiceServer {
         if (!$this->aaa->has_right('openagency', 500))
             $res->error->_value = 'authentication_error';
         else {
+            $cache_key = 'OA_enc_' . md5($agency . $param->autService->_value . $param->materialType->_value);
+            if ($ret = $this->cache->get($cache_key)) {
+                verbose::log(STAT, 'Cache hit');
+                return $ret;
+            }
             $oci = new Oci($this->config->get_value('agency_credentials','setup'));
             $oci->set_charset('UTF8');
             try {
@@ -205,6 +222,7 @@ class openAgency extends webServiceServer {
 
         //var_dump($res); var_dump($param); die();
         $ret->encryptionResponse->_value = $res;
+        if (empty($res->error)) $this->cache->set($cache_key, $ret);
         return $ret;
     }
     /** \brief
@@ -214,6 +232,12 @@ class openAgency extends webServiceServer {
         if (!$this->aaa->has_right('openagency', 500))
             $res->error->_value = 'authentication_error';
         else {
+            $agency = $this->strip_agency($param->agencyId->_value);
+            $cache_key = 'OA_endUOP_' . md5($agency . $param->orderMaterialType->_value . $param->ownedByAgency->_value);
+            if ($ret = $this->cache->get($cache_key)) {
+                verbose::log(STAT, 'Cache hit');
+                return $ret;
+            }
             $oci = new Oci($this->config->get_value('agency_credentials','setup'));
             $oci->set_charset('UTF8');
             try {
@@ -238,7 +262,6 @@ class openAgency extends webServiceServer {
                 $owned_by_agency = 1;
                 if (isset($owned_by_agency)
                         && ($will_receive = $assoc[strtolower($param->orderMaterialType->_value)][$owned_by_agency])) {
-                    $agency = $this->strip_agency($param->agencyId->_value);
                     try {
                         $oci->bind('bind_bib_nr', $agency);
                         $oci->set_query('SELECT best_modt, ' . $will_receive . ' "WR" FROM vip_beh WHERE bib_nr = :bind_bib_nr');
@@ -258,6 +281,7 @@ class openAgency extends webServiceServer {
 
         //var_dump($res); var_dump($param); die();
         $ret->endUserOrderPolicyResponse->_value = $res;
+        if (empty($res->error)) $this->cache->set($cache_key, $ret);
         return $ret;
     }
 
@@ -268,6 +292,12 @@ class openAgency extends webServiceServer {
         if (!$this->aaa->has_right('openagency', 500))
             $res->error->_value = 'authentication_error';
         else {
+            $agency = $this->strip_agency($param->agencyId->_value);
+            $cache_key = 'OA_ser_' . md5($agency . $param->service->_value);
+            if ($ret = $this->cache->get($cache_key)) {
+                verbose::log(STAT, 'Cache hit');
+                return $ret;
+            }
             $oci = new Oci($this->config->get_value('agency_credentials','setup'));
             $oci->set_charset('UTF8');
             try {
@@ -286,11 +316,10 @@ class openAgency extends webServiceServer {
                 $tab_col['vk'] = array('bib_nr', '*');
                 $tab_col['oao'] = array('bib_nr', '*');
                 foreach ($tab_col as $prefix => $arr)
-                foreach ($arr as $col)
-                $q .= (empty($q) ? '' : ', ') .
-                      $prefix . '.' . $col .
-                      ($col == '*' ? '' : ' "' . strtoupper($prefix . '.' . $col) . '"');
-                $agency = $this->strip_agency($param->agencyId->_value);
+                    foreach ($arr as $col)
+                        $q .= (empty($q) ? '' : ', ') .
+                              $prefix . '.' . $col .
+                              ($col == '*' ? '' : ' "' . strtoupper($prefix . '.' . $col) . '"');
                 try {
                     $oci->bind('bind_bib_nr', $agency);
                     $oci->set_query('SELECT ' . $q . '
@@ -616,6 +645,7 @@ class openAgency extends webServiceServer {
 
         //var_dump($res); var_dump($param); die();
         $ret->serviceResponse->_value = $res;
+        if (empty($res->error)) $this->cache->set($cache_key, $ret);
         return $ret;
     }
 
@@ -627,6 +657,11 @@ class openAgency extends webServiceServer {
             $res->error->_value = 'authentication_error';
         else {
             //var_dump($this->aaa->get_rights()); die();
+            $cache_key = 'OA_namL_' . md5($param->libraryType->_value);
+            if ($ret = $this->cache->get($cache_key)) {
+                verbose::log(STAT, 'Cache hit');
+                return $ret;
+            }
             $oci = new Oci($this->config->get_value('agency_credentials','setup'));
             $oci->set_charset('UTF8');
             try {
@@ -637,17 +672,21 @@ class openAgency extends webServiceServer {
                 $res->error->_value = 'service_unavailable';
             }
             if (empty($res->error)) {
-                if ($param->libraryType->_value == 'Folkebibliotek' ||
-                        $param->libraryType->_value == 'Forskningsbibliotek') {
+                if (empty($param->libraryType->_value) ||
+                    $param->libraryType->_value == 'Folkebibliotek' ||
+                    $param->libraryType->_value == 'Forskningsbibliotek') {
                     try {
-                        $oci->bind('bind_bib_type', $param->libraryType->_value);
+                        if ($param->libraryType->_value) {
+                            $filter_bib_type = 'AND vsn.bib_type = :bind_bib_type';
+                            $oci->bind('bind_bib_type', $param->libraryType->_value);
+                        }
                         $u = 'U';
                         $oci->bind('bind_u', $u);
                         $oci->set_query('SELECT vsn.bib_nr, vsn.navn 
                                          FROM vip v, vip_vsn vsn 
-                                         WHERE vsn.bib_type = :bind_bib_type 
-                                           AND v.bib_nr = vsn.bib_nr 
-                                           AND (v.delete_mark is null or v.delete_mark = :bind_u)');
+                                         WHERE v.bib_nr = vsn.bib_nr 
+                                           AND (v.delete_mark is null or v.delete_mark = :bind_u)
+                                           ' . $filter_bib_type);
                         while ($vv_row = $oci->fetch_into_assoc()) {
                             $o->agencyId->_value = $this->normalize_agency($vv_row['BIB_NR']);
                             $o->agencyName->_value = $vv_row['NAVN'];
@@ -664,16 +703,22 @@ class openAgency extends webServiceServer {
         }
         //var_dump($res); var_dump($param); die();
         $ret->nameListResponse->_value = $res;
+        if (empty($res->error)) $this->cache->set($cache_key, $ret);
         return $ret;
     }
 
     /** \brief
      *
      */
-    public function openSearchProfile($param) {
+    public function pickupAgencyList($param) {
         if (!$this->aaa->has_right('openagency', 500))
             $res->error->_value = 'authentication_error';
         else {
+            $cache_key = 'OA_picAL_' . md5($param->libraryType->_value);
+            if ($ret = $this->cache->get($cache_key)) {
+                verbose::log(STAT, 'Cache hit');
+                return $ret;
+            }
             $oci = new Oci($this->config->get_value('agency_credentials','setup'));
             $oci->set_charset('UTF8');
             try {
@@ -684,7 +729,151 @@ class openAgency extends webServiceServer {
                 $res->error->_value = 'service_unavailable';
             }
             if (empty($res->error)) {
-                $agency = $this->strip_agency($param->agencyId->_value);
+                if (empty($param->libraryType->_value) ||
+                    $param->libraryType->_value == 'Folkebibliotek' ||
+                    $param->libraryType->_value == 'Forskningsbibliotek') {
+                    try {
+                        if ($param->libraryType->_value) {
+                            $filter_bib_type = 'bib_type = :bind_bib_type AND';
+                            $oci->bind('bind_bib_type', $param->libraryType->_value);
+                        }
+                        $s = 'S';
+                        $oci->bind('bind_s', $s);
+                        $oci->set_query('SELECT bib_nr, navn, tlf_nr, email, badr, bpostnr, bcity
+                                         FROM vip_vsn
+                                         WHERE ' . $filter_bib_type . '
+                                              (delete_mark_vsn is null OR delete_mark_vsn <> :bind_s)
+                                         ORDER BY bib_nr');
+                        while ($row = $oci->fetch_into_assoc()) {
+                            $bib_nr = &$row['BIB_NR'];
+//                            if ($bib_nr <> 726500) continue;    // TEST
+                            $vsn[$bib_nr] = $row;
+                            $oci->bind('bind_'.$bib_nr, $vsn[$bib_nr]['BIB_NR']);
+                            $vsn_list .= ($vsn_list ? ',' : '(') . ':bind_' . $bib_nr;
+                        }
+                        $vsn_list .= ')';
+                        $s = 'S';
+                        $oci->bind('bind_s', $s);
+                        $n = 'N';
+                        $oci->bind('bind_n', $n);
+                        $oci->set_query('SELECT v.bib_nr, v.navn, v.tlf_nr, v.email, v.badr, v.bpostnr, v.bcity, v.isil, v.bib_vsn,
+                                                vb.best_modt, vb.best_modt_luk, vb.best_modt_luk_eng,
+                                                txt.aabn_tid, eng.aabn_tid_e, hold.holdeplads
+                                         FROM vip v, vip_beh vb, vip_txt txt, vip_txt_eng eng, vip_bogbus_holdeplads hold
+                                         WHERE v.bib_vsn IN ' . $vsn_list .'
+                                           AND (v.delete_mark is null OR v.delete_mark <> :bind_s)
+                                           AND v.bib_nr = vb.bib_nr (+)
+                                           AND vb.filial_tf <> :bind_n
+                                           AND v.bib_nr = txt.bib_nr (+)
+                                           AND v.bib_nr = hold.bib_nr (+)
+                                           AND v.bib_nr = eng.bib_nr (+)
+                                         ORDER BY v.bib_vsn, v.bib_nr');
+                        while ($row = $oci->fetch_into_assoc()) {
+                            $this_vsn = $row['BIB_VSN'];
+                            if ($library && $library->agencyId->_value <> $this_vsn) {
+                                $library->pickupAgency[]->_value = $pickupAgency;
+                                unset($pickupAgency);
+                                $res->library[]->_value = $library;
+                                unset($library);
+                            }
+                            if (empty($library)) {
+                                $library->agencyId->_value = $this_vsn;
+                                $library->agencyName->_value = $vsn[$this_vsn]['NAVN'];
+                                $library->agencyPhone->_value = $vsn[$this_vsn]['TLF_NR'];
+                                $library->agencyEmail->_value = $vsn[$this_vsn]['EMAIL'];
+                                $library->postalAddress->_value = $vsn[$this_vsn]['BADR'];
+                                $library->postalCode->_value = $vsn[$this_vsn]['BPOSTNR'];
+                                $library->city->_value = $vsn[$this_vsn]['BCITY'];
+                            }
+                            if ($pickupAgency && $pickupAgency->branchId->_value <> $row['BIB_NR']) {
+                                $library->pickupAgency[]->_value = $pickupAgency;
+                                unset($pickupAgency);
+                            }
+                            if (empty($pickupAgency)) {
+                                $pickupAgency->branchId->_value = $row['BIB_NR'];
+                                $pickupAgency->branchName->_value = $row['NAVN'];
+                                $pickupAgency->branchPhone->_value = $row['TLF_NR'];
+                                $pickupAgency->branchEmail->_value = $row['EMAIL'];
+                                $pickupAgency->postalAddress->_value = $row['BADR'];
+                                $pickupAgency->postalCode->_value = $row['BPOSTNR'];
+                                $pickupAgency->city->_value = $row['BCITY'];
+                                $pickupAgency->isil->_value = $row['ISIL'];
+                            }
+                            if (FALSE && $row['HOLDEPLADS'])
+                                $pickupAgency->agencySubdivision[]->_value = $row['HOLDEPLADS'];
+                            if (FALSE && empty($pickupAgency->openingHours) 
+                              && ($row['AABN_TID'] || $row['AABN_TID_E'])) {
+                                if ($row['AABN_TID']) {
+                                    $help->_value = $row['AABN_TID'];
+                                    $help->_attributes->language->_value = 'dan';
+                                    $pickupAgency->openingHours[] = $help;
+                                    unset($help);
+                                }
+                                if ($row['AABN_TID_E']) {
+                                    $help->_value = $row['AABN_TID_E'];
+                                    $help->_attributes->language->_value = 'eng';
+                                    $pickupAgency->openingHours[] = $help;
+                                    unset($help);
+                                }
+                            }
+                            $pickupAgency->temporarilyClosed->_value = ($row['BEST_MODT'] == 'J' ? 'false' : 'true');
+                            if (FALSE && $row['BEST_MODT'] == 'L'
+                              && empty($pickupAgency->temporarilyClosedReason) 
+                              && ($row['AABN_TID'] || $row['AABN_TID_E'])) {
+                                if ($row['BEST_MODT_LUK']) {
+                                    $help->_value = $row['BEST_MODT_LUK'];
+                                    $help->_attributes->language->_value = 'dan';
+                                    $pickupAgency->temporarilyClosedReason[] = $help;
+                                    unset($help);
+                                }
+                                if ($row['BEST_MODT_LUK_ENG']) {
+                                    $help->_value = $row['BEST_MODT_LUK_ENG'];
+                                    $help->_attributes->language->_value = 'eng';
+                                    $pickupAgency->temporarilyClosedReason->_value[] = $help;
+                                    unset($help);
+                                }
+                            }
+// if ($row['BIB_VSN'] == '726500' || $row['HOLDEPLADS']) { var_dump($row); var_dump($pickupAgency); }
+                        }
+                        $library->pickupAgency[]->_value = $pickupAgency;
+                        $res->library[]->_value = $library;
+                    } catch (ociException $e) {
+                        verbose::log(FATAL, 'OpenAgency('.__LINE__.'):: OCI select error: ' . $oci->get_error_string());
+                        $res->error->_value = 'service_unavailable';
+                    }
+                } else
+                    $res->error->_value = 'error_in_request';
+            }
+        }
+        //var_dump($res); var_dump($param); die();
+        $ret->pickupAgencyListResponse->_value = $res;
+        if (empty($res->error)) $this->cache->set($cache_key, $ret);
+        return $ret;
+    }
+
+    /** \brief
+     *
+     */
+    public function openSearchProfile($param) {
+        if (!$this->aaa->has_right('openagency', 500))
+            $res->error->_value = 'authentication_error';
+        else {
+            $agency = $this->strip_agency($param->agencyId->_value);
+            $cache_key = 'OA_opeSP_' . md5($agency . $param->profileName->_value);
+            if ($ret = $this->cache->get($cache_key)) {
+                verbose::log(STAT, 'Cache hit');
+                return $ret;
+            }
+            $oci = new Oci($this->config->get_value('agency_credentials','setup'));
+            $oci->set_charset('UTF8');
+            try {
+                $oci->connect();
+            }
+            catch (ociException $e) {
+                verbose::log(FATAL, 'OpenAgency('.__LINE__.'):: OCI connect error: ' . $oci->get_error_string());
+                $res->error->_value = 'service_unavailable';
+            }
+            if (empty($res->error)) {
                 $oci->bind('bind_agency', $agency);
                 if ($profile = strtolower($param->profileName->_value)) {
                     $oci->bind('bind_profile', $profile);
@@ -715,6 +904,7 @@ class openAgency extends webServiceServer {
         }
         //var_dump($res); var_dump($param); die();
         $ret->openSearchProfileResponse->_value = $res;
+        if (empty($res->error)) $this->cache->set($cache_key, $ret);
         return $ret;
     }
 
@@ -726,6 +916,12 @@ class openAgency extends webServiceServer {
         if (!$this->aaa->has_right('openagency', 550))
             $res->error->_value = 'authentication_error';
         else {
+            $agency = $this->strip_agency($param->agencyId->_value);
+            $cache_key = 'OA_remA_' . md5($agency);
+            if ($ret = $this->cache->get($cache_key)) {
+                verbose::log(STAT, 'Cache hit');
+                return $ret;
+            }
             $oci = new Oci($this->config->get_value('agency_credentials','setup'));
             $oci->set_charset('UTF8');
             try {
@@ -736,7 +932,6 @@ class openAgency extends webServiceServer {
                 $res->error->_value = 'service_unavailable';
             }
             if (empty($res->error)) {
-                $agency = $this->strip_agency($param->agencyId->_value);
                 try {
                     $oci->bind('bind_agency', $agency);
                     $uno = '1';
@@ -791,6 +986,7 @@ class openAgency extends webServiceServer {
         }
         //var_dump($res); var_dump($param); die();
         $ret->remoteAccessResponse->_value = $res;
+        if (empty($res->error)) $this->cache->set($cache_key, $ret);
         return $ret;
     }
 
