@@ -847,6 +847,7 @@ class openAgency extends webServiceServer {
         }
         //var_dump($res); var_dump($param); die();
         $ret->pickupAgencyListResponse->_value = $res;
+        $ret = $this->objconvert->set_obj_namespace($ret, $this->xmlns['oa']);
         if (empty($res->error)) $this->cache->set($cache_key, $ret);
         return $ret;
     }
