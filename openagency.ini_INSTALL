@@ -61,6 +61,11 @@ dump_timer = openAgency(%s)
 
 agency_credentials = some_user/some_pwd@some.server.dbc.dk
 
+; memcache - enabling this will cache result for 'cache_expire' seconds
+;cache_host = localhost
+;cache_port = 11211
+;cache_expire = 60
+
 [aaa]
 ; aaa Authentication, Access control and Accounting
 ;
