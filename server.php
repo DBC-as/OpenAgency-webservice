@@ -672,11 +672,11 @@ class openAgency extends webServiceServer {
                 $res->error->_value = 'service_unavailable';
             }
             if (empty($res->error)) {
-                if (empty($param->libraryType->_value) ||
+                if ($param->libraryType->_value == 'Alle' ||
                     $param->libraryType->_value == 'Folkebibliotek' ||
                     $param->libraryType->_value == 'Forskningsbibliotek') {
                     try {
-                        if ($param->libraryType->_value) {
+                        if ($param->libraryType->_value <> 'Alle') {
                             $filter_bib_type = 'AND vsn.bib_type = :bind_bib_type';
                             $oci->bind('bind_bib_type', $param->libraryType->_value);
                         }
@@ -729,39 +729,36 @@ class openAgency extends webServiceServer {
                 $res->error->_value = 'service_unavailable';
             }
             if (empty($res->error)) {
-                if (empty($param->libraryType->_value) ||
+                if ($param->libraryType->_value == 'Alle' ||
                     $param->libraryType->_value == 'Folkebibliotek' ||
                     $param->libraryType->_value == 'Forskningsbibliotek') {
                     try {
-                        if ($param->libraryType->_value) {
-                            $filter_bib_type = 'bib_type = :bind_bib_type AND';
+                        if ($param->libraryType->_value <> 'Alle') {
+                            $filter_bib_type = 'AND bib_type = :bind_bib_type';
                             $oci->bind('bind_bib_type', $param->libraryType->_value);
                         }
-                        $s = 'S';
-                        $oci->bind('bind_s', $s);
                         $oci->set_query('SELECT bib_nr, navn, tlf_nr, email, badr, bpostnr, bcity
                                          FROM vip_vsn
-                                         WHERE ' . $filter_bib_type . '
-                                              (delete_mark_vsn is null OR delete_mark_vsn <> :bind_s)
+                                         WHERE delete_mark_vsn is null ' . $filter_bib_type . '
                                          ORDER BY bib_nr');
                         while ($row = $oci->fetch_into_assoc()) {
                             $bib_nr = &$row['BIB_NR'];
-//                            if ($bib_nr <> 726500) continue;    // TEST
                             $vsn[$bib_nr] = $row;
-                            $oci->bind('bind_'.$bib_nr, $vsn[$bib_nr]['BIB_NR']);
-                            $vsn_list .= ($vsn_list ? ',' : '(') . ':bind_' . $bib_nr;
                         }
                         $vsn_list .= ')';
-                        $s = 'S';
-                        $oci->bind('bind_s', $s);
                         $n = 'N';
                         $oci->bind('bind_n', $n);
+                        if ($filter_bib_type) 
+                            $oci->bind('bind_bib_type', $param->libraryType->_value);
                         $oci->set_query('SELECT v.bib_nr, v.navn, v.tlf_nr, v.email, v.badr, v.bpostnr, v.bcity, v.isil, v.bib_vsn,
                                                 vb.best_modt, vb.best_modt_luk, vb.best_modt_luk_eng,
                                                 txt.aabn_tid, eng.aabn_tid_e, hold.holdeplads
                                          FROM vip v, vip_beh vb, vip_txt txt, vip_txt_eng eng, vip_bogbus_holdeplads hold
-                                         WHERE v.bib_vsn IN ' . $vsn_list .'
-                                           AND (v.delete_mark is null OR v.delete_mark <> :bind_s)
+                                         WHERE v.bib_vsn IN (SELECT bib_nr 
+                                                               FROM vip_vsn 
+                                                              WHERE delete_mark_vsn is null
+                                                                    ' . $filter_bib_type . ' )
+                                           AND v.delete_mark is null
                                            AND v.bib_nr = vb.bib_nr (+)
                                            AND vb.filial_tf <> :bind_n
                                            AND v.bib_nr = txt.bib_nr (+)
