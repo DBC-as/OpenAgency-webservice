@@ -49,7 +49,7 @@ class openAgency extends webServiceServer {
             $res->error->_value = 'authentication_error';
         else {
             $agency = $this->strip_agency($param->agencyId->_value);
-            $cache_key = 'OA_aut_' . md5($agency . $param->autService->_value . $param->materialType->_value);
+            $cache_key = 'OA_aut_' . $this->version . $agency . $param->autService->_value . $param->materialType->_value;
             if ($ret = $this->cache->get($cache_key)) {
                 verbose::log(STAT, 'Cache hit');
                 return $ret;
@@ -172,6 +172,7 @@ class openAgency extends webServiceServer {
         }
         //var_dump($res); var_dump($param); die();
         $ret->automationResponse->_value = $res;
+        $ret = $this->objconvert->set_obj_namespace($ret, $this->xmlns['oa']);
         if (empty($res->error)) $this->cache->set($cache_key, $ret);
         return $ret;
     }
@@ -183,7 +184,7 @@ class openAgency extends webServiceServer {
         if (!$this->aaa->has_right('openagency', 500))
             $res->error->_value = 'authentication_error';
         else {
-            $cache_key = 'OA_enc_' . md5($agency . $param->autService->_value . $param->materialType->_value);
+            $cache_key = 'OA_enc_' . $this->version . $agency . $param->autService->_value . $param->materialType->_value;
             if ($ret = $this->cache->get($cache_key)) {
                 verbose::log(STAT, 'Cache hit');
                 return $ret;
@@ -222,6 +223,7 @@ class openAgency extends webServiceServer {
 
         //var_dump($res); var_dump($param); die();
         $ret->encryptionResponse->_value = $res;
+        $ret = $this->objconvert->set_obj_namespace($ret, $this->xmlns['oa']);
         if (empty($res->error)) $this->cache->set($cache_key, $ret);
         return $ret;
     }
@@ -233,7 +235,7 @@ class openAgency extends webServiceServer {
             $res->error->_value = 'authentication_error';
         else {
             $agency = $this->strip_agency($param->agencyId->_value);
-            $cache_key = 'OA_endUOP_' . md5($agency . $param->orderMaterialType->_value . $param->ownedByAgency->_value);
+            $cache_key = 'OA_endUOP_' . $this->version . $agency . $param->orderMaterialType->_value . $param->ownedByAgency->_value;
             if ($ret = $this->cache->get($cache_key)) {
                 verbose::log(STAT, 'Cache hit');
                 return $ret;
@@ -281,6 +283,7 @@ class openAgency extends webServiceServer {
 
         //var_dump($res); var_dump($param); die();
         $ret->endUserOrderPolicyResponse->_value = $res;
+        $ret = $this->objconvert->set_obj_namespace($ret, $this->xmlns['oa']);
         if (empty($res->error)) $this->cache->set($cache_key, $ret);
         return $ret;
     }
@@ -293,7 +296,7 @@ class openAgency extends webServiceServer {
             $res->error->_value = 'authentication_error';
         else {
             $agency = $this->strip_agency($param->agencyId->_value);
-            $cache_key = 'OA_ser_' . md5($agency . $param->service->_value);
+            $cache_key = 'OA_ser_' . $this->version . $agency . $param->service->_value;
             if ($ret = $this->cache->get($cache_key)) {
                 verbose::log(STAT, 'Cache hit');
                 return $ret;
@@ -498,6 +501,20 @@ class openAgency extends webServiceServer {
                         $orsLU->passWord->_value = $oa_row['NCIP_LOOKUP_USER_PASSWORD'];
                         //var_dump($res->orsLookupUser->_value); die();
                         break;
+                    case 'orsRecall':
+                        $orsR = &$res->orsRecall->_value;
+                        $orsR->responder->_value = $this->normalize_agency($oa_row['OAO.BIB_NR']);
+                        $orsR->willReceive->_value = (in_array($oa_row['RECALL'], array('z3950', 'mail', 'ors')) ? 'YES' : '');
+                        $orsR->synchronous->_value = 'false';
+                        $orsR->protocol->_value = $oa_row['RECALL'];
+                        $orsR->address->_value = '';
+                        $orsR->userId->_value = $oa_row['RECALL_Z3950_USER'];
+                        $orsR->groupId->_value = $oa_row['RECALL_Z3950_GROUP'];
+                        $orsR->passWord->_value = ($oa_row['RECALL'] == 'z3950' ? $oa_row['RECALL_Z3950_PASSWORD'] : $oa_row['RECALL_NCIP_AUTH']);
+                        if ($oa_row['RECALL'] == 'z3950')
+                            $orsR->address->_value = $oa_row['RECALL_Z3950_ADDRESS'];
+                        //var_dump($res->orsRecall->_value); die();
+                        break;
                     case 'orsReceipt':
                         $orsR = &$res->orsReceipt->_value;
                         $orsR->responder->_value = $this->normalize_agency($oa_row['VD.BIB_NR']);
@@ -645,6 +662,7 @@ class openAgency extends webServiceServer {
 
         //var_dump($res); var_dump($param); die();
         $ret->serviceResponse->_value = $res;
+        $ret = $this->objconvert->set_obj_namespace($ret, $this->xmlns['oa']);
         if (empty($res->error)) $this->cache->set($cache_key, $ret);
         return $ret;
     }
@@ -657,7 +675,7 @@ class openAgency extends webServiceServer {
             $res->error->_value = 'authentication_error';
         else {
             //var_dump($this->aaa->get_rights()); die();
-            $cache_key = 'OA_namL_' . md5($param->libraryType->_value);
+            $cache_key = 'OA_namL_' . $this->version . $param->libraryType->_value;
             if ($ret = $this->cache->get($cache_key)) {
                 verbose::log(STAT, 'Cache hit');
                 return $ret;
@@ -703,6 +721,7 @@ class openAgency extends webServiceServer {
         }
         //var_dump($res); var_dump($param); die();
         $ret->nameListResponse->_value = $res;
+        $ret = $this->objconvert->set_obj_namespace($ret, $this->xmlns['oa']);
         if (empty($res->error)) $this->cache->set($cache_key, $ret);
         return $ret;
     }
@@ -714,7 +733,7 @@ class openAgency extends webServiceServer {
         if (!$this->aaa->has_right('openagency', 500))
             $res->error->_value = 'authentication_error';
         else {
-            $cache_key = 'OA_picAL_' . md5($param->libraryType->_value);
+            $cache_key = 'OA_picAL_' . $this->version . $param->libraryType->_value;
             if ($ret = $this->cache->get($cache_key)) {
                 verbose::log(STAT, 'Cache hit');
                 return $ret;
@@ -857,7 +876,7 @@ class openAgency extends webServiceServer {
             $res->error->_value = 'authentication_error';
         else {
             $agency = $this->strip_agency($param->agencyId->_value);
-            $cache_key = 'OA_opeSP_' . md5($agency . $param->profileName->_value);
+            $cache_key = 'OA_opeSP_' . $this->version . $agency . $param->profileName->_value;
             if ($ret = $this->cache->get($cache_key)) {
                 verbose::log(STAT, 'Cache hit');
                 return $ret;
@@ -902,6 +921,7 @@ class openAgency extends webServiceServer {
         }
         //var_dump($res); var_dump($param); die();
         $ret->openSearchProfileResponse->_value = $res;
+        $ret = $this->objconvert->set_obj_namespace($ret, $this->xmlns['oa']);
         if (empty($res->error)) $this->cache->set($cache_key, $ret);
         return $ret;
     }
@@ -915,7 +935,7 @@ class openAgency extends webServiceServer {
             $res->error->_value = 'authentication_error';
         else {
             $agency = $this->strip_agency($param->agencyId->_value);
-            $cache_key = 'OA_remA_' . md5($agency);
+            $cache_key = 'OA_remA_' . $this->version . $agency;
             if ($ret = $this->cache->get($cache_key)) {
                 verbose::log(STAT, 'Cache hit');
                 return $ret;
@@ -984,6 +1004,7 @@ class openAgency extends webServiceServer {
         }
         //var_dump($res); var_dump($param); die();
         $ret->remoteAccessResponse->_value = $res;
+        $ret = $this->objconvert->set_obj_namespace($ret, $this->xmlns['oa']);
         if (empty($res->error)) $this->cache->set($cache_key, $ret);
         return $ret;
     }
