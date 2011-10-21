@@ -175,6 +175,7 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="oa:orsEndUserIllRequest"/>
 				<xs:element ref="oa:orsItemRequest"/>
 				<xs:element ref="oa:orsLookupUser"/>
+				<xs:element ref="oa:orsRecall"/>
 				<xs:element ref="oa:orsReceipt"/>
 				<xs:element ref="oa:orsRenew"/>
 				<xs:element ref="oa:orsRenewAnswer"/>
