@@ -69,10 +69,11 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="endUserOrderPolicyResponse">
 		<xs:complexType>
 			<xs:choice>
-				<xs:choice>
+				<xs:sequence>
 					<xs:element ref="oa:willReceive"/>
-					<xs:element ref="oa:error"/>
-				</xs:choice>
+					<xs:element ref="oa:condition" minOccurs="0" maxOccurs="2"/>
+				</xs:sequence>
+				<xs:element ref="oa:error"/>
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
@@ -264,6 +265,15 @@ You should have received a copy of the GNU Affero General Public License along w
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="city" type="xs:string"/>
+	<xs:element name="condition">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute ref="oa:language"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="date" type="xs:string"/>
 	<xs:element name="email" type="xs:string"/>
 	<xs:element name="encrypt" type="xs:string"/>
