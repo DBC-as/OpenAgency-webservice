@@ -235,6 +235,7 @@ class openAgency extends webServiceServer {
             $res->error->_value = 'authentication_error';
         else {
             $agency = $this->strip_agency($param->agencyId->_value);
+            $mat_type = strtolower($param->orderMaterialType->_value);
             $cache_key = 'OA_endUOP_' . $this->version . $agency . $param->orderMaterialType->_value . $param->ownedByAgency->_value;
             if ($ret = $this->cache->get($cache_key)) {
                 verbose::log(STAT, 'Cache hit');
@@ -250,26 +251,38 @@ class openAgency extends webServiceServer {
                 $res->error->_value = 'service_unavailable';
             }
             if (empty($res->error)) {
-                $assoc['cdrom']     = array('CDROM_BEST_MODT', 'CDROM_BEST_MODT_FJL');
-                $assoc['journal']   = array('PER_BEST_MODT',   'PER_BEST_MODT_FJL');
-                $assoc['monograph'] = array('MONO_BEST_MODT',  'MONO_BEST_MODT_FJL');
-                $assoc['music']     = array('MUSIK_BEST_MODT', 'MUSIK_BEST_MODT_FJL');
-                $assoc['newspaper'] = array('AVIS_BEST_MODT',  'AVIS_BEST_MODT_FJL');
-                $assoc['video']     = array('VIDEO_BEST_MODT', 'VIDEO_BEST_MODT_FJL');
-                if (strtolower($param->ownedByAgency->_value) == 'true'
-                        || $param->ownedByAgency->_value == '1')
-                    $owned_by_agency = 0;
-                elseif (strtolower($param->ownedByAgency->_value) == 'false'
-                        || $param->ownedByAgency->_value == '0')
-                $owned_by_agency = 1;
-                if (isset($owned_by_agency)
-                        && ($will_receive = $assoc[strtolower($param->orderMaterialType->_value)][$owned_by_agency])) {
+                $assoc['cdrom']     = array('CDROM_BEST_MODT', 'BEST_TEKST_CDROM');
+                $assoc['journal']   = array('PER_BEST_MODT',   'BEST_TEKST_PER');
+                $assoc['monograph'] = array('MONO_BEST_MODT',  'BEST_TEKST');
+                $assoc['music']     = array('MUSIK_BEST_MODT', 'BEST_TEKST_MUSIK');
+                $assoc['newspaper'] = array('AVIS_BEST_MODT',  'BEST_TEKST_AVIS');
+                $assoc['video']     = array('VIDEO_BEST_MODT', 'BEST_TEKST_VIDEO');
+                if (strtolower($param->ownedByAgency->_value) == 'true' || $param->ownedByAgency->_value == '1')
+                    $fjernl = '';
+                elseif (strtolower($param->ownedByAgency->_value) == 'false' || $param->ownedByAgency->_value == '0')
+                    $fjernl = '_FJL';
+                if (isset($fjernl) && $assoc[$mat_type]) {
+                    $will_receive = $assoc[$mat_type][0] . $fjernl;
                     try {
                         $oci->bind('bind_bib_nr', $agency);
-                        $oci->set_query('SELECT best_modt, ' . $will_receive . ' "WR" FROM vip_beh WHERE bib_nr = :bind_bib_nr');
-                        if ($vb_row = $oci->fetch_into_assoc())
+                        $oci->set_query('SELECT best_modt, ' . $will_receive . ' "WR", vt.*, vte.*
+                                           FROM vip_beh vb, vip_txt vt, vip_txt_eng vte
+                                          WHERE vb.bib_nr = :bind_bib_nr
+                                            AND vb.bib_nr = vt.bib_nr (+)
+                                            AND vb.bib_nr = vte.bib_nr (+)');
+                        if ($vb_row = $oci->fetch_into_assoc()) {
                             $res->willReceive->_value =
-                                ($vb_row['BEST_MODT'] == 'J' && $vb_row['WR'] == 'J' ? 'true' : 'false');
+                                ($vb_row['BEST_MODT'] == 'J' && ($vb_row['WR'] == 'J' || $vb_row['WR'] == 'B') ? 'true' : 'false');
+                            if ($vb_row['WR'] == 'B') {
+                                $col = $assoc[$mat_type][1] . $fjernl;
+                                $cond_d->_attributes->language->_value = 'dan';
+                                $cond_d->_value = $vb_row[$col];
+                                $res->condition[] = $cond_d;
+                                $cond_e->_attributes->language->_value = 'eng';
+                                $cond_e->_value = $vb_row[$col.'_E'];
+                                $res->condition[] = $cond_e;
+                            }
+                        }
                     } catch (ociException $e) {
                         verbose::log(FATAL, 'OpenAgency('.__LINE__.'):: OCI select error: ' . $oci->get_error_string());
                         $res->error->_value = 'service_unavailable';
