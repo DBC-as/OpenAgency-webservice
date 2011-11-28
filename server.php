@@ -600,7 +600,7 @@ class openAgency extends webServiceServer {
                         //var_dump($res->orsCancel->_value); die();
                         break;
                     case 'orsCancelReply':
-                        $orsCR = &$res->orsRenewAnswer->_value;
+                        $orsCR = &$res->orsCancelReply->_value;
                         $orsCR->responder->_value = $this->normalize_agency($oa_row['OAO.BIB_NR']);
                         if ($oa_row['CANCELREPLY'] == 'z3950' || $oa_row['CANCELREPLY'] == 'ors') {
                             $orsCR->willReceive->_value = 'YES';
