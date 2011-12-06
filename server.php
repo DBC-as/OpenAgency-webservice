@@ -480,12 +480,13 @@ class openAgency extends webServiceServer {
                             $orsIR->address->_value = $oa_row['URL_ITEMORDER_BESTIL'];
                             break;
                         case 'D':
-                            $orsIR->willReceive->_value = 'NO';
-                            $orsIR->synchronous->_value = 'false';
-                            break;
                         default:
                             $orsIR->willReceive->_value = 'NO';
-                            $orsIR->synchronous->_value = 'false';
+                            if ($oa_row['BEST_TXT']) {
+                                $help->_value = $oa_row['BEST_TXT'];
+                                $help->_attributes->language->_value = 'dan';
+                                $orsIR->reason = $help;
+                            }
                             break;
                         }
                         $orsIR->userId->_value = $oa_row['ZBESTIL_USERID'];
