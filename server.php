@@ -489,21 +489,26 @@ class openAgency extends webServiceServer {
                             }
                             break;
                         }
-                        $orsIR->userId->_value = $oa_row['ZBESTIL_USERID'];
-                        $orsIR->groupId->_value = $oa_row['ZBESTIL_GROUPID'];
-                        $orsIR->passWord->_value = $oa_row['ZBESTIL_PASSW'];
-                        if ($oa_row['MAILBESTIL_VIA'] == 'A')
-                            switch ($oa_row['FORMAT_BEST']) {
-                            case 'illdanbest':
-                                $orsIR->format->_value = 'text';
-                                break;
-                            case 'ill0form':
-                                $orsIR->format->_value = 'ill0';
-                                break;
-                            case 'ill5form':
-                                $orsIR->format->_value = 'ill0';
-                                break;
-                            }
+                        if ($orsIR->willReceive->_value == 'YES') {
+                            if ($oa_row['ZBESTIL_USERID'])
+                                $orsIR->userId->_value = $oa_row['ZBESTIL_USERID'];
+                            if ($oa_row['ZBESTIL_GROUPID'])
+                                $orsIR->groupId->_value = $oa_row['ZBESTIL_GROUPID'];
+                            if ($oa_row['ZBESTIL_PASSW'])
+                                $orsIR->passWord->_value = $oa_row['ZBESTIL_PASSW'];
+                            if ($oa_row['MAILBESTIL_VIA'] == 'A')
+                                switch ($oa_row['FORMAT_BEST']) {
+                                    case 'illdanbest':
+                                        $orsIR->format->_value = 'text';
+                                        break;
+                                    case 'ill0form':
+                                        $orsIR->format->_value = 'ill0';
+                                        break;
+                                    case 'ill5form':
+                                        $orsIR->format->_value = 'ill0';
+                                        break;
+                                }
+                        }
                         //var_dump($res->orsItemRequest->_value); die();
                         break;
                     case 'orsLookupUser':
