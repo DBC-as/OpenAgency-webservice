@@ -221,7 +221,7 @@ You should have received a copy of the GNU Affero General Public License along w
 		<wsdl:port binding="oaw:nameListBinding" name="nameListPortType">
 			<soap:address location="http://openagency.addi.dk/1.4"/>
 		</wsdl:port>
-		<wsdl:port binding="oaw:pickupAgencyListBinding" name="nameListPortType">
+		<wsdl:port binding="oaw:pickupAgencyListBinding" name="pickupAgencyPortType">
 			<soap:address location="http://openagency.addi.dk/1.4"/>
 		</wsdl:port>
 		<wsdl:port binding="oaw:openSearchProfileBinding" name="openSearchProfilePortType">
