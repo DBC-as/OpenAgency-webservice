@@ -56,7 +56,7 @@ logfile = /tmp/openagency.log
 ;   OCI     - oracle
 verbose = WARNING+ERROR+FATAL+STAT+TIMER+TRACE+DEBUG+Z3950+OCI
 
-; format for automatic timer dump %s is the soap-action used
+; format for automatic timer dump %s is the operation used
 dump_timer = openAgency(%s)
 
 agency_credentials = some_user/some_pwd@some.server.dbc.dk
