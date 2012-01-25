@@ -184,7 +184,7 @@ class openAgency extends webServiceServer {
         if (!$this->aaa->has_right('openagency', 500))
             $res->error->_value = 'authentication_error';
         else {
-            $cache_key = 'OA_enc_' . $this->version . $agency . $param->autService->_value . $param->materialType->_value;
+            $cache_key = 'OA_enc_' . $this->version . $param->email->_value;
             if ($ret = $this->cache->get($cache_key)) {
                 verbose::log(STAT, 'Cache hit');
                 return $ret;
@@ -993,7 +993,7 @@ class openAgency extends webServiceServer {
                                     AND fjernadgang.faust = fjernadgang_andre.faust (+)
                                     AND fjernadgang.bib_nr = licensguide.bib_nr (+)');
                     $buf = $oci->fetch_all_into_assoc();
-//if ($_GET['debug']) die('<pre>' . print_r($buf, TRUE));
+//if ($this->debug) die('<pre>' . print_r($buf, TRUE));
                     $res->agencyId->_value = $param->agencyId->_value;
                     foreach ($buf as $val) {
                         if ($s->name->_value = $val['licens_navn'])
