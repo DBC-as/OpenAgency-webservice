@@ -99,6 +99,7 @@ You should have received a copy of the GNU Affero General Public License along w
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="oa:authentication" minOccurs="0"/>
+				<xs:element ref="oa:agency" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="oa:libraryType" minOccurs="0"/>
 				<xs:element ref="oa:callback" minOccurs="0"/>
 				<xs:element ref="oa:outputType" minOccurs="0"/>
