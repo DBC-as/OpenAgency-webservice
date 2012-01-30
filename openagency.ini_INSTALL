@@ -8,7 +8,7 @@
 ;service_http_error = HTTP/1.0 503 Service Unavailable
 
 ;version
-version = 1.4
+version = 1.5
 
 ; wsdl for service
 wsdl = openagency.wsdl
@@ -156,5 +156,5 @@ action[service][] = outputType
 
 [howru]
 test[] = service&agencyId=710100&service=orsItemRequest
-preg_match[] = <responder>710100
+preg_match[] = responder>710100<
 error[] = ERROR - Cannot find 710100 in VIP
