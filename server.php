@@ -846,8 +846,14 @@ class openAgency extends webServiceServer {
     if (!$this->aaa->has_right('openagency', 500))
       $res->error->_value = 'authentication_error';
     else {
-      $agency = $this->strip_agency($param->agencyId->_value);
-      $cache_key = 'OA_picAL_' . $this->version . $agency . $param->libraryType->_value;
+      if (is_array($param->agencyId)) {
+        foreach ($param->agencyId as $agency) {
+          $agencies[] = $this->strip_agency($agency->_value);
+        }
+      }
+      elseif ($param->agencyId->_value)
+        $agencies[] = $this->strip_agency($param->agencyId->_value);
+      $cache_key = 'OA_picAL_' . $this->version . $agency_list . $param->libraryType->_value;
       if ($ret = $this->cache->get($cache_key)) {
         verbose::log(STAT, 'Cache hit');
         return $ret;
@@ -866,13 +872,16 @@ class openAgency extends webServiceServer {
             $param->libraryType->_value == 'Folkebibliotek' ||
             $param->libraryType->_value == 'Forskningsbibliotek') {
           try {
-            if ($param->libraryType->_value <> 'Alle') {
+            if ($agencies) {
+              foreach ($agencies as $agency) {
+                $agency_list .= ($agency_list ? ', ' : '') . ':bind_' . $agency;
+                $oci->bind('bind_' . $agency, $agency);
+              }
+              $filter_bib_type .= ' AND bib_nr IN (' . $agency_list . ')';
+            }
+            elseif ($param->libraryType->_value <> 'Alle') {
               $filter_bib_type = 'AND bib_type = :bind_bib_type';
               $oci->bind('bind_bib_type', $param->libraryType->_value);
-            }
-            if ($agency) {
-              $filter_bib_type .= ' AND bib_nr = :bind_agency';
-              $oci->bind('bind_agency', $agency);
             }
             $oci->set_query('SELECT bib_nr, navn, tlf_nr, email, badr, bpostnr, bcity
                             FROM vip_vsn
@@ -884,10 +893,14 @@ class openAgency extends webServiceServer {
             }
             $n = 'N';
             $oci->bind('bind_n', $n);
-            if ($param->libraryType->_value <> 'Alle')
+            if ($agencies) {
+              foreach ($agencies as $agency) {
+                $oci->bind('bind_' . $agency, $agency);
+              }
+            }
+            elseif ($param->libraryType->_value <> 'Alle') {
               $oci->bind('bind_bib_type', $param->libraryType->_value);
-            if ($agency)
-              $oci->bind('bind_agency', $agency);
+            }
             $oci->set_query('SELECT v.bib_nr, v.navn, v.tlf_nr, v.email, v.badr, v.bpostnr, v.bcity, v.isil, v.bib_vsn,
                             vb.best_modt, vb.best_modt_luk, vb.best_modt_luk_eng,
                             txt.aabn_tid, eng.aabn_tid_e, hold.holdeplads
@@ -904,6 +917,10 @@ class openAgency extends webServiceServer {
                             AND v.bib_nr = eng.bib_nr (+)
                             ORDER BY v.bib_vsn, v.bib_nr');
             while ($row = $oci->fetch_into_assoc()) {
+              if ($agencies) {
+                $a_key = array_search($row['BIB_NR'], $agencies);
+                if ($a_key <> FALSE) unset($agencies[$a_key]);
+              }
               $this_vsn = $row['BIB_VSN'];
               if ($library && $library->agencyId->_value <> $this_vsn) {
                 $library->pickupAgency[]->_value = $pickupAgency;
@@ -968,10 +985,23 @@ class openAgency extends webServiceServer {
                   unset($help);
                 }
               }
-// if ($row['BIB_VSN'] == '726500' || $row['HOLDEPLADS']) { var_dump($row); var_dump($pickupAgency); }
             }
-            $library->pickupAgency[]->_value = $pickupAgency;
-            $res->library[]->_value = $library;
+            if ($pickupAgency) {
+              $library->pickupAgency[]->_value = $pickupAgency;
+            }
+            if ($library) {
+              $res->library[]->_value = $library;
+              if ($agencies) {
+                foreach ($agencies as $agency) {
+                  $help->agencyId->_value = $agency;
+                  $help->error->_value = 'agency_not_found';
+                  $res->library[]->_value = $help;
+                  unset($help);
+                }
+              }
+            } else {
+              $res->error->_value = 'no_agencies_found';
+            }
           }
           catch (ociException $e) {
             verbose::log(FATAL, 'OpenAgency('.__LINE__.'):: OCI select error: ' . $oci->get_error_string());
