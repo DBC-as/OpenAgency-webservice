@@ -1,7 +1,8 @@
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:open="http://oss.dbc.dk/ns/openagency">
    <soapenv:Body>
       <open:pickupAgencyListRequest>
-         <!--Optional:-->
+         <!--You have a CHOICE of the next 2 items at this level-->
+         <!--Zero or more repetitions:-->
          <open:agencyId>DK-710100</open:agencyId>
          <open:libraryType>Folkebibliotek</open:libraryType>
       </open:pickupAgencyListRequest>
