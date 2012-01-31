@@ -851,9 +851,12 @@ class openAgency extends webServiceServer {
           $agencies[] = $this->strip_agency($agency->_value);
         }
       }
-      elseif ($param->agencyId->_value)
+      elseif ($param->agencyId->_value) {
         $agencies[] = $this->strip_agency($param->agencyId->_value);
-      $cache_key = 'OA_picAL_' . $this->version . $agency_list . $param->libraryType->_value;
+      }
+      $cache_key = 'OA_picAL_' . $this->version . 
+                                 (is_array($agencies) ? implode('', $agencies) : '') . 
+                                 $param->libraryType->_value;
       if ($ret = $this->cache->get($cache_key)) {
         verbose::log(STAT, 'Cache hit');
         return $ret;
@@ -868,7 +871,8 @@ class openAgency extends webServiceServer {
         $res->error->_value = 'service_unavailable';
       }
       if (empty($res->error)) {
-        if ($param->libraryType->_value == 'Alle' ||
+        if ($agencies ||
+            $param->libraryType->_value == 'Alle' ||
             $param->libraryType->_value == 'Folkebibliotek' ||
             $param->libraryType->_value == 'Forskningsbibliotek') {
           try {
