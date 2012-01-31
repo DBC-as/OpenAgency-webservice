@@ -848,11 +848,14 @@ class openAgency extends webServiceServer {
     else {
       if (is_array($param->agencyId)) {
         foreach ($param->agencyId as $agency) {
-          $agencies[] = $this->strip_agency($agency->_value);
+          $ag = $this->strip_agency($agency->_value);
+          $agencies[] = $ag;
+          $param_agencies[$ag] = $agency->_value;
         }
       }
       elseif ($param->agencyId->_value) {
-        $agencies[] = $this->strip_agency($param->agencyId->_value);
+        $agencies[] = $ag;
+        $param_agencies[$ag] = $param->agencyId->_value;
       }
       $cache_key = 'OA_picAL_' . $this->version . 
                                  (is_array($agencies) ? implode('', $agencies) : '') . 
@@ -999,7 +1002,7 @@ class openAgency extends webServiceServer {
               $res->library[]->_value = $library;
               if ($agencies) {
                 foreach ($agencies as $agency) {
-                  $help->agencyId->_value = $agency;
+                  $help->agencyId->_value = $param_agencies[$agency];
                   $help->error->_value = 'agency_not_found';
                   $res->library[]->_value = $help;
                   unset($help);
