@@ -881,16 +881,17 @@ class openAgency extends webServiceServer {
                 $agency_list .= ($agency_list ? ', ' : '') . ':bind_' . $agency;
                 $oci->bind('bind_' . $agency, $agency);
               }
-              $filter_bib_type .= ' AND bib_nr IN (' . $agency_list . ')';
+              $filter_bib_type .= ' AND v.bib_nr IN (' . $agency_list . ')';
             }
             elseif ($param->libraryType->_value <> 'Alle') {
               $filter_bib_type = 'AND bib_type = :bind_bib_type';
               $oci->bind('bind_bib_type', $param->libraryType->_value);
             }
-            $oci->set_query('SELECT bib_nr, navn, tlf_nr, email, badr, bpostnr, bcity
-                            FROM vip_vsn
-                            WHERE delete_mark_vsn is null ' . $filter_bib_type . '
-                            ORDER BY bib_nr');
+            $oci->set_query('SELECT vsn.bib_nr, vsn.navn, vsn.tlf_nr, vsn.email, vsn.badr, vsn.bpostnr, vsn.bcity
+                            FROM vip_vsn vsn, vip v
+                            WHERE vsn.delete_mark_vsn is null ' . $filter_bib_type . '
+                              AND v.bib_vsn = vsn.bib_nr
+                            ORDER BY vsn.bib_nr');
             while ($row = $oci->fetch_into_assoc()) {
               $bib_nr = &$row['BIB_NR'];
               $vsn[$bib_nr] = $row;
@@ -909,10 +910,11 @@ class openAgency extends webServiceServer {
                             vb.best_modt, vb.best_modt_luk, vb.best_modt_luk_eng,
                             txt.aabn_tid, eng.aabn_tid_e, hold.holdeplads
                             FROM vip v, vip_beh vb, vip_txt txt, vip_txt_eng eng, vip_bogbus_holdeplads hold
-                            WHERE v.bib_vsn IN (SELECT bib_nr
-                            FROM vip_vsn
-                            WHERE delete_mark_vsn is null
-                            ' . $filter_bib_type . ' )
+                            WHERE v.bib_vsn IN (SELECT vsn.bib_nr
+                                                  FROM vip_vsn vsn, vip v
+                                                  WHERE vsn.delete_mark_vsn is null
+                                                    AND v.bib_vsn = vsn.bib_nr
+                                                        ' . $filter_bib_type . ' )
                             AND v.delete_mark is null
                             AND v.bib_nr = vb.bib_nr (+)
                             AND vb.filial_tf <> :bind_n
@@ -923,7 +925,7 @@ class openAgency extends webServiceServer {
             while ($row = $oci->fetch_into_assoc()) {
               if ($agencies) {
                 $a_key = array_search($row['BIB_NR'], $agencies);
-                if ($a_key <> FALSE) unset($agencies[$a_key]);
+                if (is_int($a_key)) unset($agencies[$a_key]);
               }
               $this_vsn = $row['BIB_VSN'];
               if ($library && $library->agencyId->_value <> $this_vsn) {
