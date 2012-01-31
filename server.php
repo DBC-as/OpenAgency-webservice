@@ -854,6 +854,7 @@ class openAgency extends webServiceServer {
         }
       }
       elseif ($param->agencyId->_value) {
+        $ag = $this->strip_agency($param->agencyId->_value);
         $agencies[] = $ag;
         $param_agencies[$ag] = $param->agencyId->_value;
       }
