@@ -102,6 +102,10 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="oa:authentication" minOccurs="0"/>
 				<xs:choice>
 					<xs:element ref="oa:agencyId" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="oa:agencyName" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="oa:branchName" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="oa:postalCode" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="oa:city" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="oa:libraryType" minOccurs="0"/>
 				</xs:choice>
 				<xs:element ref="oa:callback" minOccurs="0"/>
