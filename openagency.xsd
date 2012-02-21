@@ -101,13 +101,15 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:sequence>
 				<xs:element ref="oa:authentication" minOccurs="0"/>
 				<xs:choice>
+					<xs:sequence>
 					<xs:element ref="oa:agencyId" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="oa:agencyName" minOccurs="0" maxOccurs="unbounded"/>
-					<xs:element ref="oa:branchName" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="oa:postalCode" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="oa:city" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
 					<xs:element ref="oa:libraryType" minOccurs="0"/>
 				</xs:choice>
+				<xs:element ref="oa:pickupAllowed" minOccurs="0"/>
 				<xs:element ref="oa:callback" minOccurs="0"/>
 				<xs:element ref="oa:outputType" minOccurs="0"/>
 			</xs:sequence>
@@ -430,6 +432,11 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="oa:temporarilyClosedReason" minOccurs="0" maxOccurs="2"/>
 			</xs:sequence>
 		</xs:complexType>
+	</xs:element>
+	<xs:element name="pickupAllowed" type="xs:boolean">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Indicator whether materials can be picked up at the given branch/agency</xs:documentation>
+		</xs:annotation>
 	</xs:element>
 	<xs:element name="postalAddress" type="xs:string"/>
 	<xs:element name="postalCode" type="xs:string"/>
