@@ -8,7 +8,7 @@
 ;service_http_error = HTTP/1.0 503 Service Unavailable
 
 ;version
-version = 1.5
+version = 1.6
 
 ; wsdl for service
 wsdl = openagency.wsdl
@@ -127,7 +127,12 @@ action[nameList][] = libraryType
 action[nameList][] = callback
 action[nameList][] = outputType
 
+action[pickupAgencyList][] = agencyId
+action[pickupAgencyList][] = agencyName
+action[pickupAgencyList][] = postalCode
+action[pickupAgencyList][] = city
 action[pickupAgencyList][] = libraryType
+action[pickupAgencyList][] = pickupAllowed
 action[pickupAgencyList][] = callback
 action[pickupAgencyList][] = outputType
 
