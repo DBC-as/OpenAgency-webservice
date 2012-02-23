@@ -815,8 +815,12 @@ class openAgency extends webServiceServer {
    *
    * Request:
    * - agencyId
-   * - AutService: autPotential, autRequester or autProvider
-   * - materialType
+   * - agencyName
+   * - postalCode
+   * - city
+   * - libraryType
+   * - pickupAllowed
+
    * Response:
    * - library
    * - - agencyId
@@ -826,19 +830,26 @@ class openAgency extends webServiceServer {
    * - - postalAddress
    * - - postalCode
    * - - city
+   * - - agencyWebsiteUrl *
    * - - pickupAgency
-   * - - - branchId"/>
-   * - - - branchName"/>
-   * - - - branchPhone"/>
-   * - - - branchEmail"/>
-   * - - - postalAddress" minOccurs="0"/>
-   * - - - postalCode" minOccurs="0"/>
-   * - - - city" minOccurs="0"/>
-   * - - - isil" minOccurs="0"/>
-   * - - - agencySubdivision" minOccurs="0" maxOccurs="unbounded"/>
-   * - - - openingHours" minOccurs="0" maxOccurs="2"/>
-   * - - - temporarilyClosed"/>
-   * - - - temporarilyClosedReason" min
+   * - - - branchId
+   * - - - branchName
+   * - - - branchPhone
+   * - - - branchEmail
+   * - - - postalAddress
+   * - - - postalCode
+   * - - - city
+   * - - - isil
+   * - - - branchWebsiteUrl *
+   * - - - serviceDeclarationUrl *
+   * - - - registrationFormUrl *
+   * - - - paymentUrl *
+   * - - - userStatusUrl *
+   * - - - agencySubdivision
+   * - - - openingHours
+   * - - - temporarilyClosed
+   * - - - temporarilyClosedReason
+   * - - - pickupAllowed *
    * - or
    * - - error
    */
@@ -846,20 +857,41 @@ class openAgency extends webServiceServer {
     if (!$this->aaa->has_right('openagency', 500))
       $res->error->_value = 'authentication_error';
     else {
-      if (is_array($param->agencyId)) {
-        foreach ($param->agencyId as $agency) {
-          $ag = $this->strip_agency($agency->_value);
-          $agencies[] = $ag;
-          $param_agencies[$ag] = $agency->_value;
+      foreach (array('agencyId', 'agencyName', 'postalCode', 'city') as $par) {
+        if (is_array($param->$par)) {
+          foreach ($param->$par as $p) {
+            if ($par == 'agencyId') {
+              $ag = $this->strip_agency($p->_value);
+              if ($ag)
+                $ora_par[$par][] = $ag;
+              $param_agencies[$ag] = $p->_value;
+            }
+            elseif ($p->_value) {
+              $ora_par[$par][] = $p->_value;
+            }
+          }
+        }
+        elseif ($param->$par) {
+          if ($par == 'agencyId') {
+            $ag = $this->strip_agency($param->$par->_value);
+            if ($ag)
+              $ora_par[$par][] = $ag;
+            $param_agencies[$ag] = $param->$par->_value;
+          }
+          elseif ($param->$par->_value) {
+            $ora_par[$par][] = $param->$par->_value;
+          }
         }
       }
-      elseif ($param->agencyId->_value) {
-        $ag = $this->strip_agency($param->agencyId->_value);
-        $agencies[] = $ag;
-        $param_agencies[$ag] = $param->agencyId->_value;
-      }
+//var_dump($ora_par);
+//var_dump($param_agencies);
+//die();
       $cache_key = 'OA_picAL_' . $this->version . 
-                                 (is_array($agencies) ? implode('', $agencies) : '') . 
+                                 (is_array($ora_par['agencyId']) ? implode('', $ora_par['agencyId']) : '') . 
+                                 (is_array($ora_par['agencyName']) ? implode('', $ora_par['agencyName']) : '') . 
+                                 (is_array($ora_par['postalCode']) ? implode('', $ora_par['postalCode']) : '') . 
+                                 (is_array($ora_par['city']) ? implode('', $ora_par['city']) : '') . 
+                                 $param->pickupAllowed->_value . 
                                  $param->libraryType->_value;
       if ($ret = $this->cache->get($cache_key)) {
         verbose::log(STAT, 'Cache hit');
@@ -875,23 +907,51 @@ class openAgency extends webServiceServer {
         $res->error->_value = 'service_unavailable';
       }
       if (empty($res->error)) {
-        if ($agencies ||
+        if (is_array($ora_par) ||
             $param->libraryType->_value == 'Alle' ||
             $param->libraryType->_value == 'Folkebibliotek' ||
             $param->libraryType->_value == 'Forskningsbibliotek') {
           try {
-            if ($agencies) {
-              foreach ($agencies as $agency) {
+            foreach ($ora_par as $key => $val) {
+              $add_sql = '';
+              foreach ($val as $par) {
+                $add_item = '';
+                switch ($key) {
+                  case 'agencyId':
+                    break;
+                  case 'agencyName':
+                    $add_item .= 'upper(v.navn) like upper(\'%' . $par . '%\')';
+                    break;
+                  case 'postalCode':
+                    $add_item .= 'upper(v.bpostnr) like upper(\'%' . $par . '%\')';
+                    break;
+                  case 'city':
+                    $add_item .= 'upper(v.bcity) like upper(\'%' . $par . '%\')';
+                    break;
+                }
+                if ($add_item) {
+                  if (empty($add_sql))
+                    $add_sql = ' AND (' . $add_item;
+                  else
+                    $add_sql .= ' OR ' . $add_item;
+                }
+              }
+              if ($add_sql) $filter_bib_type .= $add_sql . ')';
+            }
+            if ($ora_par['agencyId']) {
+              foreach ($ora_par['agencyId'] as $agency) {
                 $agency_list .= ($agency_list ? ', ' : '') . ':bind_' . $agency;
                 $oci->bind('bind_' . $agency, $agency);
               }
               $filter_bib_type .= ' AND v.bib_nr IN (' . $agency_list . ')';
             }
-            elseif ($param->libraryType->_value <> 'Alle') {
-              $filter_bib_type = 'AND bib_type = :bind_bib_type';
+            elseif (empty($ora_par) && $param->libraryType->_value <> 'Alle') {
+              $filter_bib_type .= ' AND bib_type = :bind_bib_type';
               $oci->bind('bind_bib_type', $param->libraryType->_value);
             }
-            $oci->set_query('SELECT vsn.bib_nr, vsn.navn, vsn.tlf_nr, vsn.email, vsn.badr, vsn.bpostnr, vsn.bcity
+//var_dump($filter_bib_type);
+            $oci->set_query('SELECT vsn.bib_nr, vsn.navn, vsn.tlf_nr, vsn.email, 
+                                    vsn.badr, vsn.bpostnr, vsn.bcity, vsn.url
                             FROM vip_vsn vsn, vip v
                             WHERE vsn.delete_mark_vsn is null ' . $filter_bib_type . '
                               AND v.bib_vsn = vsn.bib_nr
@@ -902,34 +962,40 @@ class openAgency extends webServiceServer {
             }
             $n = 'N';
             $oci->bind('bind_n', $n);
-            if ($agencies) {
-              foreach ($agencies as $agency) {
+            if ($ora_par['agencyId']) {
+              foreach ($ora_par['agencyId'] as $agency) {
                 $oci->bind('bind_' . $agency, $agency);
               }
             }
-            elseif ($param->libraryType->_value <> 'Alle') {
+            elseif (empty($ora_par) && $param->libraryType->_value <> 'Alle') {
               $oci->bind('bind_bib_type', $param->libraryType->_value);
             }
-            $oci->set_query('SELECT v.bib_nr, v.navn, v.tlf_nr, v.email, v.badr, v.bpostnr, v.bcity, v.isil, v.bib_vsn,
-                            vb.best_modt, vb.best_modt_luk, vb.best_modt_luk_eng,
-                            txt.aabn_tid, eng.aabn_tid_e, hold.holdeplads
-                            FROM vip v, vip_beh vb, vip_txt txt, vip_txt_eng eng, vip_bogbus_holdeplads hold
+            $oci->set_query('SELECT v.bib_nr, v.navn, v.tlf_nr, v.email, v.badr, v.bpostnr, 
+                                    v.bcity, v.isil, v.bib_vsn, v.url_homepage, v.url_payment,
+                                    vb.best_modt, vb.best_modt_luk, vb.best_modt_luk_eng,
+                                    txt.aabn_tid, eng.aabn_tid_e, hold.holdeplads,
+                                    bestil.url_serv_dkl,
+                                    kat.url_best_blanket, kat.url_laanerstatus
+                            FROM vip v, vip_beh vb, vip_txt txt, vip_txt_eng eng, 
+                                 vip_bogbus_holdeplads hold, vip_bestil bestil, vip_kat kat
                             WHERE v.bib_vsn IN (SELECT vsn.bib_nr
                                                   FROM vip_vsn vsn, vip v
                                                   WHERE vsn.delete_mark_vsn is null
                                                     AND v.bib_vsn = vsn.bib_nr
                                                         ' . $filter_bib_type . ' )
-                            AND v.delete_mark is null
-                            AND v.bib_nr = vb.bib_nr (+)
-                            AND vb.filial_tf <> :bind_n
-                            AND v.bib_nr = txt.bib_nr (+)
-                            AND v.bib_nr = hold.bib_nr (+)
-                            AND v.bib_nr = eng.bib_nr (+)
+                              AND v.delete_mark is null
+                              AND v.bib_nr = vb.bib_nr (+)
+                              AND vb.filial_tf <> :bind_n
+                              AND v.bib_nr = txt.bib_nr (+)
+                              AND v.bib_nr = hold.bib_nr (+)
+                              AND v.bib_nr = eng.bib_nr (+)
+                              AND v.bib_nr = bestil.bib_nr (+)
+                              AND v.bib_nr = kat.bib_nr (+)
                             ORDER BY v.bib_vsn, v.bib_nr');
             while ($row = $oci->fetch_into_assoc()) {
-              if ($agencies) {
-                $a_key = array_search($row['BIB_NR'], $agencies);
-                if (is_int($a_key)) unset($agencies[$a_key]);
+              if ($ora_par['agencyId']) {
+                $a_key = array_search($row['BIB_NR'], $ora_par['agencyId']);
+                if (is_int($a_key)) unset($ora_par['agencyId'][$a_key]);
               }
               $this_vsn = $row['BIB_VSN'];
               if ($library && $library->agencyId->_value <> $this_vsn) {
@@ -941,11 +1007,12 @@ class openAgency extends webServiceServer {
               if (empty($library)) {
                 $library->agencyId->_value = $this_vsn;
                 $library->agencyName->_value = $vsn[$this_vsn]['NAVN'];
-                $library->agencyPhone->_value = $vsn[$this_vsn]['TLF_NR'];
-                $library->agencyEmail->_value = $vsn[$this_vsn]['EMAIL'];
-                $library->postalAddress->_value = $vsn[$this_vsn]['BADR'];
-                $library->postalCode->_value = $vsn[$this_vsn]['BPOSTNR'];
-                $library->city->_value = $vsn[$this_vsn]['BCITY'];
+                if ($vsn[$this_vsn]['TLF_NR']) $library->agencyPhone->_value = $vsn[$this_vsn]['TLF_NR'];
+                if ($vsn[$this_vsn]['EMAIL']) $library->agencyEmail->_value = $vsn[$this_vsn]['EMAIL'];
+                if ($vsn[$this_vsn]['BADR']) $library->postalAddress->_value = $vsn[$this_vsn]['BADR'];
+                if ($vsn[$this_vsn]['BPOSTNR']) $library->postalCode->_value = $vsn[$this_vsn]['BPOSTNR'];
+                if ($vsn[$this_vsn]['BCITY']) $library->city->_value = $vsn[$this_vsn]['BCITY'];
+                if ($vsn[$this_vsn]['URL']) $library->agencyWebsiteUrl->_value = $vsn[$this_vsn]['URL'];
               }
               if ($pickupAgency && $pickupAgency->branchId->_value <> $row['BIB_NR']) {
                 $library->pickupAgency[]->_value = $pickupAgency;
@@ -956,10 +1023,15 @@ class openAgency extends webServiceServer {
                 $pickupAgency->branchName->_value = $row['NAVN'];
                 $pickupAgency->branchPhone->_value = $row['TLF_NR'];
                 $pickupAgency->branchEmail->_value = $row['EMAIL'];
-                $pickupAgency->postalAddress->_value = $row['BADR'];
-                $pickupAgency->postalCode->_value = $row['BPOSTNR'];
-                $pickupAgency->city->_value = $row['BCITY'];
-                $pickupAgency->isil->_value = $row['ISIL'];
+                if ($row['BADR']) $pickupAgency->postalAddress->_value = $row['BADR'];
+                if ($row['BPOSTNR']) $pickupAgency->postalCode->_value = $row['BPOSTNR'];
+                if ($row['BCITY']) $pickupAgency->city->_value = $row['BCITY'];
+                if ($row['ISIL']) $pickupAgency->isil->_value = $row['ISIL'];
+                if ($row['URL_HOMEPAGE']) $pickupAgency->branchWebsiteUrl->_value = $row['URL_HOMEPAGE'];
+                if ($row['URL_SERV_DKL']) $pickupAgency->serviceDeclarationUrl->_value = $row['URL_SERV_DKL'];
+                if ($row['URL_BEST_BLANKET']) $pickupAgency->registrationFormUrl->_value = $row['URL_BEST_BLANKET'];
+                if ($row['URL_PAYMENT']) $pickupAgency->paymentUrl->_value = $row['URL_PAYMENT'];
+                if ($row['URL_LAANERSTATUS']) $pickupAgency->userStatusUrl->_value = $row['URL_LAANERSTATUS'];
               }
               if ($row['HOLDEPLADS'])
                 $pickupAgency->agencySubdivision[]->_value = $row['HOLDEPLADS'];
@@ -995,14 +1067,15 @@ class openAgency extends webServiceServer {
                   unset($help);
                 }
               }
+              $pickupAgency->pickupAllowed->_value = ($row['BEST_MODT'] == 'J' ? '1' : '0');
             }
             if ($pickupAgency) {
               $library->pickupAgency[]->_value = $pickupAgency;
             }
             if ($library) {
               $res->library[]->_value = $library;
-              if ($agencies) {
-                foreach ($agencies as $agency) {
+              if ($ora_par['agencyId']) {
+                foreach ($ora_par['agencyId'] as $agency) {
                   $help->agencyId->_value = $param_agencies[$agency];
                   $help->error->_value = 'agency_not_found';
                   $res->library[]->_value = $help;
