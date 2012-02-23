@@ -4,7 +4,11 @@
          <!--You have a CHOICE of the next 2 items at this level-->
          <!--Zero or more repetitions:-->
          <open:agencyId>DK-710100</open:agencyId>
+         <open:agencyName></open:agencyName>
+         <open:postalCode></open:postalCode>
+         <open:city></open:city>
          <open:libraryType>Folkebibliotek</open:libraryType>
+         <open:pickupAllowed></open:pickupAllowed>
       </open:pickupAgencyListRequest>
    </soapenv:Body>
 </soapenv:Envelope>
