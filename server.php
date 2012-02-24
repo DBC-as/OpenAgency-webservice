@@ -912,31 +912,33 @@ class openAgency extends webServiceServer {
             $param->libraryType->_value == 'Folkebibliotek' ||
             $param->libraryType->_value == 'Forskningsbibliotek') {
           try {
-            foreach ($ora_par as $key => $val) {
-              $add_sql = '';
-              foreach ($val as $par) {
-                $add_item = '';
-                switch ($key) {
-                  case 'agencyId':
-                    break;
-                  case 'agencyName':
-                    $add_item .= 'upper(v.navn) like upper(\'%' . $par . '%\')';
-                    break;
-                  case 'postalCode':
-                    $add_item .= 'upper(v.bpostnr) like upper(\'%' . $par . '%\')';
-                    break;
-                  case 'city':
-                    $add_item .= 'upper(v.bcity) like upper(\'%' . $par . '%\')';
-                    break;
+            if ($ora_par) {
+              foreach ($ora_par as $key => $val) {
+                $add_sql = '';
+                foreach ($val as $par) {
+                  $add_item = '';
+                  switch ($key) {
+                    case 'agencyId':
+                      break;
+                    case 'agencyName':
+                      $add_item .= 'upper(v.navn) like upper(\'%' . $par . '%\')';
+                      break;
+                    case 'postalCode':
+                      $add_item .= 'upper(v.bpostnr) like upper(\'%' . $par . '%\')';
+                      break;
+                    case 'city':
+                      $add_item .= 'upper(v.bcity) like upper(\'%' . $par . '%\')';
+                      break;
+                  }
+                  if ($add_item) {
+                    if (empty($add_sql))
+                      $add_sql = ' AND (' . $add_item;
+                    else
+                      $add_sql .= ' OR ' . $add_item;
+                  }
                 }
-                if ($add_item) {
-                  if (empty($add_sql))
-                    $add_sql = ' AND (' . $add_item;
-                  else
-                    $add_sql .= ' OR ' . $add_item;
-                }
+                if ($add_sql) $filter_bib_type .= $add_sql . ')';
               }
-              if ($add_sql) $filter_bib_type .= $add_sql . ')';
             }
             if ($ora_par['agencyId']) {
               foreach ($ora_par['agencyId'] as $agency) {
@@ -950,6 +952,7 @@ class openAgency extends webServiceServer {
               $oci->bind('bind_bib_type', $param->libraryType->_value);
             }
 //var_dump($filter_bib_type);
+// 2do vip_beh.best_modt = $param->pickupAllowed->_value
             $oci->set_query('SELECT vsn.bib_nr, vsn.navn, vsn.tlf_nr, vsn.email, 
                                     vsn.badr, vsn.bpostnr, vsn.bcity, vsn.url
                             FROM vip_vsn vsn, vip v
@@ -969,6 +972,12 @@ class openAgency extends webServiceServer {
             }
             elseif (empty($ora_par) && $param->libraryType->_value <> 'Alle') {
               $oci->bind('bind_bib_type', $param->libraryType->_value);
+            }
+            if (isset($param->pickupAllowed->_value)) {
+              if ($param->pickupAllowed->_value == 'true' || $param->pickupAllowed->_value == '1')
+                $filter_bib_type .= ' AND vb.best_modt = \'J\'';
+              else
+                $filter_bib_type .= ' AND vb.best_modt != \'J\'';
             }
             $oci->set_query('SELECT v.bib_nr, v.navn, v.tlf_nr, v.email, v.badr, v.bpostnr, 
                                     v.bcity, v.isil, v.bib_vsn, v.url_homepage, v.url_payment,
