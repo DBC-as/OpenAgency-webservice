@@ -166,6 +166,27 @@ You should have received a copy of the GNU Affero General Public License along w
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="requestOrderRequest">
+		<xs:annotation>
+			<xs:documentation>Retrieve a prioritised list of which agencies materials must be ordered from for a given agency</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="oa:agencyId"/>
+				<xs:element ref="oa:authentication" minOccurs="0"/>
+				<xs:element ref="oa:callback" minOccurs="0"/>
+				<xs:element ref="oa:outputType" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="requestOrderResponse">
+		<xs:complexType>
+			<xs:choice>
+				<xs:element ref="oa:agencyId" maxOccurs="unbounded"/>
+				<xs:element ref="oa:error"/>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="serviceRequest">
 		<xs:complexType>
 			<xs:sequence>
