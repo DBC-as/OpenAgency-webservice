@@ -97,6 +97,9 @@ You should have received a copy of the GNU Affero General Public License along w
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="pickupAgencyListRequest">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Retrieve a list of agencies and branches based on either library type or library parameters. Repeated parameters are combined with OR, while different parameters are combined with AND</xs:documentation>
+		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="oa:authentication" minOccurs="0"/>
@@ -431,7 +434,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	</xs:element>
 	<xs:element name="pickupAllowed" type="xs:boolean">
 		<xs:annotation>
-			<xs:documentation xml:lang="en">Indicator whether materials can be picked up at the given branch/agency</xs:documentation>
+			<xs:documentation xml:lang="en">Indicator whether materials can be picked up at the given branch/agency. If used in a request, only agencies/branches that matches it's value will be retrieved</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="postalAddress" type="xs:string"/>
