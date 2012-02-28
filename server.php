@@ -1296,13 +1296,16 @@ class openAgency extends webServiceServer {
         try {
           $oci->bind('bind_agency', $agency);
           $oci->set_query('SELECT vilse 
-                          FROM laaneveje
-                          WHERE bibliotek = :bind_agency
+                          FROM vip, laaneveje
+                          WHERE (vip.bib_vsn = bibliotek OR vip.bib_nr = bibliotek)
+                            AND vip.bib_nr = :bind_agency
                           ORDER BY prionr DESC');
           $prio = array();
           while ($s_row = $oci->fetch_into_assoc()) {
             $res->agencyId[]->_value = $s_row['VILSE'];
           }
+          if (empty($res->agencyId))
+            $res->error->_value = 'no_agencies_found';
         }
         catch (ociException $e) {
           verbose::log(FATAL, 'OpenAgency('.__LINE__.'):: OCI select error: ' . $oci->get_error_string());
