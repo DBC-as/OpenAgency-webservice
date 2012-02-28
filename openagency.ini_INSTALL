@@ -28,6 +28,7 @@ soapAction[nameList] = nameListRequest
 soapAction[pickupAgencyList] = pickupAgencyListRequest
 soapAction[openSearchProfile] = openSearchProfileRequest
 soapAction[remoteAccess] = remoteAccessRequest
+soapAction[requestOrder] = requestOrderRequest
 soapAction[service] = serviceRequest
 ;soapAction[proxyDomains] = proxyDomainsRequest
 ;soapAction[proxyIp] = proxyIpRequest
@@ -144,6 +145,10 @@ action[openSearchProfile][] = outputType
 action[remoteAccess][] = agencyId
 action[remoteAccess][] = callback
 action[remoteAccess][] = outputType
+
+action[requestOrder][] = agencyId
+action[requestOrder][] = callback
+action[requestOrder][] = outputType
 
 action[service][] = agencyId
 action[service][] = service
