@@ -1260,6 +1260,67 @@ class openAgency extends webServiceServer {
   }
 
 
+  /** \brief
+   *
+   * Request:
+   * - agencyId
+   * Response:
+   * - autPotential
+   * or
+   * - autProvider
+   * or
+   * - autRequester
+   * or
+   * - error
+   */
+  public function requestOrder($param) {
+    if (!$this->aaa->has_right('openagency', 500))
+      $res->error->_value = 'authentication_error';
+    else {
+      $agency = $this->strip_agency($param->agencyId->_value);
+      $cache_key = 'OA_reqO_' . $this->version . $agency;
+      if ($ret = $this->cache->get($cache_key)) {
+        verbose::log(STAT, 'Cache hit');
+        return $ret;
+      }
+      $oci = new Oci($this->config->get_value('agency_credentials','setup'));
+      $oci->set_charset('UTF8');
+      try {
+        $oci->connect();
+      }
+      catch (ociException $e) {
+        verbose::log(FATAL, 'OpenAgency('.__LINE__.'):: OCI connect error: ' . $oci->get_error_string());
+        $res->error->_value = 'service_unavailable';
+      }
+      if (empty($res->error)) {
+        try {
+          $oci->bind('bind_agency', $agency);
+          $oci->set_query('SELECT * 
+                          FROM laaneveje
+                          WHERE bibliotek = :bind_agency');
+          $prio = array();
+          while ($s_row = $oci->fetch_into_assoc()) {
+            $prio[$s_row['VILSE']] = $s_row['PRIONR'];
+          }
+          arsort($prio, SORT_NUMERIC);
+          foreach ($prio as $bib => $pri)
+            $res->agencyId[]->_value = $bib;
+        }
+        catch (ociException $e) {
+          verbose::log(FATAL, 'OpenAgency('.__LINE__.'):: OCI select error: ' . $oci->get_error_string());
+          $res->error->_value = 'service_unavailable';
+        }
+      }
+    }
+    //var_dump($res); var_dump($param); die();
+    $ret->requestOrderResponse->_value = $res;
+    $ret = $this->objconvert->set_obj_namespace($ret, $this->xmlns['oa']);
+    if (empty($res->error)) $this->cache->set($cache_key, $ret);
+    return $ret;
+  }
+
+
+
   /** \brief Echos config-settings
    *
    */
