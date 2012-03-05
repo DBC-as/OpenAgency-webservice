@@ -217,6 +217,7 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="oa:orsRenewAnswer"/>
 				<xs:element ref="oa:orsRenewItemUser"/>
 				<xs:element ref="oa:orsShipping"/>
+				<xs:element ref="oa:userOrderParameters"/>
 				<xs:element ref="oa:userParameters"/>
 				<xs:element ref="oa:error"/>
 			</xs:choice>
@@ -402,6 +403,35 @@ You should have received a copy of the GNU Affero General Public License along w
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="orderMaterialType" type="oa:orderMaterialTypeType"/>
+	<xs:element name="itemParameterType" type="oa:itemParameterTypeType"/>
+	<xs:element name="itemParameter">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Indicator whether a given itemParameterType is either required or optional for the given combination of orderType and orderMaterialType</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="oa:itemParameterType"/>
+				<xs:element ref="oa:parameterRequired"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="orderParameters">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">List of item parameters are that are either required or optional for different types of orders (as set in the combination of orderType and orderMaterialType)</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="oa:orderMaterialType"/>
+				<xs:element ref="oa:orderType"/>
+				<xs:element ref="oa:itemParameter" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="orderType" type="oa:orderTypeType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Type of order (ill, local)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<xs:element name="orsAnswer" type="oa:ors"/>
 	<xs:element name="orsCancel" type="oa:ors"/>
 	<xs:element name="orsCancelReply" type="oa:ors"/>
@@ -422,6 +452,7 @@ You should have received a copy of the GNU Affero General Public License along w
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="ownedByAgency" type="xs:boolean"/>
+	<xs:element name="parameterRequired" type="xs:boolean"/>
 	<xs:element name="passWord" type="xs:string"/>
 	<xs:element name="passwordAut" type="xs:string">
 		<xs:annotation>
@@ -533,11 +564,65 @@ You should have received a copy of the GNU Affero General Public License along w
 	</xs:element>
 	<xs:element name="url" type="xs:string"/>
 	<xs:element name="userId" type="xs:string"/>
+	<xs:element name="userIdTxt">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Explanation text for user identifier (for use in end user interface)</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute ref="oa:language"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="userIdCpr"/>
 	<xs:element name="userIdType" type="oa:userIdTypeType"/>
+	<xs:element name="userIdTypeTxt">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Explanation text for userParameterType=userId (for use in end user interface)</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute ref="oa:language"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="userIdAut" type="xs:string">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">User identifier (for authentication purposes)</xs:documentation>
 		</xs:annotation>
+	</xs:element>
+	<xs:element name="userOrderParameters">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Returns explanation texts and information about user- and item parameters that are either required or optional for different types of orders.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="oa:userParameter" maxOccurs="unbounded"/>
+				<xs:element ref="oa:userIdTxt" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="oa:userIdTypeTxt" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="oa:orderParameters" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="userParameterType" type="oa:userParameterTypeType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en"/>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="userParameter">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Indicatior whether a given userParameterType is required or optional for orders.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="oa:userParameterType"/>
+				<xs:element ref="oa:parameterRequired"/>
+			</xs:sequence>
+		</xs:complexType>
 	</xs:element>
 	<xs:element name="userParameters">
 		<xs:complexType>
@@ -608,6 +693,24 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:enumeration value="video"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:simpleType name="itemParameterTypeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="author"/>
+			<xs:enumeration value="issue"/>
+			<xs:enumeration value="pagination"/>
+			<xs:enumeration value="publicationDateOfComponent"/>
+			<xs:enumeration value="publicationYear"/>
+			<xs:enumeration value="title"/>
+			<xs:enumeration value="titleOfComponent"/>
+			<xs:enumeration value="volume"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="orderTypeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ill"/>
+			<xs:enumeration value="local"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:simpleType name="outputTypeType">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">The types of output that can be returned by the service.</xs:documentation>
@@ -621,6 +724,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:simpleType name="serviceType">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="information"/>
+			<xs:enumeration value="userOrderParameters"/>
 			<xs:enumeration value="orsAnswer"/>
 			<xs:enumeration value="orsCancel"/>
 			<xs:enumeration value="orsCancelReply"/>
@@ -646,6 +750,20 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:enumeration value="barcode"/>
 			<xs:enumeration value="cardno"/>
 			<xs:enumeration value="optional"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="userParameterTypeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="cpr"/>
+			<xs:enumeration value="userId"/>
+			<xs:enumeration value="barcode"/>
+			<xs:enumeration value="cardno"/>
+			<xs:enumeration value="pincode"/>
+			<xs:enumeration value="userDateOfBirth"/>
+			<xs:enumeration value="userName"/>
+			<xs:enumeration value="userAddress"/>
+			<xs:enumeration value="userMail"/>
+			<xs:enumeration value="userTelephone"/>
 		</xs:restriction>
 	</xs:simpleType>
 </xs:schema>
