@@ -735,6 +735,127 @@ class openAgency extends webServiceServer {
                 }
               }
               break;
+            case 'userOrderParameters':
+              $usrOP = &$res->userOrderParameters->_value;
+              $u_fld = array('LD_CPR' => 'cpr', 
+                             'LD_ID' => 'userId',
+                             'LD_TXT' => 'customId',
+                             'LD_LKST' => 'barcode',
+                             'LD_KLNR' => 'cardno',
+                             'LD_PIN' => 'pincode',
+                             'LD_DATO' => 'userDateOfBirth',
+                             'LD_NAVN' => 'userName',
+                             'LD_ADR' => 'userAddress',
+                             'LD_EMAIL' => 'userMail',
+                             'LD_TLF' => 'userTelephone');
+              foreach ($u_fld as $vip_key => $res_key) {
+                $sw = $oa_row[$vip_key][0];
+                if (in_array($sw, array('J', 'O'))) {
+                  $f->userParameterType->_value = $res_key;
+                  $f->parameterRequired->_value = ($sw == 'O'? '1' : '0');
+                  $usrOP->userParameter[]->_value = $f;
+                  unset($f);
+                }
+              }
+              if (in_array($oa_row['LD_ID'][0], array('J', 'O'))) {
+                if ($oa_row['LD_ID_TXT']) {
+                  $f->_attributes->language->_value = 'dan';
+                  $f->_value = $oa_row['LD_ID_TXT'];
+                  $usrOP->userIdTxt[] = $f;
+                  unset($f);
+                }
+                if ($oa_row['LD_ID_TXT_ENG']) {
+                  $f->_attributes->language->_value = 'eng';
+                  $f->_value = $oa_row['LD_ID_TXT_ENG'];
+                  $usrOP->userIdTxt[] = $f;
+                  unset($f);
+                }
+              }
+              if (in_array($oa_row['LD_TXT'][0], array('J', 'O'))) {
+                if ($oa_row['LD_TXT2']) {
+                  $f->_attributes->language->_value = 'dan';
+                  $f->_value = $oa_row['LD_TXT2'];
+                  $usrOP->userIdTypeTxt[] = $f;
+                  unset($f);
+                }
+                if ($oa_row['LD_TXT2_ENG']) {
+                  $f->_attributes->language->_value = 'eng';
+                  $f->_value = $oa_row['LD_TXT2_ENG'];
+                  $usrOP->userIdTypeTxt[] = $f;
+                  unset($f);
+                }
+              }
+              $per = array('PER_NR' => 'volume',
+                           'PER_HEFTE' => 'issue',
+                           'PER_AAR' => 'publicationYear',
+                           'PER_SIDE' => 'pagination',
+                           'PER_FORFATTER' => 'author',
+                           'PER_TITEL' => 'title',
+                           'PER_KILDE' => 'titleOfComponent');
+              foreach ($per as $key => $val)
+                $per_ill[$key . '_FJL'] = $val;
+              $avis = array('AVIS_DATO' => 'publicationDateOfComponent',
+                            'AVIS_FORFATTER' => 'author',
+                            'AVIS_TITEL' => 'title',
+                            'AVIS_AAR' => 'publicationYear',
+                            'AVIS_KILDE' => 'titleOfComponent');
+              foreach ($avis as $key => $val)
+                $avis_ill[$key . '_FJL'] = $val;
+              $m_fld = array('CDROM_BEST_MODT' => array('cdrom', 'local'),
+                             'CDROM_BEST_MODT_FJL' => array('cdrom', 'ill'),
+                             'MONO_BEST_MODT' => array('monograph', 'local'),
+                             'MONO_BEST_MODT_FJL' => array('monograph', 'ill'),
+                             'MUSIK_BEST_MODT' => array('music', 'local'),
+                             'MUSIK_BEST_MODT_FJL' => array('music', 'ill'),
+                             'AVIS_BEST_MODT' => array('newspaper', 'local', $avis),
+                             'AVIS_BEST_MODT_FJL' => array('newspaper', 'ill', $avis_ill),
+                             'PER_BEST_MODT' => array('journal', 'local', $per),
+                             'PER_BEST_MODT_FJL' => array('journal', 'ill', $per_ill),
+                             'VIDEO_BEST_MODT' => array('video', 'local'),
+                             'VIDEO_BEST_MODT_FJL' => array('video', 'ill'));
+              foreach ($m_fld as $vip_key => $res_key) {
+                if (in_array($oa_row[$vip_key], array('J', 'B'))) {
+                  $f->orderMaterialType->_value = $res_key[0];
+                  $f->orderType->_value = $res_key[1];
+                  if (is_array($res_key[2])) {
+                    foreach ($res_key[2] as $elem_vip_key => $elem_res_key) {
+                      if (in_array($oa_row[$elem_vip_key], array('J', 'O'))) {
+                        $p->itemParameterType->_value = $elem_res_key;
+                        $p->parameterRequired->_value = ($oa_row[$elem_vip_key] == 'O'? '1' : '0');
+                        $f->itemParameter[]->_value = $p;
+                        unset($p);
+                      }
+                    }
+                  }
+                  $usrOP->orderParameters[]->_value = $f;
+                  unset($f);
+                }
+              }
+/*      <open:userOrderParameters>
+            <!--1 or more repetitions:-->
+            <open:userParameter>
+               <open:userParameterType>?</open:userParameterType>
+               <open:parameterRequired>?</open:parameterRequired>
+            </open:userParameter>
+            <!--Zero or more repetitions:-->
+            <open:userIdTxt open:language="?">?</open:userIdTxt>
+            <!--Zero or more repetitions:-->
+            <open:userIdTypeTxt open:language="?">?</open:userIdTypeTxt>
+            <!--1 or more repetitions:-->
+            <open:orderParameters>
+               <open:orderMaterialType>?</open:orderMaterialType>
+               <open:orderType>?</open:orderType>
+               <!--1 or more repetitions:-->
+               <open:itemParameter>
+                  <open:itemParameterType>?</open:itemParameterType>
+                  <open:parameterRequired>?</open:parameterRequired>
+               </open:itemParameter>
+            </open:orderParameters>
+         </open:userOrderParameters>                        */
+
+    //print_r($oa_row); 
+    //var_dump($res); var_dump($param); die();
+              break;
             default:
               $res->error->_value = 'error_in_request';
           }
