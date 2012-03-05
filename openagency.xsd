@@ -365,6 +365,18 @@ You should have received a copy of the GNU Affero General Public License along w
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="isil" type="xs:string"/>
+	<xs:element name="itemParameter">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Indicator whether a given itemParameterType is either required or optional for the given combination of orderType and orderMaterialType</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="oa:itemParameterType"/>
+				<xs:element ref="oa:parameterRequired"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="itemParameterType" type="oa:itemParameterTypeType"/>
 	<xs:element name="junction" type="xs:string"/>
 	<xs:element name="key" type="xs:string"/>
 	<xs:element name="kvik" type="xs:string"/>
@@ -403,18 +415,6 @@ You should have received a copy of the GNU Affero General Public License along w
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="orderMaterialType" type="oa:orderMaterialTypeType"/>
-	<xs:element name="itemParameterType" type="oa:itemParameterTypeType"/>
-	<xs:element name="itemParameter">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Indicator whether a given itemParameterType is either required or optional for the given combination of orderType and orderMaterialType</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="oa:itemParameterType"/>
-				<xs:element ref="oa:parameterRequired"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
 	<xs:element name="orderParameters">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">List of item parameters are that are either required or optional for different types of orders (as set in the combination of orderType and orderMaterialType)</xs:documentation>
@@ -423,7 +423,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:sequence>
 				<xs:element ref="oa:orderMaterialType"/>
 				<xs:element ref="oa:orderType"/>
-				<xs:element ref="oa:itemParameter" maxOccurs="unbounded"/>
+				<xs:element ref="oa:itemParameter" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
