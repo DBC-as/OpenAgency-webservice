@@ -761,13 +761,13 @@ class openAgency extends webServiceServer {
                 if ($oa_row['LD_ID_TXT']) {
                   $f->_attributes->language->_value = 'dan';
                   $f->_value = $oa_row['LD_ID_TXT'];
-                  $usrOP->userIdTxt[] = $f;
+                  $usrOP->customIdTxt[] = $f;
                   unset($f);
                 }
                 if ($oa_row['LD_ID_TXT_ENG']) {
                   $f->_attributes->language->_value = 'eng';
                   $f->_value = $oa_row['LD_ID_TXT_ENG'];
-                  $usrOP->userIdTxt[] = $f;
+                  $usrOP->customIdTxt[] = $f;
                   unset($f);
                 }
               }
