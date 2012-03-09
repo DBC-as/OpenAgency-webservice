@@ -761,13 +761,13 @@ class openAgency extends webServiceServer {
                 if ($oa_row['LD_ID_TXT']) {
                   $f->_attributes->language->_value = 'dan';
                   $f->_value = $oa_row['LD_ID_TXT'];
-                  $usrOP->customIdTxt[] = $f;
+                  $usrOP->userIdTxt[] = $f;
                   unset($f);
                 }
                 if ($oa_row['LD_ID_TXT_ENG']) {
                   $f->_attributes->language->_value = 'eng';
                   $f->_value = $oa_row['LD_ID_TXT_ENG'];
-                  $usrOP->customIdTxt[] = $f;
+                  $usrOP->userIdTxt[] = $f;
                   unset($f);
                 }
               }
@@ -775,13 +775,13 @@ class openAgency extends webServiceServer {
                 if ($oa_row['LD_TXT2']) {
                   $f->_attributes->language->_value = 'dan';
                   $f->_value = $oa_row['LD_TXT2'];
-                  $usrOP->userIdTypeTxt[] = $f;
+                  $usrOP->customIdTxt[] = $f;
                   unset($f);
                 }
                 if ($oa_row['LD_TXT2_ENG']) {
                   $f->_attributes->language->_value = 'eng';
                   $f->_value = $oa_row['LD_TXT2_ENG'];
-                  $usrOP->userIdTypeTxt[] = $f;
+                  $usrOP->customIdTxt[] = $f;
                   unset($f);
                 }
               }
@@ -838,9 +838,9 @@ class openAgency extends webServiceServer {
                <open:parameterRequired>?</open:parameterRequired>
             </open:userParameter>
             <!--Zero or more repetitions:-->
-            <open:userIdTxt open:language="?">?</open:userIdTxt>
+            <open:customIdTxt open:language="?">?</open:customIdTxt>
             <!--Zero or more repetitions:-->
-            <open:userIdTypeTxt open:language="?">?</open:userIdTypeTxt>
+            <open:userIdTxt open:language="?">?</open:userIdTxt>
             <!--1 or more repetitions:-->
             <open:orderParameters>
                <open:orderMaterialType>?</open:orderMaterialType>
