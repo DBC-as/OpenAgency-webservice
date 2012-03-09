@@ -787,18 +787,18 @@ class openAgency extends webServiceServer {
               }
               $per = array('PER_NR' => 'volume',
                            'PER_HEFTE' => 'issue',
-                           'PER_AAR' => 'publicationYear',
+                           'PER_AAR' => 'publicationDateOfComponent',
                            'PER_SIDE' => 'pagination',
-                           'PER_FORFATTER' => 'author',
-                           'PER_TITEL' => 'title',
-                           'PER_KILDE' => 'titleOfComponent');
+                           'PER_FORFATTER' => 'authorOfComponent',
+                           'PER_TITEL' => 'titleOfComponent',
+                           'PER_KILDE' => 'userReferenceSource');
               foreach ($per as $key => $val)
                 $per_ill[$key . '_FJL'] = $val;
-              $avis = array('AVIS_DATO' => 'publicationDateOfComponent',
-                            'AVIS_FORFATTER' => 'author',
-                            'AVIS_TITEL' => 'title',
-                            'AVIS_AAR' => 'publicationYear',
-                            'AVIS_KILDE' => 'titleOfComponent');
+              $avis = array('AVIS_DATO' => 'issue',
+                            'AVIS_AAR' => 'publicationDateOfComponent',
+                            'AVIS_FORFATTER' => 'authorOfComponent',
+                            'AVIS_TITEL' => 'titleOfComponent',
+                            'AVIS_KILDE' => 'userReferenceSource');
               foreach ($avis as $key => $val)
                 $avis_ill[$key . '_FJL'] = $val;
               $m_fld = array('CDROM_BEST_MODT' => array('cdrom', 'local'),
