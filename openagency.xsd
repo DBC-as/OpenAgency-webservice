@@ -314,7 +314,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	</xs:element>
 	<xs:element name="customIdTxt">
 		<xs:annotation>
-			<xs:documentation xml:lang="en">Label for custom user identifier</xs:documentation>
+			<xs:documentation xml:lang="en">Label text for userParameterType=customId (for use in end user interface)</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:simpleContent>
@@ -577,7 +577,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="url" type="xs:string"/>
 	<xs:element name="userId" type="xs:string"/>
 	<xs:element name="userIdType" type="oa:userIdTypeType"/>
-	<xs:element name="userIdTypeTxt">
+	<xs:element name="userIdTxt">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">Explanation text for userParameterType=userId (for use in end user interface)</xs:documentation>
 		</xs:annotation>
@@ -601,8 +601,8 @@ You should have received a copy of the GNU Affero General Public License along w
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="oa:userParameter" maxOccurs="unbounded"/>
+				<xs:element ref="oa:userIdTxt" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="oa:customIdTxt" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="oa:userIdTypeTxt" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="oa:orderParameters" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
@@ -755,10 +755,10 @@ You should have received a copy of the GNU Affero General Public License along w
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="cpr"/>
 			<xs:enumeration value="userId"/>
-			<xs:enumeration value="customId"/>
 			<xs:enumeration value="barcode"/>
 			<xs:enumeration value="cardno"/>
 			<xs:enumeration value="pincode"/>
+			<xs:enumeration value="customId"/>
 			<xs:enumeration value="userDateOfBirth"/>
 			<xs:enumeration value="userName"/>
 			<xs:enumeration value="userAddress"/>
