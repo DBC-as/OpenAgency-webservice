@@ -132,6 +132,7 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="oa:agencyId"/>
 				<xs:element ref="oa:authentication" minOccurs="0"/>
 				<xs:element ref="oa:profileName" minOccurs="0"/>
+				<xs:element ref="oa:profileVersion"/>
 				<xs:element ref="oa:callback" minOccurs="0"/>
 				<xs:element ref="oa:outputType" minOccurs="0"/>
 			</xs:sequence>
@@ -513,6 +514,7 @@ You should have received a copy of the GNU Affero General Public License along w
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="profileName" type="xs:string"/>
+	<xs:element name="profileVersion" type="xs:int"/>
 	<xs:element name="provider" type="xs:string"/>
 	<xs:element name="synchronous" type="xs:boolean"/>
 	<xs:element name="reason">
@@ -548,12 +550,20 @@ You should have received a copy of the GNU Affero General Public License along w
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="oa:sourceName"/>
-				<xs:element ref="oa:sourceOwner"/>
-				<xs:element ref="oa:sourceFormat"/>
+				<xs:choice>
+					<xs:sequence>
+						<xs:element ref="oa:sourceIdentifier"/>
+					</xs:sequence>
+					<xs:sequence>
+						<xs:element ref="oa:sourceOwner"/>
+						<xs:element ref="oa:sourceFormat"/>
+					</xs:sequence>
+				</xs:choice>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="sourceFormat" type="xs:string"/>
+	<xs:element name="sourceIdentifier" type="xs:string"/>
 	<xs:element name="sourceName" type="xs:string"/>
 	<xs:element name="sourceOwner" type="xs:string"/>
 	<xs:element name="subscription">
