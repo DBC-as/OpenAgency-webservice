@@ -526,7 +526,17 @@ You should have received a copy of the GNU Affero General Public License along w
 			</xs:simpleContent>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="rdfLabel" type="xs:string"/>
+	<xs:element name="rdfInverse" type="xs:string"/>
 	<xs:element name="registrationFormUrl" type="xs:string"/>
+	<xs:element name="relation">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="oa:rdfLabel"/>
+				<xs:element ref="oa:rdfInverse" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="replyToEmail" type="xs:string"/>
 	<xs:element name="requester" type="xs:string"/>
 	<xs:element name="requestOrder" type="xs:string"/>
@@ -559,6 +569,7 @@ You should have received a copy of the GNU Affero General Public License along w
 						<xs:element ref="oa:sourceFormat"/>
 					</xs:sequence>
 				</xs:choice>
+				<xs:element ref="oa:relation" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
