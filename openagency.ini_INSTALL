@@ -8,7 +8,7 @@
 ;service_http_error = HTTP/1.0 503 Service Unavailable
 
 ;version
-version = 1.6
+version = 1.7
 
 ; wsdl for service
 wsdl = openagency.wsdl
