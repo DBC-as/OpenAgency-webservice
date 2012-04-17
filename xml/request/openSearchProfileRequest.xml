@@ -3,5 +3,6 @@
 <ns1:openSearchProfileRequest>
   <ns1:agencyId>716700</ns1:agencyId>
   <ns1:profileName>Lorem ipsum</ns1:profileName>
+  <ns1:profileVersion>2</ns1:profileVersion>
 </ns1:openSearchProfileRequest>
 </SOAP-ENV:Body></SOAP-ENV:Envelope>

@@ -1234,6 +1234,19 @@ class openAgency extends webServiceServer {
 
   /** \brief
    *
+   * Request:
+   * - agencyId
+   * - profileName: 
+   * - profileVersion: 
+   * Response:
+   * - profile
+   * - - profileName
+   * - - source
+   * - - - sourceName
+   * - - - sourceIdentifier
+   * - - - or
+   * - - - sourceOwner
+   * - - - sourceFormat
    */
   public function openSearchProfile($param) {
     if (!$this->aaa->has_right('openagency', 500))
@@ -1255,32 +1268,62 @@ class openAgency extends webServiceServer {
         $res->error->_value = 'service_unavailable';
       }
       if (empty($res->error)) {
-        $oci->bind('bind_agency', $agency);
-        if ($profile = strtolower($param->profileName->_value)) {
-          $oci->bind('bind_profile', $profile);
-          $sql_add = ' AND lower(broendprofiler.name) = :bind_profile';
-        }
-        try {
-          $oci->set_query('SELECT DISTINCT broendprofiler.name bp_name,
-                          broendkilder.name,
-                          submitter,
-                          format
-                          FROM broendkilder, broendprofil_kilder, broendprofiler
-                          WHERE broendkilder.id_nr = broendprofil_kilder.broendkilde_id
-                          AND broendprofil_kilder.profil_id = broendprofiler.id_nr
-                          AND broendprofiler.bib_nr = :bind_agency' . $sql_add);
-          while ($s_row = $oci->fetch_into_assoc()) {
-            $s->sourceName->_value = $s_row['NAME'];
-            $s->sourceOwner->_value = (strtolower($s_row['SUBMITTER']) == 'agency' ? $agency : $s_row['SUBMITTER']);
-            $s->sourceFormat->_value = $s_row['FORMAT'];
-            $res->profile[$s_row['BP_NAME']]->_value->profileName->_value = $s_row['BP_NAME'];
-            $res->profile[$s_row['BP_NAME']]->_value->source[]->_value = $s;
-            unset($s);
+        if ($param->profileVersion->_value == 3) {
+          $oci->bind('bind_agency', $agency);
+          if ($profile = strtolower($param->profileName->_value)) {
+            $oci->bind('bind_profile', $profile);
+            $sql_add = ' AND lower(broend_to_profiler.name) = :bind_profile';
           }
-        }
-        catch (ociException $e) {
-          verbose::log(FATAL, 'OpenAgency('.__LINE__.'):: OCI select error: ' . $oci->get_error_string());
-          $res->error->_value = 'service_unavailable';
+          try {
+            $oci->set_query('SELECT DISTINCT broend_to_profiler.name bp_name,
+                                             broend_to_kilder.name, identifier, access_for, status, searchable
+                               FROM broend_to_kilder, broend_to_profiler, broendprofil_to_kilder
+                              WHERE broend_to_kilder.id_nr = broendprofil_to_kilder.broendkilde_id
+                                AND broendprofil_to_kilder.profil_id = broend_to_profiler.id_nr
+                                AND broend_to_profiler.bib_nr = :bind_agency' . $sql_add);
+            while ($s_row = $oci->fetch_into_assoc()) {
+              if ($s_row['ACCESS_FOR']) {
+              }
+              if ($s_row['SEARCHABLE'] == 'Y'
+                && (empty($s_row['ACCESS_FOR']) ||  strpos($s_row['ACCESS_FOR'], $agency) !== FALSE)) {
+                $s->sourceName->_value = $s_row['NAME'];
+                $s->sourceIdentifier->_value = str_replace('[agency]', $agency, $s_row['IDENTIFIER']);
+                $res->profile[$s_row['BP_NAME']]->_value->profileName->_value = $s_row['BP_NAME'];
+                $res->profile[$s_row['BP_NAME']]->_value->source[]->_value = $s;
+                unset($s);
+              }
+            }
+          }
+          catch (ociException $e) {
+            verbose::log(FATAL, 'OpenAgency('.__LINE__.'):: OCI select error: ' . $oci->get_error_string());
+            $res->error->_value = 'service_unavailable';
+          }
+        } else {
+          $oci->bind('bind_agency', $agency);
+          if ($profile = strtolower($param->profileName->_value)) {
+            $oci->bind('bind_profile', $profile);
+            $sql_add = ' AND lower(broendprofiler.name) = :bind_profile';
+          }
+          try {
+            $oci->set_query('SELECT DISTINCT broendprofiler.name bp_name,
+                                             broendkilder.name, submitter, format
+                               FROM broendkilder, broendprofil_kilder, broendprofiler
+                              WHERE broendkilder.id_nr = broendprofil_kilder.broendkilde_id
+                                AND broendprofil_kilder.profil_id = broendprofiler.id_nr
+                                AND broendprofiler.bib_nr = :bind_agency' . $sql_add);
+            while ($s_row = $oci->fetch_into_assoc()) {
+              $s->sourceName->_value = $s_row['NAME'];
+              $s->sourceOwner->_value = (strtolower($s_row['SUBMITTER']) == 'agency' ? $agency : $s_row['SUBMITTER']);
+              $s->sourceFormat->_value = $s_row['FORMAT'];
+              $res->profile[$s_row['BP_NAME']]->_value->profileName->_value = $s_row['BP_NAME'];
+              $res->profile[$s_row['BP_NAME']]->_value->source[]->_value = $s;
+              unset($s);
+            }
+          }
+          catch (ociException $e) {
+            verbose::log(FATAL, 'OpenAgency('.__LINE__.'):: OCI select error: ' . $oci->get_error_string());
+            $res->error->_value = 'service_unavailable';
+          }
         }
       }
     }

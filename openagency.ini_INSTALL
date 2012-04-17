@@ -139,6 +139,7 @@ action[pickupAgencyList][] = outputType
 
 action[openSearchProfile][] = agencyId
 action[openSearchProfile][] = profile
+action[openSearchProfile][] = profileVersion
 action[openSearchProfile][] = callback
 action[openSearchProfile][] = outputType
 
