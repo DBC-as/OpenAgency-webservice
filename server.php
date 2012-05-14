@@ -1115,7 +1115,7 @@ class openAgency extends webServiceServer {
                                                         ' . $filter_bib_type . ' )
                               AND v.delete_mark is null
                               AND v.bib_nr = vb.bib_nr (+)
-                              AND vb.filial_tf <> :bind_n
+                              AND (vb.filial_tf <> :bind_n OR vb.filial_tf is null)
                               AND v.bib_nr = txt.bib_nr (+)
                               AND v.bib_nr = hold.bib_nr (+)
                               AND v.bib_nr = eng.bib_nr (+)
