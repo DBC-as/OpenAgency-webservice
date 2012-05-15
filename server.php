@@ -1244,16 +1244,19 @@ class openAgency extends webServiceServer {
    * - - source
    * - - - sourceName
    * - - - sourceIdentifier
-   * - - - or
+   * - - - 1 above or 2 below
    * - - - sourceOwner
    * - - - sourceFormat
+   * - - - relation
+   * - - - - rdfLabel
+   * - - - - rdfInverse
    */
   public function openSearchProfile($param) {
     if (!$this->aaa->has_right('openagency', 500))
       $res->error->_value = 'authentication_error';
     else {
       $agency = $this->strip_agency($param->agencyId->_value);
-      $cache_key = 'OA_opeSP_' . $this->version . $agency . $param->profileName->_value;
+      $cache_key = 'OA_opeSP_' . $this->version . $agency . $param->profileName->_value . $param->profileVersion->_value;
       if ($ret = $this->cache->get($cache_key)) {
         verbose::log(STAT, 'Cache hit');
         return $ret;
@@ -1276,23 +1279,42 @@ class openAgency extends webServiceServer {
           }
           try {
             $oci->set_query('SELECT DISTINCT broend_to_profiler.name bp_name,
-                                             broend_to_kilder.name, identifier, access_for, status, searchable
+                                             broend_to_kilder.name, broend_to_kilder.id_nr b2k_id_nr,
+                                             identifier, access_for, status, searchable
                                FROM broend_to_kilder, broend_to_profiler, broendprofil_to_kilder
                               WHERE broend_to_kilder.id_nr = broendprofil_to_kilder.broendkilde_id
                                 AND broendprofil_to_kilder.profil_id = broend_to_profiler.id_nr
                                 AND broend_to_profiler.bib_nr = :bind_agency' . $sql_add);
-            while ($s_row = $oci->fetch_into_assoc()) {
-              if ($s_row['ACCESS_FOR']) {
-              }
-              if ($s_row['SEARCHABLE'] == 'Y'
-                && (empty($s_row['ACCESS_FOR']) ||  strpos($s_row['ACCESS_FOR'], $agency) !== FALSE)) {
-                $s->sourceName->_value = $s_row['NAME'];
-                $s->sourceIdentifier->_value = str_replace('[agency]', $agency, $s_row['IDENTIFIER']);
-                $res->profile[$s_row['BP_NAME']]->_value->profileName->_value = $s_row['BP_NAME'];
-                $res->profile[$s_row['BP_NAME']]->_value->source[]->_value = $s;
+            $profiles = $oci->fetch_all_into_assoc();
+//var_dump($profiles);
+            foreach ($profiles as $profile) {
+              $oci->bind('bind_kilde_id', $profile['B2K_ID_NR']);
+              $oci->set_query('SELECT DISTINCT rdf, rdf_reverse
+                                 FROM broend_relation, broend_kilde_relation, broend_profil_kilde_relation
+                                WHERE broend_kilde_relation.broendkilde_id = :bind_kilde_id 
+                                  AND broend_profil_kilde_relation.kilde_relation_id =  broend_kilde_relation.id_nr 
+                                  AND broend_kilde_relation.relation_id = broend_relation.id_nr');
+              $relations = $oci->fetch_all_into_assoc();
+//var_dump($relations);
+              if ($profile['SEARCHABLE'] == 'Y'
+               && (empty($profile['ACCESS_FOR']) ||  strpos($profile['ACCESS_FOR'], $agency) !== FALSE)) {
+                $s->sourceName->_value = $profile['NAME'];
+                $s->sourceIdentifier->_value = str_replace('[agency]', $agency, $profile['IDENTIFIER']);
+                if ($relations) {
+                  foreach ($relations as $relation) {
+                    $rel->rdfLabel->_value = $relation['RDF'];
+                    if ($relation['RDF_REVERSE'])
+                      $rel->rdfInverse->_value = $relation['RDF_REVERSE'];
+                    $s->relation[]->_value = $rel;
+                    unset($rel);
+                  }
+                }
+                $res->profile[$profile['BP_NAME']]->_value->profileName->_value = $profile['BP_NAME'];
+                $res->profile[$profile['BP_NAME']]->_value->source[]->_value = $s;
                 unset($s);
               }
             }
+//die('a');
           }
           catch (ociException $e) {
             verbose::log(FATAL, 'OpenAgency('.__LINE__.'):: OCI select error: ' . $oci->get_error_string());
