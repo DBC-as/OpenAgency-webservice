@@ -276,6 +276,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="agencyCatalogueUrl" type="xs:string"/>
 	<xs:element name="agencyEmail" type="xs:string"/>
 	<xs:element name="agencyFax" type="xs:string"/>
 	<xs:element name="agencyId" type="xs:string"/>
@@ -357,6 +358,7 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="oa:agencyFax" minOccurs="0"/>
 				<xs:element ref="oa:agencyEmail" minOccurs="0"/>
 				<xs:element ref="oa:agencyType" minOccurs="0"/>
+				<xs:element ref="oa:agencyCatalogueUrl" minOccurs="0"/>
 				<xs:element ref="oa:branchId" minOccurs="0"/>
 				<xs:element ref="oa:branchName" minOccurs="0"/>
 				<xs:element ref="oa:branchPhone" minOccurs="0"/>
