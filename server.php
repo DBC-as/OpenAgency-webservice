@@ -411,6 +411,7 @@ class openAgency extends webServiceServer {
               $inf->agencyFax->_value = $oa_row['VV.FAX_NR'];
               $inf->agencyEmail->_value = $oa_row['VV.EMAIL'];
               $inf->agencyType->_value = $oa_row['VV.BIB_TYPE'];
+              $inf->agencyCatalogueUrl->_value = $oa_row['URL_BIB_KAT'];
               $inf->branchId->_value = $this->normalize_agency($oa_row['V.BIB_NR']);
               $inf->branchName->_value = $oa_row['V.NAVN'];
               $inf->branchPhone->_value = $oa_row['V.TLF_NR'];
