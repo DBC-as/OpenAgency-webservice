@@ -1360,6 +1360,15 @@ class openAgency extends webServiceServer {
 
   /** \brief
    *
+   * Request:
+   * - agencyId
+   * Response:
+   * - agencyId
+   * - subscription
+   * - - name
+   * - - url
+   * - or
+   * - - error
    */
   public function remoteAccess($param) {
     if (!$this->aaa->has_right('openagency', 550))
