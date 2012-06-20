@@ -1273,12 +1273,74 @@ class openAgency extends webServiceServer {
       }
       if (empty($res->error)) {
         if ($param->profileVersion->_value == 3) {
-          $oci->bind('bind_agency', $agency);
-          if ($profile = strtolower($param->profileName->_value)) {
-            $oci->bind('bind_profile', $profile);
-            $sql_add = ' AND lower(broend_to_profiler.name) = :bind_profile';
-          }
           try {
+// TODO
+// hent alle broend_to_kilder med searchable == "Y" og loop over dem.
+// find de kilder som profilen kender:
+// SELECT broendkilde_id FROM broendprofil_to_kilder, broend_to_profiler 
+//  WHERE broend_to_profiler.bib_nr = agency 
+//    AND broend_to_profiler.NAME = profilName 
+//    AND broend_to_profiler.id_nr = broendprofil_to_kilder.profil_idi (+);
+// Søgbarheden (sourceSearchable) gives hvis den findes i den givne profil (broendkilde_id findes)
+// Søgbargeden kan evt. begrænses af broend_to_kilder.access_for
+            $oci->bind('bind_y', 'Y');
+            $oci->set_query('SELECT DISTINCT *
+                               FROM broend_to_kilder
+                              WHERE searchable = :bind_y
+                               ORDER BY upper(name)');
+            $kilder = $oci->fetch_all_into_assoc();
+            $oci->bind('bind_agency', $agency);
+            if ($profile = strtolower($param->profileName->_value)) {
+              $oci->bind('bind_profile', $profile);
+              $sql_add = ' AND lower(broend_to_profiler.name) = :bind_profile';
+            }
+            $oci->set_query('SELECT broendkilde_id, profil_id, name
+                               FROM broendprofil_to_kilder, broend_to_profiler
+                              WHERE broend_to_profiler.bib_nr = :bind_agency
+                                AND  broend_to_profiler.id_nr = broendprofil_to_kilder.profil_id (+)' . $sql_add);
+            $profil_res = $oci->fetch_all_into_assoc();
+            foreach ($profil_res as $p) {
+              $profiler[$p['PROFIL_ID']][$p['BROENDKILDE_ID']] = $p;
+            }
+//var_dump($kilder);
+            foreach ($profiler as $profil_no => $profil) {
+//echo 'Profil: '; var_dump($profil);
+              foreach ($kilder as $kilde) {
+                if (empty($kilde['ACCESS_FOR']) || strpos($kilde['ACCESS_FOR'], $agency) !== FALSE) {
+                  $oci->bind('bind_kilde_id', $kilde['ID_NR']);
+                  $oci->set_query('SELECT DISTINCT rdf, rdf_reverse
+                                     FROM broend_relation, broend_kilde_relation, broend_profil_kilde_relation
+                                    WHERE broend_kilde_relation.broendkilde_id = :bind_kilde_id 
+                                      AND broend_profil_kilde_relation.kilde_relation_id =  broend_kilde_relation.id_nr 
+                                      AND broend_kilde_relation.relation_id = broend_relation.id_nr');
+                  $relations = $oci->fetch_all_into_assoc();
+//echo $kilde['NAME'] . ': '; var_dump($relations);
+                  $s->sourceName->_value = $kilde['NAME'];
+                  if (isset($profil[$kilde['ID_NR']])) {
+                    $profile_name = $profil[$kilde['ID_NR']]['NAME'];
+                    $s->sourceSearchable->_value = '1';
+                  }
+                  else
+                    $s->sourceSearchable->_value = '0';
+                  $s->sourceIdentifier->_value = str_replace('[agency]', $agency, $kilde['IDENTIFIER']);
+                  if ($relations) {
+                    foreach ($relations as $relation) {
+                      $rel->rdfLabel->_value = $relation['RDF'];
+                      if ($relation['RDF_REVERSE'])
+                        $rel->rdfInverse->_value = $relation['RDF_REVERSE'];
+                      $s->relation[]->_value = $rel;
+                      unset($rel);
+                    }
+                  }
+                }
+                $res->profile[$profile_no]->_value->profileName->_value = $profile_name;
+                $res->profile[$profile_no]->_value->source[]->_value = $s;
+                unset($s);
+              }
+            }
+//var_dump($res);
+//die();
+/*
             $oci->set_query('SELECT DISTINCT broend_to_profiler.name bp_name,
                                              broend_to_kilder.name, broend_to_kilder.id_nr b2k_id_nr,
                                              identifier, access_for, status, searchable
@@ -1297,9 +1359,9 @@ class openAgency extends webServiceServer {
                                   AND broend_kilde_relation.relation_id = broend_relation.id_nr');
               $relations = $oci->fetch_all_into_assoc();
 //var_dump($relations);
-              if ($profile['SEARCHABLE'] == 'Y'
-               && (empty($profile['ACCESS_FOR']) ||  strpos($profile['ACCESS_FOR'], $agency) !== FALSE)) {
+              if (empty($profile['ACCESS_FOR']) ||  strpos($profile['ACCESS_FOR'], $agency) !== FALSE) {
                 $s->sourceName->_value = $profile['NAME'];
+                $s->sourceSearchable->_value = '?';
                 $s->sourceIdentifier->_value = str_replace('[agency]', $agency, $profile['IDENTIFIER']);
                 if ($relations) {
                   foreach ($relations as $relation) {
@@ -1315,6 +1377,7 @@ class openAgency extends webServiceServer {
                 unset($s);
               }
             }
+*/
 //die('a');
           }
           catch (ociException $e) {
