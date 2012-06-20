@@ -1274,13 +1274,8 @@ class openAgency extends webServiceServer {
       if (empty($res->error)) {
         if ($param->profileVersion->_value == 3) {
           try {
-// TODO
 // hent alle broend_to_kilder med searchable == "Y" og loop over dem.
 // find de kilder som profilen kender:
-// SELECT broendkilde_id FROM broendprofil_to_kilder, broend_to_profiler 
-//  WHERE broend_to_profiler.bib_nr = agency 
-//    AND broend_to_profiler.NAME = profilName 
-//    AND broend_to_profiler.id_nr = broendprofil_to_kilder.profil_idi (+);
 // Søgbarheden (sourceSearchable) gives hvis den findes i den givne profil (broendkilde_id findes)
 // Søgbargeden kan evt. begrænses af broend_to_kilder.access_for
             $oci->bind('bind_y', 'Y');
@@ -1333,8 +1328,8 @@ class openAgency extends webServiceServer {
                     }
                   }
                 }
-                $res->profile[$profile_no]->_value->profileName->_value = $profile_name;
-                $res->profile[$profile_no]->_value->source[]->_value = $s;
+                $res->profile[$profil_no]->_value->profileName->_value = $profile_name;
+                $res->profile[$profil_no]->_value->source[]->_value = $s;
                 unset($s);
               }
             }
