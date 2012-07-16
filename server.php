@@ -1329,8 +1329,10 @@ class openAgency extends webServiceServer {
                   }
                 }
                 $res->profile[$profil_no]->_value->profileName->_value = $profile_name;
-                $res->profile[$profil_no]->_value->source[]->_value = $s;
-                unset($s);
+                if ($s) {
+                  $res->profile[$profil_no]->_value->source[]->_value = $s;
+                  unset($s);
+                }
               }
             }
 //var_dump($res);
