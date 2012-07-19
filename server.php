@@ -1154,13 +1154,7 @@ class openAgency extends webServiceServer {
               }
               if (empty($pickupAgency)) {
                 $pickupAgency->branchId->_value = $row['BIB_NR'];
-                switch (strtoupper($row['TYPE'])) {
-                  case 'H': $pickupAgency->branchType->_value = 'hovedbibliotek'; break;
-                  case 'F': $pickupAgency->branchType->_value = 'filial'; break;
-                  case 'B': $pickupAgency->branchType->_value = 'bogbus'; break;
-                  case 'S': $pickupAgency->branchType->_value = 'servicepunkt'; break;
-                  case 'T': $pickupAgency->branchType->_value = 'transport'; break;
-                }
+                $pickupAgency->branchType->_value = $row['TYPE'];
                 $pickupAgency->branchPhone->_value = $row['TLF_NR'];
                 $pickupAgency->branchName->_value = $row['NAVN'];
                 $pickupAgency->branchEmail->_value = $row['EMAIL'];
