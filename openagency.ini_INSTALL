@@ -133,6 +133,7 @@ action[pickupAgencyList][] = agencyName
 action[pickupAgencyList][] = postalCode
 action[pickupAgencyList][] = city
 action[pickupAgencyList][] = libraryType
+action[pickupAgencyList][] = libraryStatus
 action[pickupAgencyList][] = pickupAllowed
 action[pickupAgencyList][] = callback
 action[pickupAgencyList][] = outputType
