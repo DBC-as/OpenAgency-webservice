@@ -943,6 +943,7 @@ class openAgency extends webServiceServer {
    * - postalCode
    * - city
    * - libraryType
+   * - libraryStatus
    * - pickupAllowed
 
    * Response:
@@ -1056,7 +1057,7 @@ class openAgency extends webServiceServer {
                   }
                   if ($add_item) {
                     if (empty($add_sql))
-                      $add_sql = ' AND (' . $add_item;
+                      $add_sql = ' (' . $add_item;
                     else
                       $add_sql .= ' OR ' . $add_item;
                   }
@@ -1069,18 +1070,31 @@ class openAgency extends webServiceServer {
                 $agency_list .= ($agency_list ? ', ' : '') . ':bind_' . $agency;
                 $oci->bind('bind_' . $agency, $agency);
               }
-              $filter_bib_type .= ' AND v.bib_nr IN (' . $agency_list . ')';
+              $filter_bib_type .= ' v.bib_nr IN (' . $agency_list . ')';
             }
             elseif (empty($ora_par) && $param->libraryType->_value <> 'Alle') {
-              $filter_bib_type .= ' AND bib_type = :bind_bib_type';
+              $filter_bib_type .= ' bib_type = :bind_bib_type';
               $oci->bind('bind_bib_type', $param->libraryType->_value);
             }
 //var_dump($filter_bib_type);
 // 2do vip_beh.best_modt = $param->pickupAllowed->_value
+            if ($param->libraryStatus->_value == 'alle') {
+              $filter_delete = '';
+            } elseif ($param->libraryStatus->_value == 'usynlig') {
+              $u = 'U';
+              $oci->bind('bind_u', $u);
+              $filter_delete = '(vsn.delete_mark_vsn is null or vsn.delete_mark_vsn = :bind_u) AND ';
+            } elseif ($param->libraryStatus->_value == 'slettet') {
+              $s = 'S';
+              $oci->bind('bind_s', $s);
+              $filter_delete = '(vsn.delete_mark_vsn is null or vsn.delete_mark_vsn = :bind_s) AND ';
+            } else {
+              $filter_delete = 'vsn.delete_mark_vsn is null AND ';
+            }
             $oci->set_query('SELECT vsn.bib_nr, vsn.navn, vsn.bib_type, vsn.tlf_nr, vsn.email, 
                                     vsn.badr, vsn.bpostnr, vsn.bcity, vsn.url
                             FROM vip_vsn vsn, vip v
-                            WHERE vsn.delete_mark_vsn is null ' . $filter_bib_type . '
+                            WHERE ' . $filter_delete . $filter_bib_type . '
                               AND v.bib_vsn = vsn.bib_nr
                             ORDER BY vsn.bib_nr');
             while ($row = $oci->fetch_into_assoc()) {
@@ -1103,6 +1117,19 @@ class openAgency extends webServiceServer {
               else
                 $filter_bib_type .= ' AND vb.best_modt != \'J\'';
             }
+            if ($param->libraryStatus->_value == 'alle') {
+              $filter_delete = '';
+            } elseif ($param->libraryStatus->_value == 'usynlig') {
+              $u = 'U';
+              $oci->bind('bind_u', $u);
+              $filter_delete = ' AND (v.delete_mark is null OR v.delete_mark = :bind_u)';
+            } elseif ($param->libraryStatus->_value == 'slettet') {
+              $s = 'S';
+              $oci->bind('bind_s', $s);
+              $filter_delete = ' AND (v.delete_mark is null OR v.delete_mark = :bind_s)';
+            } else {
+              $filter_delete = ' AND v.delete_mark is null';
+            }
             $oci->set_query('SELECT v.bib_nr, v.navn, v.type, v.tlf_nr, v.email, v.badr, v.bpostnr, 
                                     v.bcity, v.isil, v.bib_vsn, v.url_homepage, v.url_payment,
                                     vb.best_modt, vb.best_modt_luk, vb.best_modt_luk_eng,
@@ -1115,8 +1142,8 @@ class openAgency extends webServiceServer {
                                                   FROM vip_vsn vsn, vip v
                                                   WHERE vsn.delete_mark_vsn is null
                                                     AND v.bib_vsn = vsn.bib_nr
-                                                        ' . $filter_bib_type . ' )
-                              AND v.delete_mark is null
+                                                    AND ' . $filter_bib_type . ' )
+                              ' . $filter_delete . '
                               AND v.bib_nr = vb.bib_nr (+)
                               AND (vb.filial_tf <> :bind_n OR vb.filial_tf is null)
                               AND v.bib_nr = txt.bib_nr (+)

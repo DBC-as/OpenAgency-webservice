@@ -8,6 +8,7 @@
          <open:postalCode></open:postalCode>
          <open:city></open:city>
          <open:libraryType>Folkebibliotek</open:libraryType>
+         <open:libraryStatus></open:libraryStatus>
          <open:pickupAllowed></open:pickupAllowed>
       </open:pickupAgencyListRequest>
    </soapenv:Body>
