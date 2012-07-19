@@ -418,6 +418,8 @@ class openAgency extends webServiceServer {
               $inf->branchFax->_value = $oa_row['VD.SVAR_FAX'];
               $inf->branchEmail->_value = $oa_row['V.EMAIL'];
               $inf->branchType->_value = $oa_row['V.TYPE'];
+              if ($oa_row['AFSAETNINGSBIBLIOTEK'])
+                $inf->dropOffAgency->_value = $oa_row['AFSAETNINGSBIBLIOTEK'];
               $inf->postalAddress->_value = $oa_row['V.BADR'];
               $inf->postalCode->_value = $oa_row['V.BPOSTNR'];
               $inf->city->_value = $oa_row['V.BCITY'];
@@ -1075,7 +1077,7 @@ class openAgency extends webServiceServer {
             }
 //var_dump($filter_bib_type);
 // 2do vip_beh.best_modt = $param->pickupAllowed->_value
-            $oci->set_query('SELECT vsn.bib_nr, vsn.navn, vsn.tlf_nr, vsn.email, 
+            $oci->set_query('SELECT vsn.bib_nr, vsn.navn, vsn.bib_type, vsn.tlf_nr, vsn.email, 
                                     vsn.badr, vsn.bpostnr, vsn.bcity, vsn.url
                             FROM vip_vsn vsn, vip v
                             WHERE vsn.delete_mark_vsn is null ' . $filter_bib_type . '
@@ -1101,7 +1103,7 @@ class openAgency extends webServiceServer {
               else
                 $filter_bib_type .= ' AND vb.best_modt != \'J\'';
             }
-            $oci->set_query('SELECT v.bib_nr, v.navn, v.tlf_nr, v.email, v.badr, v.bpostnr, 
+            $oci->set_query('SELECT v.bib_nr, v.navn, v.type, v.tlf_nr, v.email, v.badr, v.bpostnr, 
                                     v.bcity, v.isil, v.bib_vsn, v.url_homepage, v.url_payment,
                                     vb.best_modt, vb.best_modt_luk, vb.best_modt_luk_eng,
                                     txt.aabn_tid, eng.aabn_tid_e, hold.holdeplads,
@@ -1137,6 +1139,7 @@ class openAgency extends webServiceServer {
               }
               if (empty($library)) {
                 $library->agencyId->_value = $this_vsn;
+                $library->agencyType->_value = $vsn[$this_vsn]['BIB_TYPE'];
                 $library->agencyName->_value = $vsn[$this_vsn]['NAVN'];
                 if ($vsn[$this_vsn]['TLF_NR']) $library->agencyPhone->_value = $vsn[$this_vsn]['TLF_NR'];
                 if ($vsn[$this_vsn]['EMAIL']) $library->agencyEmail->_value = $vsn[$this_vsn]['EMAIL'];
@@ -1151,8 +1154,15 @@ class openAgency extends webServiceServer {
               }
               if (empty($pickupAgency)) {
                 $pickupAgency->branchId->_value = $row['BIB_NR'];
-                $pickupAgency->branchName->_value = $row['NAVN'];
+                switch (strtoupper($row['TYPE'])) {
+                  case 'H': $pickupAgency->branchType->_value = 'hovedbibliotek'; break;
+                  case 'F': $pickupAgency->branchType->_value = 'filial'; break;
+                  case 'B': $pickupAgency->branchType->_value = 'bogbus'; break;
+                  case 'S': $pickupAgency->branchType->_value = 'servicepunkt'; break;
+                  case 'T': $pickupAgency->branchType->_value = 'transport'; break;
+                }
                 $pickupAgency->branchPhone->_value = $row['TLF_NR'];
+                $pickupAgency->branchName->_value = $row['NAVN'];
                 $pickupAgency->branchEmail->_value = $row['EMAIL'];
                 if ($row['BADR']) $pickupAgency->postalAddress->_value = $row['BADR'];
                 if ($row['BPOSTNR']) $pickupAgency->postalCode->_value = $row['BPOSTNR'];

@@ -327,6 +327,7 @@ You should have received a copy of the GNU Affero General Public License along w
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="date" type="xs:string"/>
+	<xs:element name="dropOffAgency" type="xs:string"/>
 	<xs:element name="email" type="xs:string"/>
 	<xs:element name="encrypt" type="xs:string"/>
 	<xs:element name="encryption">
@@ -365,6 +366,7 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="oa:branchFax" minOccurs="0"/>
 				<xs:element ref="oa:branchEmail" minOccurs="0"/>
 				<xs:element ref="oa:branchType" minOccurs="0"/>
+				<xs:element ref="oa:dropOffAgency" minOccurs="0"/>
 				<xs:element ref="oa:postalAddress" minOccurs="0"/>
 				<xs:element ref="oa:postalCode" minOccurs="0"/>
 				<xs:element ref="oa:city" minOccurs="0"/>
@@ -401,6 +403,7 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="oa:agencyId"/>
 				<xs:choice>
 					<xs:sequence>
+						<xs:element ref="oa:agencyType"/>
 						<xs:element ref="oa:agencyName"/>
 						<xs:element ref="oa:agencyPhone" minOccurs="0"/>
 						<xs:element ref="oa:agencyEmail" minOccurs="0"/>
@@ -479,6 +482,7 @@ You should have received a copy of the GNU Affero General Public License along w
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="oa:branchId"/>
+				<xs:element ref="oa:branchType"/>
 				<xs:element ref="oa:branchName"/>
 				<xs:element ref="oa:branchPhone"/>
 				<xs:element ref="oa:branchEmail"/>
