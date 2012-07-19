@@ -112,6 +112,7 @@ You should have received a copy of the GNU Affero General Public License along w
 					</xs:sequence>
 					<xs:element ref="oa:libraryType" minOccurs="0"/>
 				</xs:choice>
+				<xs:element ref="oa:libraryStatus" minOccurs="0"/>
 				<xs:element ref="oa:pickupAllowed" minOccurs="0"/>
 				<xs:element ref="oa:callback" minOccurs="0"/>
 				<xs:element ref="oa:outputType" minOccurs="0"/>
@@ -418,6 +419,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="libraryStatus" type="oa:libraryStatusType"/>
 	<xs:element name="libraryType" type="oa:libraryTypeType"/>
 	<xs:element name="lookupUrl" type="xs:string"/>
 	<xs:element name="materialType" type="xs:integer"/>
@@ -702,6 +704,13 @@ You should have received a copy of the GNU Affero General Public License along w
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="dan"/>
 			<xs:enumeration value="eng"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="libraryStatusType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="alle"/>
+			<xs:enumeration value="usynlig"/>
+			<xs:enumeration value="slettet"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="libraryTypeType">
