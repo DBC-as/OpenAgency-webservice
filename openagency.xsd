@@ -298,6 +298,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="branchId" type="xs:string"/>
 	<xs:element name="branchName" type="xs:string"/>
 	<xs:element name="branchPhone" type="xs:string"/>
+	<xs:element name="branchStatus" type="xs:string"/>
 	<xs:element name="branchType" type="xs:string"/>
 	<xs:element name="branchWebsiteUrl" type="xs:string"/>
 	<xs:element name="callback" type="xs:string">
@@ -502,6 +503,7 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="oa:temporarilyClosed"/>
 				<xs:element ref="oa:temporarilyClosedReason" minOccurs="0" maxOccurs="2"/>
 				<xs:element ref="oa:pickupAllowed" minOccurs="0"/>
+				<xs:element ref="oa:branchStatus" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>

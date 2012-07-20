@@ -1101,8 +1101,6 @@ class openAgency extends webServiceServer {
               $bib_nr = &$row['BIB_NR'];
               $vsn[$bib_nr] = $row;
             }
-            $n = 'N';
-            $oci->bind('bind_n', $n);
             if ($ora_par['agencyId']) {
               foreach ($ora_par['agencyId'] as $agency) {
                 $oci->bind('bind_' . $agency, $agency);
@@ -1130,8 +1128,13 @@ class openAgency extends webServiceServer {
             } else {
               $filter_delete = ' AND v.delete_mark is null';
             }
+            if ($filter_delete) {
+              $n = 'N';
+              $oci->bind('bind_n', $n);
+              $filter_filial = ' AND (vb.filial_tf <> :bind_n OR vb.filial_tf is null)';
+            }
             $oci->set_query('SELECT v.bib_nr, v.navn, v.type, v.tlf_nr, v.email, v.badr, v.bpostnr, 
-                                    v.bcity, v.isil, v.bib_vsn, v.url_homepage, v.url_payment,
+                                    v.bcity, v.isil, v.bib_vsn, v.url_homepage, v.url_payment, v.delete_mark,
                                     vb.best_modt, vb.best_modt_luk, vb.best_modt_luk_eng,
                                     txt.aabn_tid, eng.aabn_tid_e, hold.holdeplads,
                                     bestil.url_serv_dkl,
@@ -1144,8 +1147,8 @@ class openAgency extends webServiceServer {
                                                     AND v.bib_vsn = vsn.bib_nr
                                                     AND ' . $filter_bib_type . ' )
                               ' . $filter_delete . '
+                              ' . $filter_filial . '
                               AND v.bib_nr = vb.bib_nr (+)
-                              AND (vb.filial_tf <> :bind_n OR vb.filial_tf is null)
                               AND v.bib_nr = txt.bib_nr (+)
                               AND v.bib_nr = hold.bib_nr (+)
                               AND v.bib_nr = eng.bib_nr (+)
@@ -1230,6 +1233,9 @@ class openAgency extends webServiceServer {
                 }
               }
               $pickupAgency->pickupAllowed->_value = ($row['BEST_MODT'] == 'J' ? '1' : '0');
+              if ($row['DELETE_MARK']) {
+                $pickupAgency->branchStatus->_value = $row['DELETE_MARK'];
+              }
             }
             if ($pickupAgency) {
               $library->pickupAgency[]->_value = $pickupAgency;
