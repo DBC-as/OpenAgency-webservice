@@ -225,6 +225,17 @@ You should have received a copy of the GNU Affero General Public License along w
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="acceptOrderAgencyOffline" type="xs:boolean"/>
+	<xs:element name="acceptOrderFromUnknownUser" type="xs:boolean"/>
+	<xs:element name="acceptOrderFromUnknownUserText">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute ref="oa:language"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="autPotential">
 		<xs:complexType>
 			<xs:sequence>
@@ -277,6 +288,17 @@ You should have received a copy of the GNU Affero General Public License along w
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="agencyParameters">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="oa:borrowerCheckParameters" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="oa:acceptOrderFromUnknownUser"/>
+				<xs:element ref="oa:acceptOrderFromUnknownUserText" minOccurs="0" maxOccurs="2"/>
+				<xs:element ref="oa:acceptOrderAgencyOffline"/>
+				<xs:element ref="oa:payForPostage"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="agencyCatalogueUrl" type="xs:string"/>
 	<xs:element name="agencyEmail" type="xs:string"/>
 	<xs:element name="agencyFax" type="xs:string"/>
@@ -293,6 +315,16 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="autRes" type="xs:string"/>
 	<xs:element name="autService" type="oa:autServiceType"/>
 	<xs:element name="base64" type="xs:string"/>
+	<xs:element name="borrowerCheck" type="xs:boolean"/>
+	<xs:element name="borrowerCheckParameters">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="oa:borrowerCheckSystem"/>
+				<xs:element ref="oa:borrowerCheck"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="borrowerCheckSystem" type="xs:string"/>
 	<xs:element name="branchEmail" type="xs:string"/>
 	<xs:element name="branchFax" type="xs:string"/>
 	<xs:element name="branchId" type="xs:string"/>
@@ -480,6 +512,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:documentation xml:lang="en">Password (for authentication purposes)</xs:documentation>
 		</xs:annotation>
 	</xs:element>
+	<xs:element name="payForPostage" type="xs:boolean"/>
 	<xs:element name="paymentUrl" type="xs:string"/>
 	<xs:element name="pickupAgency">
 		<xs:complexType>
@@ -637,6 +670,7 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="oa:userIdTxt" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="oa:customIdTxt" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="oa:orderParameters" maxOccurs="unbounded"/>
+				<xs:element ref="oa:agencyParameters"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>

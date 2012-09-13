@@ -393,6 +393,15 @@ class openAgency extends webServiceServer {
                           AND v.bib_nr = :bind_bib_nr');
           $oa_row = $oci->fetch_into_assoc();
           $this->sanitize_array($oa_row);
+          if ($param->service->_value == 'userOrderParameters') {
+            $oci->bind('bind_bib_nr', $agency);
+            $oci->set_query('SELECT fjernadgang.har_laanertjek fjernadgang_har_laanertjek, fjernadgang.*, 
+                                    fjernadgang_andre.*
+                             FROM fjernadgang, fjernadgang_andre
+                            WHERE fjernadgang.faust = fjernadgang_andre.faust
+                              AND bib_nr = :bind_bib_nr');
+            $fjernadgang_rows = $oci->fetch_all_into_assoc();
+          }
         }
         catch (ociException $e) {
           verbose::log(FATAL, 'OpenAgency('.__LINE__.'):: OCI select error: ' . $oci->get_error_string());
@@ -834,6 +843,29 @@ class openAgency extends webServiceServer {
                   unset($f);
                 }
               }
+              foreach ($fjernadgang_rows as $fjern) {
+                $f->borrowerCheckSystem->_value = $fjern['NAVN'];
+                $f->borrowerCheck->_value = $fjern['HAR_LAANERTJEK'] == 1 ? '1' : '0';
+                $bCP[]->_value = $f;
+                unset($f);
+              }
+              $aP->borrowerCheckParameters = $bCP;
+              $aP->acceptOrderFromUnknownUser->_value = in_array($oa_row[$best_ukendt], array('N', 'K'))? '1' : '0';
+              if ($oa_row[$best_ukendt_txt]) {
+                $f->_attributes->language->_value = 'dan';
+                $f->_value = $oa_row[$best_ukendt_txt];
+                $aP->acceptOrderFromUnknownUserText[]->_value = $f;
+                unset($f);
+              }
+              if ($oa_row[$best_ukendt_txt_eng]) {
+                $f->_attributes->language->_value = 'eng';
+                $f->_value = $oa_row[$best_ukendt_txt_eng];
+                $aP->acceptOrderFromUnknownUserText[]->_value = $f;
+                unset($f);
+              }
+              $aP->acceptOrderAgencyOffline->_value = $oa_row[$laanertjek_noresponse] == 'N' ? '0' : '1';
+              $aP->payForPostage->_value = $oa_row[$laanertjek_noresponse] == 'N' ? '0' : '1';
+              $usrOP->agencyParameters->_value = $aP;
 /*      <open:userOrderParameters>
             <!--1 or more repetitions:-->
             <open:userParameter>
@@ -854,6 +886,18 @@ class openAgency extends webServiceServer {
                   <open:parameterRequired>?</open:parameterRequired>
                </open:itemParameter>
             </open:orderParameters>
+            <open:agencyParameters>
+               <!--Zero or more repetitions:-->
+               <open:borrowerCheckParameters>
+                  <open:borrowerCheckSystem>?</open:borrowerCheckSystem>
+                  <open:borrowerCheck>?</open:borrowerCheck>
+               </open:borrowerCheckParameters>
+               <open:acceptOrderFromUnknownUser>?</open:acceptOrderFromUnknownUser>
+               <!--0 to 2 repetitions:-->
+               <open:acceptOrderFromUnknownUserText open:language="?">?</open:acceptOrderFromUnknownUserText>
+               <open:acceptOrderAgencyOffline>?</open:acceptOrderAgencyOffline>
+               <open:payForPostage>?</open:payForPostage>
+            </open:agencyParameters>
          </open:userOrderParameters>                        */
 
     //print_r($oa_row); 
@@ -1138,7 +1182,8 @@ class openAgency extends webServiceServer {
                                     vb.best_modt, vb.best_modt_luk, vb.best_modt_luk_eng,
                                     txt.aabn_tid, eng.aabn_tid_e, hold.holdeplads,
                                     bestil.url_serv_dkl,
-                                    kat.url_best_blanket, kat.url_laanerstatus
+                                    kat.url_best_blanket, kat.url_laanerstatus, kat.ncip_lookup_user,
+                                    kat.ncip_renew, kat.ncip_cancel, kat.ncip_update_request
                             FROM vip v, vip_beh vb, vip_txt txt, vip_txt_eng eng, 
                                  vip_bogbus_holdeplads hold, vip_bestil bestil, vip_kat kat
                             WHERE v.bib_vsn IN (SELECT vsn.bib_nr
@@ -1236,6 +1281,10 @@ class openAgency extends webServiceServer {
               if ($row['DELETE_MARK']) {
                 $pickupAgency->branchStatus->_value = $row['DELETE_MARK'];
               }
+              $pickupAgency->ncipLookupUser->_value = ($row['NCIP_LOOKUP_USER'] == 'J' ? 1 : '0');
+              $pickupAgency->ncipRenewOrder->_value = ($row['NCIP_RENEW'] == 'J' ? '1' : '0');
+              $pickupAgency->ncipCancelOrder->_value = ($row['NCIP_CANCEL'] == 'J' ? '1' : '0');
+              $pickupAgency->ncipUpdateOrder->_value = ($row['NCIP_UPDATE_REQUEST'] == 'J' ? '1' : '0');
             }
             if ($pickupAgency) {
               $library->pickupAgency[]->_value = $pickupAgency;
