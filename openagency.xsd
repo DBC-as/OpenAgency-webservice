@@ -457,6 +457,10 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="lookupUrl" type="xs:string"/>
 	<xs:element name="materialType" type="xs:integer"/>
 	<xs:element name="name" type="xs:string"/>
+	<xs:element name="ncipCancelOrder" type="xs:boolean"/>
+	<xs:element name="ncipLookupUser" type="xs:boolean"/>
+	<xs:element name="ncipRenewOrder" type="xs:boolean"/>
+	<xs:element name="ncipUpdateOrder" type="xs:boolean"/>
 	<xs:element name="norfri" type="xs:string"/>
 	<xs:element name="openingHours">
 		<xs:complexType>
@@ -537,6 +541,10 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="oa:temporarilyClosedReason" minOccurs="0" maxOccurs="2"/>
 				<xs:element ref="oa:pickupAllowed" minOccurs="0"/>
 				<xs:element ref="oa:branchStatus" minOccurs="0"/>
+				<xs:element ref="oa:ncipLookupUser" minOccurs="0"/>
+				<xs:element ref="oa:ncipRenewOrder" minOccurs="0"/>
+				<xs:element ref="oa:ncipCancelOrder" minOccurs="0"/>
+				<xs:element ref="oa:ncipUpdateOrder" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
