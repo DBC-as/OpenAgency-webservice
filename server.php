@@ -398,8 +398,8 @@ class openAgency extends webServiceServer {
             $oci->set_query('SELECT fjernadgang.har_laanertjek fjernadgang_har_laanertjek, fjernadgang.*, 
                                     fjernadgang_andre.*
                              FROM fjernadgang, fjernadgang_andre
-                            WHERE fjernadgang.faust = fjernadgang_andre.faust
-                              AND bib_nr = :bind_bib_nr');
+                            WHERE fjernadgang.faust (+) = fjernadgang_andre.faust
+                              AND bib_nr (+) = :bind_bib_nr');
             $fjernadgang_rows = $oci->fetch_all_into_assoc();
           }
         }
@@ -845,7 +845,7 @@ class openAgency extends webServiceServer {
               }
               foreach ($fjernadgang_rows as $fjern) {
                 $f->borrowerCheckSystem->_value = $fjern['NAVN'];
-                $f->borrowerCheck->_value = $fjern['HAR_LAANERTJEK'] == 1 ? '1' : '0';
+                $f->borrowerCheck->_value = $fjern['FJERNADGANG_HAR_LAANERTJEK'] == 1 ? '1' : '0';
                 $bCP[]->_value = $f;
                 unset($f);
               }
