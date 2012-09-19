@@ -1123,22 +1123,22 @@ class openAgency extends webServiceServer {
 //var_dump($filter_bib_type);
 // 2do vip_beh.best_modt = $param->pickupAllowed->_value
             if ($param->libraryStatus->_value == 'alle') {
-              $filter_delete = '';
+              $filter_delete_vsn = '';
             } elseif ($param->libraryStatus->_value == 'usynlig') {
               $u = 'U';
               $oci->bind('bind_u', $u);
-              $filter_delete = '(vsn.delete_mark_vsn is null or vsn.delete_mark_vsn = :bind_u) AND ';
+              $filter_delete_vsn = '(vsn.delete_mark_vsn is null or vsn.delete_mark_vsn = :bind_u) AND (v.delete_mark is null or v.delete_mark = :bind_u) AND ';
             } elseif ($param->libraryStatus->_value == 'slettet') {
               $s = 'S';
               $oci->bind('bind_s', $s);
-              $filter_delete = '(vsn.delete_mark_vsn is null or vsn.delete_mark_vsn = :bind_s) AND ';
+              $filter_delete_vsn = '(vsn.delete_mark_vsn is null or vsn.delete_mark_vsn = :bind_s) AND (v.delete_mark is null or v.delete_mark = :bind_s) AND ';
             } else {
-              $filter_delete = 'vsn.delete_mark_vsn is null AND ';
+              $filter_delete_vsn = 'vsn.delete_mark_vsn is null AND v.delete_mark is null AND ';
             }
             $oci->set_query('SELECT vsn.bib_nr, vsn.navn, vsn.bib_type, vsn.tlf_nr, vsn.email, 
                                     vsn.badr, vsn.bpostnr, vsn.bcity, vsn.url
                             FROM vip_vsn vsn, vip v
-                            WHERE ' . $filter_delete . $filter_bib_type . '
+                            WHERE ' . $filter_delete_vsn . $filter_bib_type . '
                               AND v.bib_vsn = vsn.bib_nr
                             ORDER BY vsn.bib_nr');
             while ($row = $oci->fetch_into_assoc()) {
@@ -1188,8 +1188,8 @@ class openAgency extends webServiceServer {
                                  vip_bogbus_holdeplads hold, vip_bestil bestil, vip_kat kat
                             WHERE v.bib_vsn IN (SELECT vsn.bib_nr
                                                   FROM vip_vsn vsn, vip v
-                                                  WHERE vsn.delete_mark_vsn is null
-                                                    AND v.bib_vsn = vsn.bib_nr
+                                                  WHERE ' . $filter_delete_vsn . '
+                                                         v.bib_vsn = vsn.bib_nr
                                                     AND ' . $filter_bib_type . ' )
                               ' . $filter_delete . '
                               ' . $filter_filial . '
