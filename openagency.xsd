@@ -116,6 +116,7 @@ You should have received a copy of the GNU Affero General Public License along w
 				</xs:choice>
 				<xs:element ref="oa:libraryStatus" minOccurs="0"/>
 				<xs:element ref="oa:pickupAllowed" minOccurs="0"/>
+				<xs:element ref="oa:sort" minOccurs="0"/>
 				<xs:element ref="oa:callback" minOccurs="0"/>
 				<xs:element ref="oa:outputType" minOccurs="0"/>
 			</xs:sequence>
@@ -611,6 +612,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	</xs:element>
 	<xs:element name="service" type="oa:serviceType"/>
 	<xs:element name="serviceDeclarationUrl" type="xs:string"/>
+	<xs:element name="sort" type="oa:sortType"/>
 	<xs:element name="source">
 		<xs:complexType>
 			<xs:sequence>
@@ -825,6 +827,16 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:enumeration value="orsShipping"/>
 			<xs:enumeration value="serverInformation"/>
 			<xs:enumeration value="userParameters"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="sortType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="agencyId"/>
+			<xs:enumeration value="agencyName"/>
+			<xs:enumeration value="agencyAddress"/>
+			<xs:enumeration value="postalCode"/>
+			<xs:enumeration value="city"/>
+			<xs:enumeration value="libraryType"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="userIdTypeType">
