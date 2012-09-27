@@ -110,7 +110,7 @@ You should have received a copy of the GNU Affero General Public License along w
 						<xs:element ref="oa:agencyAddress" minOccurs="0" maxOccurs="unbounded"/>
 						<xs:element ref="oa:postalCode" minOccurs="0" maxOccurs="unbounded"/>
 						<xs:element ref="oa:city" minOccurs="0" maxOccurs="unbounded"/>
-						<xs:element ref="oa:anyIndex" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element ref="oa:anyField" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
 					<xs:element ref="oa:libraryType" minOccurs="0"/>
 				</xs:choice>
@@ -313,7 +313,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="agencyType" type="xs:string"/>
 	<xs:element name="agencyWebsiteUrl" type="xs:string"/>
 	<xs:element name="address" type="xs:string"/>
-	<xs:element name="anyIndex" type="xs:string"/>
+	<xs:element name="anyField" type="xs:string"/>
 	<xs:element name="autChoice" type="xs:string"/>
 	<xs:element name="autId" type="xs:integer"/>
 	<xs:element name="autPeriod" type="xs:integer"/>

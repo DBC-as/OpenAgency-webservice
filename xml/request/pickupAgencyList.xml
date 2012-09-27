@@ -5,11 +5,14 @@
          <!--Zero or more repetitions:-->
          <open:agencyId>DK-710100</open:agencyId>
          <open:agencyName></open:agencyName>
+         <open:agencyAddress></open:agencyAddress>
          <open:postalCode></open:postalCode>
          <open:city></open:city>
+         <open:anyField></open:anyField>
          <open:libraryType>Folkebibliotek</open:libraryType>
          <open:libraryStatus></open:libraryStatus>
          <open:pickupAllowed></open:pickupAllowed>
+         <open:sort></open:sort>
       </open:pickupAgencyListRequest>
    </soapenv:Body>
 </soapenv:Envelope>
