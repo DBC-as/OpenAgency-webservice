@@ -984,11 +984,14 @@ class openAgency extends webServiceServer {
    * Request:
    * - agencyId
    * - agencyName
+   * - agencyAddress
    * - postalCode
    * - city
+   * - anyField
    * - libraryType
    * - libraryStatus
    * - pickupAllowed
+   * - sort
 
    * Response:
    * - library
@@ -1026,7 +1029,7 @@ class openAgency extends webServiceServer {
     if (!$this->aaa->has_right('openagency', 500))
       $res->error->_value = 'authentication_error';
     else {
-      foreach (array('agencyId', 'agencyName', 'postalCode', 'city') as $par) {
+      foreach (array('agencyId', 'agencyName', 'agencyAddress', 'postalCode', 'city', 'anyField') as $par) {
         if (is_array($param->$par)) {
           foreach ($param->$par as $p) {
             if ($par == 'agencyId') {
@@ -1055,13 +1058,17 @@ class openAgency extends webServiceServer {
 //var_dump($ora_par);
 //var_dump($param_agencies);
 //die();
-      $cache_key = 'OA_picAL_' . $this->version . 
-                                 (is_array($ora_par['agencyId']) ? implode('', $ora_par['agencyId']) : '') . 
-                                 (is_array($ora_par['agencyName']) ? implode('', $ora_par['agencyName']) : '') . 
-                                 (is_array($ora_par['postalCode']) ? implode('', $ora_par['postalCode']) : '') . 
-                                 (is_array($ora_par['city']) ? implode('', $ora_par['city']) : '') . 
-                                 $param->pickupAllowed->_value . 
-                                 $param->libraryType->_value;
+      $cache_key = 'OA_picAL_' . 
+                   $this->version . 
+                   (is_array($ora_par['agencyId']) ? implode('', $ora_par['agencyId']) : '') . 
+                   (is_array($ora_par['agencyName']) ? implode('', $ora_par['agencyName']) : '') . 
+                   (is_array($ora_par['agencyAddress']) ? implode('', $ora_par['agencyAddress']) : '') . 
+                   (is_array($ora_par['postalCode']) ? implode('', $ora_par['postalCode']) : '') . 
+                   (is_array($ora_par['city']) ? implode('', $ora_par['city']) : '') . 
+                   (is_array($ora_par['anyField']) ? implode('', $ora_par['anyField']) : '') . 
+                   $param->pickupAllowed->_value . 
+                   $param->libraryType->_value .
+                   $param->sort->_value;
       if ($ret = $this->cache->get($cache_key)) {
         verbose::log(STAT, 'Cache hit');
         return $ret;
@@ -1086,6 +1093,7 @@ class openAgency extends webServiceServer {
                 $add_sql = '';
                 foreach ($val as $par) {
                   $add_item = '';
+                  $regexp_par = $this->build_regexp_like($par);
                   switch ($key) {
                     case 'agencyId':
                       break;
@@ -1098,6 +1106,26 @@ class openAgency extends webServiceServer {
                     case 'city':
                       $add_item .= 'upper(v.bcity) like upper(\'%' . $par . '%\')';
                       break;
+/*
+                    case 'agencyName':
+                      $add_item .= 'regexp_like(upper(v.navn), \'' . $regexp_par . '\') OR ' .
+                                   '(regexp_like(upper(vs.tekst), \'' . $regexp_par . '\') AND vs.type = \'N\')';
+                      break;
+                    case 'agencyAddress':
+                      $add_item .= 'regexp_like(upper(v.badr), \'' . $regexp_par . '\') OR ' .
+                                   'regexp_like(upper(vsn.badr), \'' . $regexp_par . '\') OR ' .
+                                   '(regexp_like(upper(vs.tekst), \'' . $regexp_par . '\') AND vs.type = \'A\')';
+                      break;
+                    case 'postalCode':
+                      $add_item .= 'upper(v.bpostnr) like upper(\'%' . $par . '%\')';
+                      break;
+                    case 'city':
+                      $add_item .= 'upper(v.bcity) like upper(\'%' . $par . '%\')';
+                      break;
+                    case 'anyField':
+                      $add_item .= 'upper(v.navn) like upper(\'%' . $par . '%\')';
+                      break;
+*/
                   }
                   if ($add_item) {
                     if (empty($add_sql))
@@ -1135,12 +1163,14 @@ class openAgency extends webServiceServer {
             } else {
               $filter_delete_vsn = 'vsn.delete_mark_vsn is null AND v.delete_mark is null AND ';
             }
-            $oci->set_query('SELECT vsn.bib_nr, vsn.navn, vsn.bib_type, vsn.tlf_nr, vsn.email, 
+            $sql = 'SELECT vsn.bib_nr, vsn.navn, vsn.bib_type, vsn.tlf_nr, vsn.email,
                                     vsn.badr, vsn.bpostnr, vsn.bcity, vsn.url
-                            FROM vip_vsn vsn, vip v
+                            FROM vip_vsn vsn, vip v, vip_sup vs
                             WHERE ' . $filter_delete_vsn . $filter_bib_type . '
+                              AND v.bib_nr = vs.bib_nr (+)
                               AND v.bib_vsn = vsn.bib_nr
-                            ORDER BY vsn.bib_nr');
+                            ORDER BY vsn.bib_nr';
+            $oci->set_query($sql);
             while ($row = $oci->fetch_into_assoc()) {
               $bib_nr = &$row['BIB_NR'];
               $vsn[$bib_nr] = $row;
@@ -1177,29 +1207,30 @@ class openAgency extends webServiceServer {
               $oci->bind('bind_n', $n);
               $filter_filial = ' AND (vb.filial_tf <> :bind_n OR vb.filial_tf is null)';
             }
-            $oci->set_query('SELECT v.bib_nr, v.navn, v.type, v.tlf_nr, v.email, v.badr, v.bpostnr, 
-                                    v.bcity, v.isil, v.bib_vsn, v.url_homepage, v.url_payment, v.delete_mark,
-                                    vb.best_modt, vb.best_modt_luk, vb.best_modt_luk_eng,
-                                    txt.aabn_tid, eng.aabn_tid_e, hold.holdeplads,
-                                    bestil.url_serv_dkl,
-                                    kat.url_best_blanket, kat.url_laanerstatus, kat.ncip_lookup_user,
-                                    kat.ncip_renew, kat.ncip_cancel, kat.ncip_update_request
-                            FROM vip v, vip_beh vb, vip_txt txt, vip_txt_eng eng, 
-                                 vip_bogbus_holdeplads hold, vip_bestil bestil, vip_kat kat
-                            WHERE v.bib_vsn IN (SELECT vsn.bib_nr
-                                                  FROM vip_vsn vsn, vip v
-                                                  WHERE ' . $filter_delete_vsn . '
-                                                         v.bib_vsn = vsn.bib_nr
-                                                    AND ' . $filter_bib_type . ' )
-                              ' . $filter_delete . '
-                              ' . $filter_filial . '
-                              AND v.bib_nr = vb.bib_nr (+)
-                              AND v.bib_nr = txt.bib_nr (+)
-                              AND v.bib_nr = hold.bib_nr (+)
-                              AND v.bib_nr = eng.bib_nr (+)
-                              AND v.bib_nr = bestil.bib_nr (+)
-                              AND v.bib_nr = kat.bib_nr (+)
-                            ORDER BY v.bib_vsn, v.bib_nr');
+            $sql ='SELECT v.bib_nr, v.navn, v.type, v.tlf_nr, v.email, v.badr, v.bpostnr, 
+                          v.bcity, v.isil, v.bib_vsn, v.url_homepage, v.url_payment, v.delete_mark,
+                          vb.best_modt, vb.best_modt_luk, vb.best_modt_luk_eng,
+                          txt.aabn_tid, eng.aabn_tid_e, hold.holdeplads,
+                          bestil.url_serv_dkl,
+                          kat.url_best_blanket, kat.url_laanerstatus, kat.ncip_lookup_user,
+                          kat.ncip_renew, kat.ncip_cancel, kat.ncip_update_request
+                  FROM vip v, vip_beh vb, vip_txt txt, vip_txt_eng eng, 
+                       vip_bogbus_holdeplads hold, vip_bestil bestil, vip_kat kat
+                  WHERE v.bib_vsn IN (SELECT vsn.bib_nr
+                                        FROM vip_vsn vsn, vip v, vip_sup vs
+                                        WHERE ' . $filter_delete_vsn . '
+                                               v.bib_vsn = vsn.bib_nr
+                                          AND ' . $filter_bib_type . ' )
+                    ' . $filter_delete . '
+                    ' . $filter_filial . '
+                    AND v.bib_nr = vb.bib_nr (+)
+                    AND v.bib_nr = txt.bib_nr (+)
+                    AND v.bib_nr = hold.bib_nr (+)
+                    AND v.bib_nr = eng.bib_nr (+)
+                    AND v.bib_nr = bestil.bib_nr (+)
+                    AND v.bib_nr = kat.bib_nr (+)
+                  ORDER BY v.bib_vsn, v.bib_nr';
+            $oci->set_query($sql);
             while ($row = $oci->fetch_into_assoc()) {
               if ($ora_par['agencyId']) {
                 $a_key = array_search($row['BIB_NR'], $ora_par['agencyId']);
@@ -1318,6 +1349,15 @@ class openAgency extends webServiceServer {
     if (empty($res->error)) $this->cache->set($cache_key, $ret);
     return $ret;
   }
+
+  /** \brief makes a regular expression to match single_words in the DB, using ? as truncation
+   *
+   * select navn from vip where regexp_like(navn, '[ ,.;:]bibliotek[ .,;:$]');
+   * select bib_nr, navn from vip where regexp_like(lower(navn), '(^|[ ,.;:])krystal[a-zæøå]*([ .,;:]|$)');
+   */
+private function build_regexp_like($par) {
+  return '(^|[ ,.;:])' . strtoupper(str_replace('?', '[a-zæøå]*', $par)) . '([ .,;:]|$)';
+}
 
   /** \brief
    *
