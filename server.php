@@ -961,16 +961,16 @@ class openAgency extends webServiceServer {
     else {
       $cache_key = 'OA_FinL_' . 
                    $this->version . 
-                   $this->stringify($param->agencyId) . '_' . 
-                   $this->stringify($param->agencyname) . '_' . 
-                   $this->stringify($param->agencyAddress) . '_' . 
-                   $this->stringify($param->postalCode) . '_' . 
-                   $this->stringify($param->city) . '_' . 
-                   $this->stringify($param->anyField) . '_' . 
-                   $this->stringify($param->libraryType) . '_' . 
-                   $this->stringify($param->libraryStatus) . '_' . 
-                   $this->stringify($param->pickupAllowed) . '_' . 
-                   $this->stringify($param->sort);
+                   $this->stringiefy($param->agencyId) . '_' . 
+                   $this->stringiefy($param->agencyname) . '_' . 
+                   $this->stringiefy($param->agencyAddress) . '_' . 
+                   $this->stringiefy($param->postalCode) . '_' . 
+                   $this->stringiefy($param->city) . '_' . 
+                   $this->stringiefy($param->anyField) . '_' . 
+                   $this->stringiefy($param->libraryType) . '_' . 
+                   $this->stringiefy($param->libraryStatus) . '_' . 
+                   $this->stringiefy($param->pickupAllowed) . '_' . 
+                   $this->stringiefy($param->sort);
       if ($ret = $this->cache->get($cache_key)) {
         verbose::log(STAT, 'Cache hit');
         return $ret;
@@ -991,31 +991,31 @@ class openAgency extends webServiceServer {
       }
   // agencyName
       if ($val = $param->agencyName->_value) {
-        $sqls[] = 'upper(v.navn) like upper(:bind_navn)';
-        $oci->bind('bind_navn', $val . '%');
+        $sqls[] = 'regexp_like(upper(v.navn), :bind_navn)';
+        $oci->bind('bind_navn', $this->build_regexp_like($val));
       }
   // agencyAddress
       if ($val = $param->agencyAddress->_value) {
-        $sqls[] = 'upper(v.badr) like upper(:bind_adr)';
-        $oci->bind('bind_adr', $val . '%');
+        $sqls[] = 'regexp_like(upper(v.badr), :bind_addr)';
+        $oci->bind('bind_addr', $this->build_regexp_like($val));
       }
   // postalCode
       if ($val = $param->postalCode->_value) {
-        $sqls[] = 'upper(v.bpostnr) like upper(:bind_postnr)';
-        $oci->bind('bind_postnr', $val . '%');
+        $sqls[] = 'regexp_like(upper(v.bpostnr), :bind_postnr)';
+        $oci->bind('bind_postnr', $this->build_regexp_like($val));
       }
   // city
       if ($val = $param->city->_value) {
-        $sqls[] = 'upper(v.bcity) like upper(:bind_city)';
-        $oci->bind('bind_city', $val . '%');
+        $sqls[] = 'regexp_like(upper(v.bcity), :bind_city)';
+        $oci->bind('bind_city', $this->build_regexp_like($val));
       }
   // anyField
       if ($val = $param->anyField->_value) {
-        $sqls[] = '(upper(v.navn) like upper(:bind_any)' . 
-                  ' OR upper(v.badr) like upper(:bind_any)' . 
-                  ' OR upper(v.bpostnr) like upper(:bind_any)' . 
-                  ' OR upper(v.bcity) like upper(:bind_any))';
-        $oci->bind('bind_any', $val . '%');
+        $sqls[] = '(regexp_like(upper(v.navn), :bind_any)' .
+                  ' OR regexp_like(upper(v.badr), :bind_any)' .
+                  ' OR regexp_like(upper(v.bpostnr), :bind_any)' .
+                  ' OR regexp_like(upper(v.bcity), :bind_any))';
+        $oci->bind('bind_any', $this->build_regexp_like($val));
       }
   // libraryType
       if ($val = $param->libraryType->_value
@@ -1078,6 +1078,7 @@ class openAgency extends webServiceServer {
 
     $sql ='SELECT v.bib_nr, v.navn, v.type, v.tlf_nr, v.email, v.badr, v.bpostnr, 
                   v.bcity, v.isil, v.bib_vsn, v.url_homepage, v.url_payment, v.delete_mark,
+                  vsn.navn vsn_navn, 
                   vb.best_modt, vb.best_modt_luk, vb.best_modt_luk_eng,
                   txt.aabn_tid, eng.aabn_tid_e, hold.holdeplads,
                   bestil.url_serv_dkl,
@@ -1098,11 +1099,13 @@ class openAgency extends webServiceServer {
     try {
       $oci->set_query($sql);
       while ($row = $oci->fetch_into_assoc()) {
-  //echo $row['BIB_NR'] . ' ' . $row['NAVN'] . '<br/>';
-        if ($row)
+        if ($row) {
+          //$row['NAVN'] = $row['VSN_NAVN'];
           $this->fill_pickupAgency($pickupAgency, $row);
-        if (empty($curr_bib)) 
+        }
+        if (empty($curr_bib)) {
           $curr_bib = $row['BIB_NR'];
+        }
         if ($curr_bib <> $row['BIB_NR']) {
           $res->pickupAgency[]->_value = $pickupAgency;
           unset($pickupAgency);
@@ -1295,7 +1298,6 @@ class openAgency extends webServiceServer {
                 $add_sql = '';
                 foreach ($val as $par) {
                   $add_item = '';
-                  //$regexp_par = $this->build_regexp_like($par);
                   switch ($key) {
                     case 'agencyId':
                       break;
@@ -1960,7 +1962,7 @@ class openAgency extends webServiceServer {
   /** \brief
    *  return change array to string. For cache key
    */
-  private function stringify($mix, $glue = '') {
+  private function stringiefy($mix, $glue = '') {
     if (is_array($mix)) {
       $ret = array();
       foreach ($mix as $m) {
