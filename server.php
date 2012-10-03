@@ -295,10 +295,10 @@ class openAgency extends webServiceServer {
         $assoc['music']     = array('MUSIK_BEST_MODT', 'BEST_TEKST_MUSIK');
         $assoc['newspaper'] = array('AVIS_BEST_MODT',  'BEST_TEKST_AVIS');
         $assoc['video']     = array('VIDEO_BEST_MODT', 'BEST_TEKST_VIDEO');
-        if (strtolower($param->ownedByAgency->_value) == 'true' || $param->ownedByAgency->_value == '1') {
+        if ($this->xs_boolean($param->ownedByAgency->_value)) {
           $fjernl = '';
         }
-        elseif (strtolower($param->ownedByAgency->_value) == 'false' || $param->ownedByAgency->_value == '0') {
+        else {
           $fjernl = '_FJL';
         }
         if (isset($fjernl) && $assoc[$mat_type]) {
@@ -920,6 +920,211 @@ class openAgency extends webServiceServer {
 
   /** \brief
    *
+   * Request:
+   * - agencyId
+   * - agencyName
+   * - agencyAddress
+   * - postalCode
+   * - city
+   * - anyField
+   * - libraryType
+   * - libraryStatus
+   * - pickupAllowed
+   * - sort
+
+   * Response:
+   * - pickupAgency
+   * - - branchId
+   * - - branchName
+   * - - branchPhone
+   * - - branchEmail
+   * - - postalAddress
+   * - - postalCode
+   * - - city
+   * - - isil
+   * - - branchWebsiteUrl *
+   * - - serviceDeclarationUrl *
+   * - - registrationFormUrl *
+   * - - paymentUrl *
+   * - - userStatusUrl *
+   * - - agencySubdivision
+   * - - openingHours
+   * - - temporarilyClosed
+   * - - temporarilyClosedReason
+   * - - pickupAllowed *
+   * - or
+   * - - error
+   */
+  public function findLibrary($param) {
+    if (!$this->aaa->has_right('openagency', 500))
+      $res->error->_value = 'authentication_error';
+    else {
+      $cache_key = 'OA_FinL_' . 
+                   $this->version . 
+                   $this->stringify($param->agencyId) . '_' . 
+                   $this->stringify($param->agencyname) . '_' . 
+                   $this->stringify($param->agencyAddress) . '_' . 
+                   $this->stringify($param->postalCode) . '_' . 
+                   $this->stringify($param->city) . '_' . 
+                   $this->stringify($param->anyField) . '_' . 
+                   $this->stringify($param->libraryType) . '_' . 
+                   $this->stringify($param->libraryStatus) . '_' . 
+                   $this->stringify($param->pickupAllowed) . '_' . 
+                   $this->stringify($param->sort);
+      if ($ret = $this->cache->get($cache_key)) {
+        verbose::log(STAT, 'Cache hit');
+        return $ret;
+      }
+      $oci = new Oci($this->config->get_value('agency_credentials','setup'));
+      $oci->set_charset('UTF8');
+      try {
+        $oci->connect();
+      }
+      catch (ociException $e) {
+        verbose::log(FATAL, 'OpenAgency('.__LINE__.'):: OCI connect error: ' . $oci->get_error_string());
+        $res->error->_value = 'service_unavailable';
+      }
+  // agencyId
+      if ($val = $this->strip_agency($param->agencyId->_value)) {
+        $sqls[] = 'v.bib_nr = :bind_bib_nr';
+        $oci->bind('bind_bib_nr', $val);
+      }
+  // agencyName
+      if ($val = $param->agencyName->_value) {
+        $sqls[] = 'upper(v.navn) like upper(:bind_navn)';
+        $oci->bind('bind_navn', $val . '%');
+      }
+  // agencyAddress
+      if ($val = $param->agencyAddress->_value) {
+        $sqls[] = 'upper(v.badr) like upper(:bind_adr)';
+        $oci->bind('bind_adr', $val . '%');
+      }
+  // postalCode
+      if ($val = $param->postalCode->_value) {
+        $sqls[] = 'upper(v.bpostnr) like upper(:bind_postnr)';
+        $oci->bind('bind_postnr', $val . '%');
+      }
+  // city
+      if ($val = $param->city->_value) {
+        $sqls[] = 'upper(v.bcity) like upper(:bind_city)';
+        $oci->bind('bind_city', $val . '%');
+      }
+  // anyField
+      if ($val = $param->anyField->_value) {
+        $sqls[] = '(upper(v.navn) like upper(:bind_any)' . 
+                  ' OR upper(v.badr) like upper(:bind_any)' . 
+                  ' OR upper(v.bpostnr) like upper(:bind_any)' . 
+                  ' OR upper(v.bcity) like upper(:bind_any))';
+        $oci->bind('bind_any', $val . '%');
+      }
+  // libraryType
+      if ($val = $param->libraryType->_value
+        && ($param->libraryType->_value == 'Folkebibliotek'
+          || $param->libraryType->_value == 'Forskningsbibliotek')) {
+        $sqls[] = 'vsn.bib_type = :bind_bib_type';
+        $oci->bind('bind_bib_type', $param->libraryType->_value);
+      }
+  // libraryStatus
+      if ($param->libraryStatus->_value == 'usynlig') {
+        $u = 'U';
+        $oci->bind('bind_u', $u);
+        $sqls[] = '(vsn.delete_mark_vsn is null OR vsn.delete_mark_vsn = :bind_u)' .
+                  ' AND (v.delete_mark is null OR v.delete_mark = :bind_u)';
+      } elseif ($param->libraryStatus->_value == 'slettet') {
+        $s = 'S';
+        $oci->bind('bind_s', $s);
+        $sqls[] = '(vsn.delete_mark_vsn is null OR vsn.delete_mark_vsn = :bind_s)' . 
+                  ' AND (v.delete_mark is null OR v.delete_mark = :bind_s)';
+      } elseif ($param->libraryStatus->_value <> 'alle') {
+        $sqls[] = 'vsn.delete_mark_vsn is null AND v.delete_mark is null';
+      }
+  // pickupAllowed
+      if (isset($param->pickupAllowed->_value)) {
+        $j = 'J';
+        $oci->bind('bind_j', $j);
+        if ($this->xs_boolean($param->pickupAllowed->_value))
+          $sqls[] .= 'vb.best_modt = :bind_j';
+        else
+          $sqls[] .= 'vb.best_modt != :bind_j';
+      }
+    }
+    $filter_sql = implode(' AND ', $sqls);
+
+  // sort
+    if (isset($param->sort)) {
+      if (is_array($param->sort)) {
+        $sorts = $param->sort;
+      }
+      else {
+        $sorts = array($param->sort);
+      }
+      foreach ($sorts as $s) {
+        switch ($s->_value) {
+          case 'agencyId':      $sort_order[] = 'v.bib_nr'; break;
+          case 'agencyName':    $sort_order[] = 'v.navn'; break;
+          case 'agencyAddress': $sort_order[] = 'v.badr'; break;
+          case 'postalCode':    $sort_order[] = 'v.postnr'; break;
+          case 'city':          $sort_order[] = 'v.bcity'; break;
+          case 'libraryType':   $sort_order[] = 'vsn.bib_type'; break;
+        }
+      }
+    }
+    if (is_array($sort_order)) {
+      $order_by = implode(', ', $sort_order);
+    }
+    else {
+      $order_by = 'v.bib_nr';
+    }
+
+    $sql ='SELECT v.bib_nr, v.navn, v.type, v.tlf_nr, v.email, v.badr, v.bpostnr, 
+                  v.bcity, v.isil, v.bib_vsn, v.url_homepage, v.url_payment, v.delete_mark,
+                  vb.best_modt, vb.best_modt_luk, vb.best_modt_luk_eng,
+                  txt.aabn_tid, eng.aabn_tid_e, hold.holdeplads,
+                  bestil.url_serv_dkl,
+                  kat.url_best_blanket, kat.url_laanerstatus, kat.ncip_lookup_user,
+                  kat.ncip_renew, kat.ncip_cancel, kat.ncip_update_request
+          FROM vip v, vip_vsn vsn, vip_beh vb, vip_txt txt, vip_txt_eng eng, 
+               vip_bogbus_holdeplads hold, vip_bestil bestil, vip_kat kat
+          WHERE 
+            ' . $filter_sql . '
+            AND v.bib_vsn = vsn.bib_nr (+)
+            AND v.bib_nr = vb.bib_nr (+)
+            AND v.bib_nr = txt.bib_nr (+)
+            AND v.bib_nr = hold.bib_nr (+)
+            AND v.bib_nr = eng.bib_nr (+)
+            AND v.bib_nr = bestil.bib_nr (+)
+            AND v.bib_nr = kat.bib_nr (+)
+          ORDER BY ' . $order_by;
+    try {
+      $oci->set_query($sql);
+      while ($row = $oci->fetch_into_assoc()) {
+  //echo $row['BIB_NR'] . ' ' . $row['NAVN'] . '<br/>';
+        if ($row)
+          $this->fill_pickupAgency($pickupAgency, $row);
+        if (empty($curr_bib)) 
+          $curr_bib = $row['BIB_NR'];
+        if ($curr_bib <> $row['BIB_NR']) {
+          $res->pickupAgency[]->_value = $pickupAgency;
+          unset($pickupAgency);
+          $curr_bib = $row['BIB_NR'];
+        }
+      }
+      if ($pickupAgency)
+        $res->pickupAgency[]->_value = $pickupAgency;
+    }
+    catch (ociException $e) {
+      verbose::log(FATAL, 'OpenAgency('.__LINE__.'):: OCI select error: ' . $oci->get_error_string());
+      $res->error->_value = 'service_unavailable';
+    }
+//die($sql);
+    //var_dump($res); var_dump($param); die();
+    $ret->findLibraryResponse->_value = $res;
+    $ret = $this->objconvert->set_obj_namespace($ret, $this->xmlns['oa']);
+    if (empty($res->error)) $this->cache->set($cache_key, $ret);
+    return $ret;
+  }
+  /** \brief
+   *
    */
   public function nameList($param) {
     if (!$this->aaa->has_right('openagency', 500))
@@ -987,11 +1192,9 @@ class openAgency extends webServiceServer {
    * - agencyAddress
    * - postalCode
    * - city
-   * - anyField
    * - libraryType
    * - libraryStatus
    * - pickupAllowed
-   * - sort
 
    * Response:
    * - library
@@ -1065,10 +1268,9 @@ class openAgency extends webServiceServer {
                    (is_array($ora_par['agencyAddress']) ? implode('', $ora_par['agencyAddress']) : '') . 
                    (is_array($ora_par['postalCode']) ? implode('', $ora_par['postalCode']) : '') . 
                    (is_array($ora_par['city']) ? implode('', $ora_par['city']) : '') . 
-                   (is_array($ora_par['anyField']) ? implode('', $ora_par['anyField']) : '') . 
                    $param->pickupAllowed->_value . 
-                   $param->libraryType->_value .
-                   $param->sort->_value;
+                   $param->libraryStatus->_value . 
+                   $param->libraryType->_value;
       if ($ret = $this->cache->get($cache_key)) {
         verbose::log(STAT, 'Cache hit');
         return $ret;
@@ -1093,39 +1295,22 @@ class openAgency extends webServiceServer {
                 $add_sql = '';
                 foreach ($val as $par) {
                   $add_item = '';
-                  $regexp_par = $this->build_regexp_like($par);
+                  //$regexp_par = $this->build_regexp_like($par);
                   switch ($key) {
                     case 'agencyId':
                       break;
-                    case 'agencyName':
-                      $add_item .= 'upper(v.navn) like upper(\'%' . $par . '%\')';
-                      break;
-                    case 'postalCode':
-                      $add_item .= 'upper(v.bpostnr) like upper(\'%' . $par . '%\')';
-                      break;
-                    case 'city':
-                      $add_item .= 'upper(v.bcity) like upper(\'%' . $par . '%\')';
-                      break;
-/*
-                    case 'agencyName':
-                      $add_item .= 'regexp_like(upper(v.navn), \'' . $regexp_par . '\') OR ' .
-                                   '(regexp_like(upper(vs.tekst), \'' . $regexp_par . '\') AND vs.type = \'N\')';
-                      break;
                     case 'agencyAddress':
-                      $add_item .= 'regexp_like(upper(v.badr), \'' . $regexp_par . '\') OR ' .
-                                   'regexp_like(upper(vsn.badr), \'' . $regexp_par . '\') OR ' .
-                                   '(regexp_like(upper(vs.tekst), \'' . $regexp_par . '\') AND vs.type = \'A\')';
+                      $add_item .= 'upper(v.badr) like upper(\'%' . $par . '%\')';
                       break;
-                    case 'postalCode':
-                      $add_item .= 'upper(v.bpostnr) like upper(\'%' . $par . '%\')';
+                    case 'agencyName':
+                      $add_item .= 'upper(v.navn) like upper(\'%' . $par . '%\')';
                       break;
                     case 'city':
                       $add_item .= 'upper(v.bcity) like upper(\'%' . $par . '%\')';
                       break;
-                    case 'anyField':
-                      $add_item .= 'upper(v.navn) like upper(\'%' . $par . '%\')';
+                    case 'postalCode':
+                      $add_item .= 'upper(v.bpostnr) like upper(\'%' . $par . '%\')';
                       break;
-*/
                   }
                   if ($add_item) {
                     if (empty($add_sql))
@@ -1184,7 +1369,7 @@ class openAgency extends webServiceServer {
               $oci->bind('bind_bib_type', $param->libraryType->_value);
             }
             if (isset($param->pickupAllowed->_value)) {
-              if ($param->pickupAllowed->_value == 'true' || $param->pickupAllowed->_value == '1')
+              if ($this->xs_boolean($param->pickupAllowed->_value))
                 $filter_bib_type .= ' AND vb.best_modt = \'J\'';
               else
                 $filter_bib_type .= ' AND vb.best_modt != \'J\'';
@@ -1258,64 +1443,7 @@ class openAgency extends webServiceServer {
                 $library->pickupAgency[]->_value = $pickupAgency;
                 unset($pickupAgency);
               }
-              if (empty($pickupAgency)) {
-                $pickupAgency->branchId->_value = $row['BIB_NR'];
-                $pickupAgency->branchType->_value = $row['TYPE'];
-                $pickupAgency->branchPhone->_value = $row['TLF_NR'];
-                $pickupAgency->branchName->_value = $row['NAVN'];
-                $pickupAgency->branchEmail->_value = $row['EMAIL'];
-                if ($row['BADR']) $pickupAgency->postalAddress->_value = $row['BADR'];
-                if ($row['BPOSTNR']) $pickupAgency->postalCode->_value = $row['BPOSTNR'];
-                if ($row['BCITY']) $pickupAgency->city->_value = $row['BCITY'];
-                if ($row['ISIL']) $pickupAgency->isil->_value = $row['ISIL'];
-                if ($row['URL_HOMEPAGE']) $pickupAgency->branchWebsiteUrl->_value = $row['URL_HOMEPAGE'];
-                if ($row['URL_SERV_DKL']) $pickupAgency->serviceDeclarationUrl->_value = $row['URL_SERV_DKL'];
-                if ($row['URL_BEST_BLANKET']) $pickupAgency->registrationFormUrl->_value = $row['URL_BEST_BLANKET'];
-                if ($row['URL_PAYMENT']) $pickupAgency->paymentUrl->_value = $row['URL_PAYMENT'];
-                if ($row['URL_LAANERSTATUS']) $pickupAgency->userStatusUrl->_value = $row['URL_LAANERSTATUS'];
-              }
-              if ($row['HOLDEPLADS'])
-                $pickupAgency->agencySubdivision[]->_value = $row['HOLDEPLADS'];
-              if (empty($pickupAgency->openingHours)
-                  && ($row['AABN_TID'] || $row['AABN_TID_E'])) {
-                if ($row['AABN_TID']) {
-                  $help->_value = $row['AABN_TID'];
-                  $help->_attributes->language->_value = 'dan';
-                  $pickupAgency->openingHours[] = $help;
-                  unset($help);
-                }
-                if ($row['AABN_TID_E']) {
-                  $help->_value = $row['AABN_TID_E'];
-                  $help->_attributes->language->_value = 'eng';
-                  $pickupAgency->openingHours[] = $help;
-                  unset($help);
-                }
-              }
-              $pickupAgency->temporarilyClosed->_value = ($row['BEST_MODT'] == 'J' ? 'false' : 'true');
-              if ($row['BEST_MODT'] == 'L'
-                  && empty($pickupAgency->temporarilyClosedReason)
-                  && ($row['BEST_MODT_LUK'] || $row['BEST_MODT_LUK_ENG'])) {
-                if ($row['BEST_MODT_LUK']) {
-                  $help->_value = $row['BEST_MODT_LUK'];
-                  $help->_attributes->language->_value = 'dan';
-                  $pickupAgency->temporarilyClosedReason[] = $help;
-                  unset($help);
-                }
-                if ($row['BEST_MODT_LUK_ENG']) {
-                  $help->_value = $row['BEST_MODT_LUK_ENG'];
-                  $help->_attributes->language->_value = 'eng';
-                  $pickupAgency->temporarilyClosedReason[] = $help;
-                  unset($help);
-                }
-              }
-              $pickupAgency->pickupAllowed->_value = ($row['BEST_MODT'] == 'J' ? '1' : '0');
-              if ($row['DELETE_MARK']) {
-                $pickupAgency->branchStatus->_value = $row['DELETE_MARK'];
-              }
-              $pickupAgency->ncipLookupUser->_value = ($row['NCIP_LOOKUP_USER'] == 'J' ? 1 : '0');
-              $pickupAgency->ncipRenewOrder->_value = ($row['NCIP_RENEW'] == 'J' ? '1' : '0');
-              $pickupAgency->ncipCancelOrder->_value = ($row['NCIP_CANCEL'] == 'J' ? '1' : '0');
-              $pickupAgency->ncipUpdateOrder->_value = ($row['NCIP_UPDATE_REQUEST'] == 'J' ? '1' : '0');
+              $this->fill_pickupAgency($pickupAgency, $row);
             }
             if ($pickupAgency) {
               $library->pickupAgency[]->_value = $pickupAgency;
@@ -1355,9 +1483,9 @@ class openAgency extends webServiceServer {
    * select navn from vip where regexp_like(navn, '[ ,.;:]bibliotek[ .,;:$]');
    * select bib_nr, navn from vip where regexp_like(lower(navn), '(^|[ ,.;:])krystal[a-zæøå]*([ .,;:]|$)');
    */
-private function build_regexp_like($par) {
-  return '(^|[ ,.;:])' . strtoupper(str_replace('?', '[a-zæøå]*', $par)) . '([ .,;:]|$)';
-}
+  private function build_regexp_like($par) {
+    return '(^|[ ,.;:])' . strtoupper(str_replace('?', '[a-zæøå]*', $par)) . '([ .,;:]|$)';
+  }
 
   /** \brief
    *
@@ -1718,6 +1846,73 @@ private function build_regexp_like($par) {
     die();
   }
 
+  /** \brief Fill pickupAgency with info from oracle
+   *
+   * used by findLibrary and pickupAgencyList to ensure identical structure
+   */
+  private function fill_pickupAgency(&$pickupAgency, $row) {
+    if (empty($pickupAgency)) {
+      $pickupAgency->branchId->_value = $row['BIB_NR'];
+      $pickupAgency->branchType->_value = $row['TYPE'];
+      $pickupAgency->branchPhone->_value = $row['TLF_NR'];
+      $pickupAgency->branchName->_value = $row['NAVN'];
+      $pickupAgency->branchEmail->_value = $row['EMAIL'];
+      if ($row['BADR']) $pickupAgency->postalAddress->_value = $row['BADR'];
+      if ($row['BPOSTNR']) $pickupAgency->postalCode->_value = $row['BPOSTNR'];
+      if ($row['BCITY']) $pickupAgency->city->_value = $row['BCITY'];
+      if ($row['ISIL']) $pickupAgency->isil->_value = $row['ISIL'];
+      if ($row['URL_HOMEPAGE']) $pickupAgency->branchWebsiteUrl->_value = $row['URL_HOMEPAGE'];
+      if ($row['URL_SERV_DKL']) $pickupAgency->serviceDeclarationUrl->_value = $row['URL_SERV_DKL'];
+      if ($row['URL_BEST_BLANKET']) $pickupAgency->registrationFormUrl->_value = $row['URL_BEST_BLANKET'];
+      if ($row['URL_PAYMENT']) $pickupAgency->paymentUrl->_value = $row['URL_PAYMENT'];
+      if ($row['URL_LAANERSTATUS']) $pickupAgency->userStatusUrl->_value = $row['URL_LAANERSTATUS'];
+    }
+    if ($row['HOLDEPLADS'])
+      $pickupAgency->agencySubdivision[]->_value = $row['HOLDEPLADS'];
+    if (empty($pickupAgency->openingHours)
+        && ($row['AABN_TID'] || $row['AABN_TID_E'])) {
+      if ($row['AABN_TID']) {
+        $help->_value = $row['AABN_TID'];
+        $help->_attributes->language->_value = 'dan';
+        $pickupAgency->openingHours[] = $help;
+        unset($help);
+      }
+      if ($row['AABN_TID_E']) {
+        $help->_value = $row['AABN_TID_E'];
+        $help->_attributes->language->_value = 'eng';
+        $pickupAgency->openingHours[] = $help;
+        unset($help);
+      }
+    }
+    $pickupAgency->temporarilyClosed->_value = ($row['BEST_MODT'] == 'J' ? 'false' : 'true');
+    if ($row['BEST_MODT'] == 'L'
+        && empty($pickupAgency->temporarilyClosedReason)
+        && ($row['BEST_MODT_LUK'] || $row['BEST_MODT_LUK_ENG'])) {
+      if ($row['BEST_MODT_LUK']) {
+        $help->_value = $row['BEST_MODT_LUK'];
+        $help->_attributes->language->_value = 'dan';
+        $pickupAgency->temporarilyClosedReason[] = $help;
+        unset($help);
+      }
+      if ($row['BEST_MODT_LUK_ENG']) {
+        $help->_value = $row['BEST_MODT_LUK_ENG'];
+        $help->_attributes->language->_value = 'eng';
+        $pickupAgency->temporarilyClosedReason[] = $help;
+        unset($help);
+      }
+    }
+    $pickupAgency->pickupAllowed->_value = ($row['BEST_MODT'] == 'J' ? '1' : '0');
+    if ($row['DELETE_MARK']) {
+      $pickupAgency->branchStatus->_value = $row['DELETE_MARK'];
+    }
+    $pickupAgency->ncipLookupUser->_value = ($row['NCIP_LOOKUP_USER'] == 'J' ? 1 : '0');
+    $pickupAgency->ncipRenewOrder->_value = ($row['NCIP_RENEW'] == 'J' ? '1' : '0');
+    $pickupAgency->ncipCancelOrder->_value = ($row['NCIP_CANCEL'] == 'J' ? '1' : '0');
+    $pickupAgency->ncipUpdateOrder->_value = ($row['NCIP_UPDATE_REQUEST'] == 'J' ? '1' : '0');
+
+    return;
+  }
+
   private function strip_oci_pwd($cred) {
     if (($p1 = strpos($cred, '/')) && ($p2 = strpos($cred, '@')))
       return substr($cred, 0, $p1) . '/********' . substr($cred, $p2);
@@ -1753,6 +1948,28 @@ private function build_regexp_like($par) {
           $arr[$key] = str_replace("\r", ' ', str_replace("\n", ' ', $val));
       }
     }
+  }
+
+  /** \brief
+   *  return true if xs:boolean is so
+   */
+  private function xs_boolean($str) {
+    return (strtolower($str) == 'true' || $str == 1);
+  }
+
+  /** \brief
+   *  return change array to string. For cache key
+   */
+  private function stringify($mix, $glue = '') {
+    if (is_array($mix)) {
+      $ret = array();
+      foreach ($mix as $m) {
+        $ret[] = $m->_value;
+      }
+      return implode($glue, $ret);
+    } 
+    else
+      return $mix->_value;
   }
 
 }
