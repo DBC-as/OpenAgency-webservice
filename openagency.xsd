@@ -78,6 +78,33 @@ You should have received a copy of the GNU Affero General Public License along w
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="findLibraryRequest">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="oa:authentication" minOccurs="0"/>
+				<xs:element ref="oa:agencyId" minOccurs="0"/>
+				<xs:element ref="oa:agencyName" minOccurs="0"/>
+				<xs:element ref="oa:agencyAddress" minOccurs="0"/>
+				<xs:element ref="oa:postalCode" minOccurs="0"/>
+				<xs:element ref="oa:city" minOccurs="0"/>
+				<xs:element ref="oa:anyField" minOccurs="0"/>
+				<xs:element ref="oa:libraryType" minOccurs="0"/>
+				<xs:element ref="oa:libraryStatus" minOccurs="0"/>
+				<xs:element ref="oa:pickupAllowed" minOccurs="0"/>
+				<xs:element ref="oa:sort" minOccurs="0" maxOccurs="6"/>
+				<xs:element ref="oa:callback" minOccurs="0"/>
+				<xs:element ref="oa:outputType" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="findLibraryResponse">
+		<xs:complexType>
+			<xs:choice>
+				<xs:element ref="oa:pickupAgency" maxOccurs="unbounded"/>
+				<xs:element ref="oa:error"/>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="nameListRequest">
 		<xs:complexType>
 			<xs:sequence>
@@ -110,13 +137,11 @@ You should have received a copy of the GNU Affero General Public License along w
 						<xs:element ref="oa:agencyAddress" minOccurs="0" maxOccurs="unbounded"/>
 						<xs:element ref="oa:postalCode" minOccurs="0" maxOccurs="unbounded"/>
 						<xs:element ref="oa:city" minOccurs="0" maxOccurs="unbounded"/>
-						<xs:element ref="oa:anyField" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
 					<xs:element ref="oa:libraryType" minOccurs="0"/>
 				</xs:choice>
 				<xs:element ref="oa:libraryStatus" minOccurs="0"/>
 				<xs:element ref="oa:pickupAllowed" minOccurs="0"/>
-				<xs:element ref="oa:sort" minOccurs="0"/>
 				<xs:element ref="oa:callback" minOccurs="0"/>
 				<xs:element ref="oa:outputType" minOccurs="0"/>
 			</xs:sequence>
