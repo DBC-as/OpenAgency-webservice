@@ -991,31 +991,44 @@ class openAgency extends webServiceServer {
       }
   // agencyName
       if ($val = $param->agencyName->_value) {
-        $sqls[] = 'regexp_like(upper(v.navn), :bind_navn)';
+        $sqls[] = '(regexp_like(upper(v.navn), upper(:bind_navn))' .
+                  ' OR (regexp_like(upper(sup.tekst), upper(:bind_navn)) AND sup.type = :bind_n))';
         $oci->bind('bind_navn', $this->build_regexp_like($val));
+        $oci->bind('bind_n', 'N');
       }
   // agencyAddress
       if ($val = $param->agencyAddress->_value) {
-        $sqls[] = 'regexp_like(upper(v.badr), :bind_addr)';
+        $sqls[] = '(regexp_like(upper(v.badr), upper(:bind_addr))' . 
+                  ' OR (regexp_like(upper(sup.tekst), upper(:bind_addr)) AND sup.type = :bind_a)' .
+                  ' OR regexp_like(upper(vsn.badr), upper(:bind_addr)))';
         $oci->bind('bind_addr', $this->build_regexp_like($val));
+        $oci->bind('bind_a', 'A');
       }
   // postalCode
       if ($val = $param->postalCode->_value) {
-        $sqls[] = 'regexp_like(upper(v.bpostnr), :bind_postnr)';
+        $sqls[] = '(regexp_like(upper(v.bpostnr), upper(:bind_postnr))' .
+                  ' OR (regexp_like(upper(sup.tekst), upper(:bind_postnr)) AND sup.type = :bind_p))';
         $oci->bind('bind_postnr', $this->build_regexp_like($val));
+        $oci->bind('bind_p', 'P');
       }
   // city
       if ($val = $param->city->_value) {
-        $sqls[] = 'regexp_like(upper(v.bcity), :bind_city)';
+        $sqls[] = 'regexp_like(upper(v.bcity), upper(:bind_city))';
         $oci->bind('bind_city', $this->build_regexp_like($val));
       }
   // anyField
       if ($val = $param->anyField->_value) {
-        $sqls[] = '(regexp_like(upper(v.navn), :bind_any)' .
-                  ' OR regexp_like(upper(v.badr), :bind_any)' .
-                  ' OR regexp_like(upper(v.bpostnr), :bind_any)' .
-                  ' OR regexp_like(upper(v.bcity), :bind_any))';
+        $sqls[] = '(regexp_like(upper(v.navn), upper(:bind_any))' .
+                  ' OR regexp_like(upper(v.badr), upper(:bind_any))' .
+                  ' OR regexp_like(upper(v.bpostnr), upper(:bind_any))' .
+                  ' OR regexp_like(upper(v.bcity), upper(:bind_any))' .
+                  ' OR (regexp_like(upper(sup.tekst), upper(:bind_any)) AND sup.type = :bind_n)' .
+                  ' OR (regexp_like(upper(sup.tekst), upper(:bind_any)) AND sup.type = :bind_a)' .
+                  ' OR (regexp_like(upper(sup.tekst), upper(:bind_any)) AND sup.type = :bind_p))';
         $oci->bind('bind_any', $this->build_regexp_like($val));
+        $oci->bind('bind_a', 'A');
+        $oci->bind('bind_n', 'N');
+        $oci->bind('bind_p', 'P');
       }
   // libraryType
       if ($val = $param->libraryType->_value
@@ -1084,12 +1097,13 @@ class openAgency extends webServiceServer {
                   bestil.url_serv_dkl,
                   kat.url_best_blanket, kat.url_laanerstatus, kat.ncip_lookup_user,
                   kat.ncip_renew, kat.ncip_cancel, kat.ncip_update_request
-          FROM vip v, vip_vsn vsn, vip_beh vb, vip_txt txt, vip_txt_eng eng, 
+          FROM vip v, vip_vsn vsn, vip_beh vb, vip_txt txt, vip_txt_eng eng, vip_sup sup,
                vip_bogbus_holdeplads hold, vip_bestil bestil, vip_kat kat
           WHERE 
             ' . $filter_sql . '
             AND v.bib_vsn = vsn.bib_nr (+)
             AND v.bib_nr = vb.bib_nr (+)
+            AND v.bib_nr = sup.bib_nr (+)
             AND v.bib_nr = txt.bib_nr (+)
             AND v.bib_nr = hold.bib_nr (+)
             AND v.bib_nr = eng.bib_nr (+)
@@ -1099,10 +1113,6 @@ class openAgency extends webServiceServer {
     try {
       $oci->set_query($sql);
       while ($row = $oci->fetch_into_assoc()) {
-        if ($row) {
-          //$row['NAVN'] = $row['VSN_NAVN'];
-          $this->fill_pickupAgency($pickupAgency, $row);
-        }
         if (empty($curr_bib)) {
           $curr_bib = $row['BIB_NR'];
         }
@@ -1110,6 +1120,10 @@ class openAgency extends webServiceServer {
           $res->pickupAgency[]->_value = $pickupAgency;
           unset($pickupAgency);
           $curr_bib = $row['BIB_NR'];
+        }
+        if ($row) {
+          //$row['NAVN'] = $row['VSN_NAVN'];
+          $this->fill_pickupAgency($pickupAgency, $row);
         }
       }
       if ($pickupAgency)
@@ -1119,7 +1133,6 @@ class openAgency extends webServiceServer {
       verbose::log(FATAL, 'OpenAgency('.__LINE__.'):: OCI select error: ' . $oci->get_error_string());
       $res->error->_value = 'service_unavailable';
     }
-//die($sql);
     //var_dump($res); var_dump($param); die();
     $ret->findLibraryResponse->_value = $res;
     $ret = $this->objconvert->set_obj_namespace($ret, $this->xmlns['oa']);
@@ -1478,15 +1491,6 @@ class openAgency extends webServiceServer {
     $ret = $this->objconvert->set_obj_namespace($ret, $this->xmlns['oa']);
     if (empty($res->error)) $this->cache->set($cache_key, $ret);
     return $ret;
-  }
-
-  /** \brief makes a regular expression to match single_words in the DB, using ? as truncation
-   *
-   * select navn from vip where regexp_like(navn, '[ ,.;:]bibliotek[ .,;:$]');
-   * select bib_nr, navn from vip where regexp_like(lower(navn), '(^|[ ,.;:])krystal[a-zæøå]*([ .,;:]|$)');
-   */
-  private function build_regexp_like($par) {
-    return '(^|[ ,.;:])' . strtoupper(str_replace('?', '[a-zæøå]*', $par)) . '([ .,;:]|$)';
   }
 
   /** \brief
@@ -1972,6 +1976,15 @@ class openAgency extends webServiceServer {
     } 
     else
       return $mix->_value;
+  }
+
+  /** \brief makes a regular expression to match single_words in the DB, using ? as truncation
+   *
+   * select navn from vip where regexp_like(navn, '[ ,.;:]bibliotek[ .,;:$]');
+   * select bib_nr, navn from vip where regexp_like(lower(navn), '(^|[ ,.;:])krystal[a-zæøå]*([ .,;:]|$)');
+   */
+  private function build_regexp_like($par) {
+    return '(^|[ ,.;:])' . str_replace('?', '[a-zæøå0-9]*', $par) . '([ .,;:]|$)';
   }
 
 }
