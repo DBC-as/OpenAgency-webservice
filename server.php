@@ -402,7 +402,7 @@ class openAgency extends webServiceServer {
                               AND bib_nr = :bind_bib_nr');
             $fjernadgang_rows = $oci->fetch_all_into_assoc();
             if (empty($fjernadgang_rows)) {
-              if ($oa_row['BIB_VSN']) {
+              if ($oa_row['FILIAL_VSN'] <> 'J' && $oa_row['BIB_VSN']) {
                 $oci->bind('bind_bib_nr', $oa_row['BIB_VSN']);
               }
               else {
