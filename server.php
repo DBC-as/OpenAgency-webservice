@@ -399,8 +399,22 @@ class openAgency extends webServiceServer {
                                     fjernadgang_andre.*
                              FROM fjernadgang, fjernadgang_andre
                             WHERE fjernadgang.faust (+) = fjernadgang_andre.faust
-                              AND bib_nr (+) = :bind_bib_nr');
+                              AND bib_nr = :bind_bib_nr');
             $fjernadgang_rows = $oci->fetch_all_into_assoc();
+            if (empty($fjernadgang_rows)) {
+              if ($oa_row['BIB_VSN']) {
+                $oci->bind('bind_bib_nr', $oa_row['BIB_VSN']);
+              }
+              else {
+                $oci->bind('bind_bib_nr', $agency);
+              }
+              $oci->set_query('SELECT fjernadgang.har_laanertjek fjernadgang_har_laanertjek, fjernadgang.*, 
+                                      fjernadgang_andre.*
+                               FROM fjernadgang, fjernadgang_andre
+                              WHERE fjernadgang.faust (+) = fjernadgang_andre.faust
+                                AND bib_nr (+) = :bind_bib_nr');
+              $fjernadgang_rows = $oci->fetch_all_into_assoc();
+            }
           }
         }
         catch (ociException $e) {
