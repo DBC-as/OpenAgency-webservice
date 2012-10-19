@@ -39,7 +39,7 @@ soapAction[service] = serviceRequest
 ;validate[response] = openagency.xsd
 
 ; prefixes and namespaces
-xmlns[] = http://oss.dbc.dk/ns/openagency
+xmlns[oa] = http://oss.dbc.dk/ns/openagency
 
 xmldir = ./xml
 
