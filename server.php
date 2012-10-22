@@ -1577,9 +1577,11 @@ class openAgency extends webServiceServer {
               foreach ($kilder as $kilde) {
                 if (empty($kilde['ACCESS_FOR']) || strpos($kilde['ACCESS_FOR'], $agency) !== FALSE) {
                   $oci->bind('bind_kilde_id', $kilde['ID_NR']);
+                  $oci->bind('bind_profil_id', $profil_no);
                   $oci->set_query('SELECT DISTINCT rdf, rdf_reverse
                                      FROM broend_relation, broend_kilde_relation, broend_profil_kilde_relation
                                     WHERE broend_kilde_relation.broendkilde_id = :bind_kilde_id 
+                                      AND broend_profil_kilde_relation.profil_id = :bind_profil_id 
                                       AND broend_profil_kilde_relation.kilde_relation_id =  broend_kilde_relation.id_nr 
                                       AND broend_kilde_relation.relation_id = broend_relation.id_nr');
                   $relations = $oci->fetch_all_into_assoc();
@@ -1618,8 +1620,8 @@ class openAgency extends webServiceServer {
                                FROM broend_to_kilder, broend_to_profiler, broendprofil_to_kilder
                               WHERE broend_to_kilder.id_nr = broendprofil_to_kilder.broendkilde_id
                                 AND broendprofil_to_kilder.profil_id = broend_to_profiler.id_nr
-                                AND broend_to_profiler.bib_nr = :bind_agency' . $sql_add);
-            $profiles = $oci->fetch_all_into_assoc();
+            $profiles = $oci->felde_relationtch_all_into_assoc();
+                                oND broend_to_profiler.bib_nr = :bind_agency' . $sql_add);
 //var_dump($profiles);
             foreach ($profiles as $profile) {
               $oci->bind('bind_kilde_id', $profile['B2K_ID_NR']);
