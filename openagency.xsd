@@ -16,8 +16,8 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="automationRequest">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="oa:agencyId"/>
 				<xs:element ref="oa:authentication" minOccurs="0"/>
+				<xs:element ref="oa:agencyId"/>
 				<xs:element ref="oa:autService"/>
 				<xs:element ref="oa:materialType"/>
 				<xs:element ref="oa:callback" minOccurs="0"/>
@@ -58,8 +58,8 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="endUserOrderPolicyRequest">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="oa:agencyId"/>
 				<xs:element ref="oa:authentication" minOccurs="0"/>
+				<xs:element ref="oa:agencyId"/>
 				<xs:element ref="oa:orderMaterialType"/>
 				<xs:element ref="oa:ownedByAgency"/>
 				<xs:element ref="oa:callback" minOccurs="0"/>
@@ -158,8 +158,8 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="openSearchProfileRequest">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="oa:agencyId"/>
 				<xs:element ref="oa:authentication" minOccurs="0"/>
+				<xs:element ref="oa:agencyId"/>
 				<xs:element ref="oa:profileName" minOccurs="0"/>
 				<xs:element ref="oa:profileVersion"/>
 				<xs:element ref="oa:callback" minOccurs="0"/>
@@ -202,8 +202,8 @@ You should have received a copy of the GNU Affero General Public License along w
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="oa:agencyId"/>
 				<xs:element ref="oa:authentication" minOccurs="0"/>
+				<xs:element ref="oa:agencyId"/>
 				<xs:element ref="oa:callback" minOccurs="0"/>
 				<xs:element ref="oa:outputType" minOccurs="0"/>
 			</xs:sequence>
@@ -220,8 +220,8 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="serviceRequest">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="oa:agencyId"/>
 				<xs:element ref="oa:authentication" minOccurs="0"/>
+				<xs:element ref="oa:agencyId"/>
 				<xs:element ref="oa:service"/>
 				<xs:element ref="oa:callback" minOccurs="0"/>
 				<xs:element ref="oa:outputType" minOccurs="0"/>

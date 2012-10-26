@@ -57,7 +57,7 @@ class openAgency extends webServiceServer {
    * - error
    **/
   function automation($param) {
-    if (!$this->aaa->has_right('openagency', 500))
+    if (!$this->aaa->has_right('netpunkt.dk', 500))
       $res->error->_value = 'authentication_error';
     else {
       $agency = $this->strip_agency($param->agencyId->_value);
@@ -218,7 +218,7 @@ class openAgency extends webServiceServer {
    * - error
    */
   public function encryption($param) {
-    if (!$this->aaa->has_right('openagency', 500))
+    if (!$this->aaa->has_right('netpunkt.dk', 500))
       $res->error->_value = 'authentication_error';
     else {
       $cache_key = 'OA_enc_' . $this->version . $param->email->_value;
@@ -269,7 +269,7 @@ class openAgency extends webServiceServer {
    *
    */
   public function endUserOrderPolicy($param) {
-    if (!$this->aaa->has_right('openagency', 500))
+    if (!$this->aaa->has_right('netpunkt.dk', 500))
       $res->error->_value = 'authentication_error';
     else {
       $agency = $this->strip_agency($param->agencyId->_value);
@@ -347,7 +347,7 @@ class openAgency extends webServiceServer {
    *
    */
   public function service($param) {
-    if (!$this->aaa->has_right('openagency', 500))
+    if (!$this->aaa->has_right('netpunkt.dk', 500))
       $res->error->_value = 'authentication_error';
     else {
       $agency = $this->strip_agency($param->agencyId->_value);
@@ -970,7 +970,7 @@ class openAgency extends webServiceServer {
    * - - error
    */
   public function findLibrary($param) {
-    if (!$this->aaa->has_right('openagency', 500))
+    if (!$this->aaa->has_right('netpunkt.dk', 500))
       $res->error->_value = 'authentication_error';
     else {
       $cache_key = 'OA_FinL_' . 
@@ -1157,7 +1157,7 @@ class openAgency extends webServiceServer {
    *
    */
   public function nameList($param) {
-    if (!$this->aaa->has_right('openagency', 500))
+    if (!$this->aaa->has_right('netpunkt.dk', 500))
       $res->error->_value = 'authentication_error';
     else {
       //var_dump($this->aaa->get_rights()); die();
@@ -1259,7 +1259,7 @@ class openAgency extends webServiceServer {
    * - - error
    */
   public function pickupAgencyList($param) {
-    if (!$this->aaa->has_right('openagency', 500))
+    if (!$this->aaa->has_right('netpunkt.dk', 500))
       $res->error->_value = 'authentication_error';
     else {
       foreach (array('agencyId', 'agencyName', 'agencyAddress', 'postalCode', 'city', 'anyField') as $par) {
@@ -1527,7 +1527,7 @@ class openAgency extends webServiceServer {
    * - - - - rdfInverse
    */
   public function openSearchProfile($param) {
-    if (!$this->aaa->has_right('openagency', 500))
+    if (!$this->aaa->has_right('netpunkt.dk', 500))
       $res->error->_value = 'authentication_error';
     else {
       $agency = $this->strip_agency($param->agencyId->_value);
@@ -1707,7 +1707,7 @@ class openAgency extends webServiceServer {
    * - - error
    */
   public function remoteAccess($param) {
-    if (!$this->aaa->has_right('openagency', 550))
+    if (!$this->aaa->has_right('netpunkt.dk', 550))
       $res->error->_value = 'authentication_error';
     else {
       $agency = $this->strip_agency($param->agencyId->_value);
@@ -1806,7 +1806,7 @@ class openAgency extends webServiceServer {
    * - error
    */
   public function requestOrder($param) {
-    if (!$this->aaa->has_right('openagency', 500))
+    if (!$this->aaa->has_right('netpunkt.dk', 500))
       $res->error->_value = 'authentication_error';
     else {
       $agency = $this->strip_agency($param->agencyId->_value);
