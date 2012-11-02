@@ -864,21 +864,21 @@ class openAgency extends webServiceServer {
                 unset($f);
               }
               $aP->borrowerCheckParameters = $bCP;
-              $aP->acceptOrderFromUnknownUser->_value = in_array($oa_row[$best_ukendt], array('N', 'K'))? '1' : '0';
-              if ($oa_row[$best_ukendt_txt]) {
+              $aP->acceptOrderFromUnknownUser->_value = in_array($oa_row['BEST_UKENDT'], array('N', 'K'))? '1' : '0';
+              if ($oa_row['BEST_UKENDT_TXT']) {
                 $f->_attributes->language->_value = 'dan';
-                $f->_value = $oa_row[$best_ukendt_txt];
-                $aP->acceptOrderFromUnknownUserText[]->_value = $f;
+                $f->_value = $oa_row['BEST_UKENDT_TXT'];
+                $aP->acceptOrderFromUnknownUserText[] = $f;
                 unset($f);
               }
-              if ($oa_row[$best_ukendt_txt_eng]) {
+              if ($oa_row['BEST_UKENDT_TXT_ENG']) {
                 $f->_attributes->language->_value = 'eng';
-                $f->_value = $oa_row[$best_ukendt_txt_eng];
-                $aP->acceptOrderFromUnknownUserText[]->_value = $f;
+                $f->_value = $oa_row['BEST_UKENDT_TXT_ENG'];
+                $aP->acceptOrderFromUnknownUserText[] = $f;
                 unset($f);
               }
-              $aP->acceptOrderAgencyOffline->_value = $oa_row[$laanertjek_noresponse] == 'N' ? '0' : '1';
-              $aP->payForPostage->_value = $oa_row[$laanertjek_noresponse] == 'N' ? '0' : '1';
+              $aP->acceptOrderAgencyOffline->_value = $oa_row['LAANERTJEK_NORESPONSE'] == 'N' ? '0' : '1';
+              $aP->payForPostage->_value = $oa_row['PORTO_BETALING'] == 'N' ? '0' : '1';
               $usrOP->agencyParameters->_value = $aP;
 /*      <open:userOrderParameters>
             <!--1 or more repetitions:-->
