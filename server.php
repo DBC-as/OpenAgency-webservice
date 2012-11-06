@@ -1566,8 +1566,8 @@ class openAgency extends webServiceServer {
             $oci->set_query('SELECT broendkilde_id, profil_id, name
                                FROM broendprofil_to_kilder, broend_to_profiler
                               WHERE broend_to_profiler.bib_nr = :bind_agency
-                                AND broendprofil_to_kilder.broendkilde_id IS NOT null
-                                AND broendprofil_to_kilder.profil_id IS NOT null
+                                AND broendprofil_to_kilder.broendkilde_id IS NOT NULL
+                                AND broendprofil_to_kilder.profil_id IS NOT NULL
                                 AND broend_to_profiler.id_nr = broendprofil_to_kilder.profil_id (+)' . $sql_add);
             $profil_res = $oci->fetch_all_into_assoc();
             foreach ($profil_res as $p) {
