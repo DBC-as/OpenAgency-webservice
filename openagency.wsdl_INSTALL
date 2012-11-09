@@ -255,34 +255,34 @@ You should have received a copy of the GNU Affero General Public License along w
 	</wsdl:binding>
 	<wsdl:service name="openAgencyService">
 		<wsdl:port binding="oaw:automationBinding" name="automationPortType">
-			<soap:address location="http://openagency.addi.dk/1.9/"/>
+			<soap:address location="http://openagency.addi.dk/2.0/"/>
 		</wsdl:port>
 		<wsdl:port binding="oaw:encryptionBinding" name="encryptionPortType">
-			<soap:address location="http://openagency.addi.dk/1.9/"/>
+			<soap:address location="http://openagency.addi.dk/2.0/"/>
 		</wsdl:port>
 		<wsdl:port binding="oaw:endUserOrderPolicyBinding" name="endUserOrderPolicyPortType">
-			<soap:address location="http://openagency.addi.dk/1.9/"/>
+			<soap:address location="http://openagency.addi.dk/2.0/"/>
 		</wsdl:port>
 		<wsdl:port binding="oaw:findLibraryBinding" name="findLibraryPortType">
-			<soap:address location="http://openagency.addi.dk/1.9/"/>
+			<soap:address location="http://openagency.addi.dk/2.0/"/>
 		</wsdl:port>
 		<wsdl:port binding="oaw:nameListBinding" name="nameListPortType">
-			<soap:address location="http://openagency.addi.dk/1.9/"/>
+			<soap:address location="http://openagency.addi.dk/2.0/"/>
 		</wsdl:port>
 		<wsdl:port binding="oaw:pickupAgencyListBinding" name="pickupAgencyListPortType">
-			<soap:address location="http://openagency.addi.dk/1.9/"/>
+			<soap:address location="http://openagency.addi.dk/2.0/"/>
 		</wsdl:port>
 		<wsdl:port binding="oaw:openSearchProfileBinding" name="openSearchProfilePortType">
-			<soap:address location="http://openagency.addi.dk/1.9/"/>
+			<soap:address location="http://openagency.addi.dk/2.0/"/>
 		</wsdl:port>
 		<wsdl:port binding="oaw:remoteAccessBinding" name="remoteAccessPortType">
-			<soap:address location="http://openagency.addi.dk/1.9/"/>
+			<soap:address location="http://openagency.addi.dk/2.0/"/>
 		</wsdl:port>
 		<wsdl:port binding="oaw:requestOrderBinding" name="requestOrderPortType">
-			<soap:address location="http://openagency.addi.dk/1.9/"/>
+			<soap:address location="http://openagency.addi.dk/2.0/"/>
 		</wsdl:port>
 		<wsdl:port binding="oaw:serviceBinding" name="servicePortType">
-			<soap:address location="http://openagency.addi.dk/1.9/"/>
+			<soap:address location="http://openagency.addi.dk/2.0/"/>
 		</wsdl:port>
 	</wsdl:service>
 </wsdl:definitions>
