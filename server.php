@@ -948,6 +948,7 @@ class openAgency extends webServiceServer {
 
    * Response:
    * - pickupAgency
+   * - - agencyName
    * - - branchId
    * - - branchName
    * - - branchPhone
@@ -1839,6 +1840,7 @@ class openAgency extends webServiceServer {
    */
   private function fill_pickupAgency(&$pickupAgency, $row) {
     if (empty($pickupAgency)) {
+      if (isset($row['VSN_NAVN'])) $pickupAgency->agencyName->_value = $row['VSN_NAVN'];
       $pickupAgency->branchId->_value = $row['BIB_NR'];
       $pickupAgency->branchType->_value = $row['TYPE'];
       $pickupAgency->branchPhone->_value = $row['TLF_NR'];
