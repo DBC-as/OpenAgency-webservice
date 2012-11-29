@@ -112,25 +112,26 @@ class openAgency extends webServiceServer {
                   $res->error->_value = 'service_unavailable';
                 }
               }
-            }
-            elseif ($vf_row['VALG'] == 'l') {
-              try {
-                $oci->bind('bind_fjernlaan_id', $vf_row['ID_NR']);
-                $oci->set_query('SELECT bib_nr
-                                FROM vip_fjernlaan_bibliotek
-                                WHERE fjernlaan_id = :bind_fjernlaan_id');
-                $ap = &$res->autPotential->_value;
-                $ap->materialType->_value = $param->materialType->_value;
-                while ($vfb_row = $oci->fetch_into_assoc())
-                  $ap->responder[]->_value = $this->normalize_agency($vfb_row['BIB_NR']);
+              elseif ($vf_row['VALG'] == 'l') {
+                try {
+                  $oci->bind('bind_fjernlaan_id', $vf_row['ID_NR']);
+                  $oci->set_query('SELECT bib_nr
+                                  FROM vip_fjernlaan_bibliotek
+                                  WHERE fjernlaan_id = :bind_fjernlaan_id');
+                  $ap = &$res->autPotential->_value;
+                  $ap->materialType->_value = $param->materialType->_value;
+                  while ($vfb_row = $oci->fetch_into_assoc())
+                    $ap->responder[]->_value = $this->normalize_agency($vfb_row['BIB_NR']);
+                }
+                catch (ociException $e) {
+                  verbose::log(FATAL, 'OpenAgency('.__LINE__.'):: OCI select error: ' . $oci->get_error_string());
+                  $res->error->_value = 'service_unavailable';
+                }
               }
-              catch (ociException $e) {
-                verbose::log(FATAL, 'OpenAgency('.__LINE__.'):: OCI select error: ' . $oci->get_error_string());
-                $res->error->_value = 'service_unavailable';
+              else {
+                $res->error->_value = 'no_agencies_found';
               }
             }
-            else
-              $res->error->_value = 'no_agencies_found';
             break;
           case 'autRequester':
             try {
