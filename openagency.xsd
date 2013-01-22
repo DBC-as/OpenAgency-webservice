@@ -355,6 +355,14 @@ You should have received a copy of the GNU Affero General Public License along w
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="borrowerCheckSystem" type="xs:string"/>
+	<xs:element name="domain" type="xs:string"/>
+	<xs:element name="branchDomains">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="oa:domain" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="branchEmail" type="xs:string"/>
 	<xs:element name="branchFax" type="xs:string"/>
 	<xs:element name="branchId" type="xs:string"/>
@@ -588,6 +596,7 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="oa:ncipRenewOrder" minOccurs="0"/>
 				<xs:element ref="oa:ncipCancelOrder" minOccurs="0"/>
 				<xs:element ref="oa:ncipUpdateOrder" minOccurs="0"/>
+				<xs:element ref="oa:branchDomains" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>

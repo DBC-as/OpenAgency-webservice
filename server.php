@@ -1358,6 +1358,13 @@ class openAgency extends webServiceServer {
               $bib_nr = &$row['BIB_NR'];
               $vsn[$bib_nr] = $row;
             }
+
+            $sql = 'SELECT bib_nr, domain FROM user_domains WHERE DELETE_DATE IS NULL';
+            $oci->set_query($sql);
+            while ($row = $oci->fetch_into_assoc()) {
+              $ip_list[$row['BIB_NR']][] = $row['DOMAIN'];
+            }
+
             if ($ora_par['agencyId']) {
               foreach ($ora_par['agencyId'] as $agency) {
                 $oci->bind('bind_' . $agency, $agency);
@@ -1441,7 +1448,7 @@ class openAgency extends webServiceServer {
                 $library->pickupAgency[]->_value = $pickupAgency;
                 unset($pickupAgency);
               }
-              $this->fill_pickupAgency($pickupAgency, $row);
+              $this->fill_pickupAgency($pickupAgency, $row, $ip_list[$row['BIB_NR']]);
             }
             if ($pickupAgency) {
               $library->pickupAgency[]->_value = $pickupAgency;
@@ -1806,7 +1813,7 @@ class openAgency extends webServiceServer {
    *
    * used by findLibrary and pickupAgencyList to ensure identical structure
    */
-  private function fill_pickupAgency(&$pickupAgency, $row) {
+  private function fill_pickupAgency(&$pickupAgency, $row, $ip_list = array()) {
     if (empty($pickupAgency)) {
       if (isset($row['VSN_NAVN'])) $pickupAgency->agencyName->_value = $row['VSN_NAVN'];
       $pickupAgency->branchId->_value = $row['BIB_NR'];
@@ -1863,6 +1870,11 @@ class openAgency extends webServiceServer {
     $pickupAgency->ncipRenewOrder->_value = ($row['NCIP_RENEW'] == 'J' ? '1' : '0');
     $pickupAgency->ncipCancelOrder->_value = ($row['NCIP_CANCEL'] == 'J' ? '1' : '0');
     $pickupAgency->ncipUpdateOrder->_value = ($row['NCIP_UPDATE_REQUEST'] == 'J' ? '1' : '0');
+    if (is_array($ip_list)) {
+      foreach ($ip_list as $ip) {
+        $pickupAgency->branchDomains->_value->domain[]->_value = $ip;
+      }
+    }
 
     return;
   }
