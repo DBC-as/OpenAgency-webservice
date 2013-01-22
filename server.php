@@ -316,12 +316,8 @@ class openAgency extends webServiceServer {
                 ($vb_row['BEST_MODT'] == 'J' && ($vb_row['WR'] == 'J' || $vb_row['WR'] == 'B') ? 1 : 0);
               if ($vb_row['WR'] == 'B') {
                 $col = $assoc[$mat_type][1] . $fjernl;
-                $cond_d->_attributes->language->_value = 'dan';
-                $cond_d->_value = $vb_row[$col];
-                $res->condition[] = $cond_d;
-                $cond_e->_attributes->language->_value = 'eng';
-                $cond_e->_value = $vb_row[$col.'_E'];
-                $res->condition[] = $cond_e;
+                $res->condition[] = $this->value_and_language($vb_row[$col], 'dan');
+                $res->condition[] = $this->value_and_language($vb_row[$col.'_E'], 'eng');
               }
             }
           }
@@ -548,9 +544,7 @@ class openAgency extends webServiceServer {
                 default:
                   $orsIR->willReceive->_value = 'NO';
                   if ($oa_row['BEST_TXT']) {
-                    $help->_value = $oa_row['BEST_TXT'];
-                    $help->_attributes->language->_value = 'dan';
-                    $orsIR->reason = $help;
+                    $orsIR->reason = $this->value_and_language($oa_row['BEST_TXT'], 'dan');
                   }
                   break;
               }
@@ -777,30 +771,18 @@ class openAgency extends webServiceServer {
               }
               if (in_array($oa_row['LD_ID'][0], array('J', 'O'))) {
                 if ($oa_row['LD_ID_TXT']) {
-                  $f->_attributes->language->_value = 'dan';
-                  $f->_value = $oa_row['LD_ID_TXT'];
-                  $usrOP->userIdTxt[] = $f;
-                  unset($f);
+                  $usrOP->userIdTxt[] = $this->value_and_language($oa_row['LD_ID_TXT'], 'dan');
                 }
                 if ($oa_row['LD_ID_TXT_ENG']) {
-                  $f->_attributes->language->_value = 'eng';
-                  $f->_value = $oa_row['LD_ID_TXT_ENG'];
-                  $usrOP->userIdTxt[] = $f;
-                  unset($f);
+                  $usrOP->userIdTxt[] = $this->value_and_language($oa_row['LD_ID_TXT_ENG'], 'eng');
                 }
               }
               if (in_array($oa_row['LD_TXT'][0], array('J', 'O'))) {
                 if ($oa_row['LD_TXT2']) {
-                  $f->_attributes->language->_value = 'dan';
-                  $f->_value = $oa_row['LD_TXT2'];
-                  $usrOP->customIdTxt[] = $f;
-                  unset($f);
+                  $usrOP->customIdTxt[] = $this->value_and_language($oa_row['LD_TXT2'], 'dan');
                 }
                 if ($oa_row['LD_TXT2_ENG']) {
-                  $f->_attributes->language->_value = 'eng';
-                  $f->_value = $oa_row['LD_TXT2_ENG'];
-                  $usrOP->customIdTxt[] = $f;
-                  unset($f);
+                  $usrOP->customIdTxt[] = $this->value_and_language($oa_row['LD_TXT2_ENG'], 'eng');
                 }
               }
               $per = array('PER_NR' => 'volume',
@@ -858,16 +840,10 @@ class openAgency extends webServiceServer {
               $aP->borrowerCheckParameters = $bCP;
               $aP->acceptOrderFromUnknownUser->_value = in_array($oa_row['BEST_UKENDT'], array('N', 'K'))? '1' : '0';
               if ($oa_row['BEST_UKENDT_TXT']) {
-                $f->_attributes->language->_value = 'dan';
-                $f->_value = $oa_row['BEST_UKENDT_TXT'];
-                $aP->acceptOrderFromUnknownUserText[] = $f;
-                unset($f);
+                $aP->acceptOrderFromUnknownUserText[] = $this->value_and_language($oa_row['BEST_UKENDT_TXT'], 'dan');
               }
               if ($oa_row['BEST_UKENDT_TXT_ENG']) {
-                $f->_attributes->language->_value = 'eng';
-                $f->_value = $oa_row['BEST_UKENDT_TXT_ENG'];
-                $aP->acceptOrderFromUnknownUserText[] = $f;
-                unset($f);
+                $aP->acceptOrderFromUnknownUserText[] = $this->value_and_language($oa_row['BEST_UKENDT_TXT_ENG'], 'eng');
               }
               $aP->acceptOrderAgencyOffline->_value = $oa_row['LAANERTJEK_NORESPONSE'] == 'N' ? '0' : '1';
               $aP->payForPostage->_value = $oa_row['PORTO_BETALING'] == 'N' ? '0' : '1';
@@ -1100,7 +1076,7 @@ class openAgency extends webServiceServer {
                   v.bcity, v.isil, v.bib_vsn, v.url_homepage, v.url_payment, v.delete_mark,
                   vsn.navn vsn_navn, 
                   vb.best_modt, vb.best_modt_luk, vb.best_modt_luk_eng,
-                  txt.aabn_tid, eng.aabn_tid_e, hold.holdeplads,
+                  txt.aabn_tid, txt.kvt_tekst_fjl, eng.aabn_tid_e, eng.kvt_tekst_fjl_e, hold.holdeplads,
                   bestil.url_serv_dkl,
                   kat.url_best_blanket, kat.url_laanerstatus, kat.ncip_lookup_user,
                   kat.ncip_renew, kat.ncip_cancel, kat.ncip_update_request, kat.filial_vsn
@@ -1417,7 +1393,7 @@ class openAgency extends webServiceServer {
             $sql ='SELECT v.bib_nr, v.navn, v.type, v.tlf_nr, v.email, v.badr, v.bpostnr, 
                           v.bcity, v.isil, v.bib_vsn, v.url_homepage, v.url_payment, v.delete_mark,
                           vb.best_modt, vb.best_modt_luk, vb.best_modt_luk_eng,
-                          txt.aabn_tid, eng.aabn_tid_e, hold.holdeplads,
+                          txt.aabn_tid, txt.kvt_tekst_fjl, eng.aabn_tid_e, eng.kvt_tekst_fjl_e, hold.holdeplads,
                           bestil.url_serv_dkl,
                           kat.url_best_blanket, kat.url_laanerstatus, kat.ncip_lookup_user,
                           kat.ncip_renew, kat.ncip_cancel, kat.ncip_update_request, kat.filial_vsn
@@ -1854,16 +1830,10 @@ class openAgency extends webServiceServer {
     if (empty($pickupAgency->openingHours)
         && ($row['AABN_TID'] || $row['AABN_TID_E'])) {
       if ($row['AABN_TID']) {
-        $help->_value = $row['AABN_TID'];
-        $help->_attributes->language->_value = 'dan';
-        $pickupAgency->openingHours[] = $help;
-        unset($help);
+        $pickupAgency->openingHours[] = $this->value_and_language($row['AABN_TID'], 'dan');
       }
       if ($row['AABN_TID_E']) {
-        $help->_value = $row['AABN_TID_E'];
-        $help->_attributes->language->_value = 'eng';
-        $pickupAgency->openingHours[] = $help;
-        unset($help);
+        $pickupAgency->openingHours[] = $this->value_and_language($row['AABN_TID_E'], 'eng');
       }
     }
     $pickupAgency->temporarilyClosed->_value = ($row['BEST_MODT'] == 'J' ? 0 : 1);
@@ -1871,16 +1841,18 @@ class openAgency extends webServiceServer {
         && empty($pickupAgency->temporarilyClosedReason)
         && ($row['BEST_MODT_LUK'] || $row['BEST_MODT_LUK_ENG'])) {
       if ($row['BEST_MODT_LUK']) {
-        $help->_value = $row['BEST_MODT_LUK'];
-        $help->_attributes->language->_value = 'dan';
-        $pickupAgency->temporarilyClosedReason[] = $help;
-        unset($help);
+        $pickupAgency->temporarilyClosedReason[] = $this->value_and_language($row['BEST_MODT_LUK'], 'dan');
       }
       if ($row['BEST_MODT_LUK_ENG']) {
-        $help->_value = $row['BEST_MODT_LUK_ENG'];
-        $help->_attributes->language->_value = 'eng';
-        $pickupAgency->temporarilyClosedReason[] = $help;
-        unset($help);
+        $pickupAgency->temporarilyClosedReason[] = $this->value_and_language($row['BEST_MODT_LUK_ENG'], 'eng');
+      }
+    }
+    if (empty($pickupAgency->illOrderReceiptText)) {
+      if ($row['KVT_TEKST_FJL']) {
+        $pickupAgency->illOrderReceiptText[] = $this->value_and_language($row['KVT_TEKST_FJL'], 'dan');
+      }
+      if ($row['KVT_TEKST_FJL_E']) {
+        $pickupAgency->illOrderReceiptText[] = $this->value_and_language($row['KVT_TEKST_FJL_E'], 'eng');
       }
     }
     $pickupAgency->pickupAllowed->_value = ($row['BEST_MODT'] == 'J' ? '1' : '0');
@@ -1893,6 +1865,12 @@ class openAgency extends webServiceServer {
     $pickupAgency->ncipUpdateOrder->_value = ($row['NCIP_UPDATE_REQUEST'] == 'J' ? '1' : '0');
 
     return;
+  }
+
+  private function value_and_language($val, $lang) {
+    $ret->_value = $val;
+    $ret->_attributes->language->_value = $lang;
+    return $ret;
   }
 
   private function strip_oci_pwd($cred) {
