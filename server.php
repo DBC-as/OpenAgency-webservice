@@ -1077,7 +1077,7 @@ class openAgency extends webServiceServer {
                   vsn.navn vsn_navn, 
                   vb.best_modt, vb.best_modt_luk, vb.best_modt_luk_eng,
                   txt.aabn_tid, txt.kvt_tekst_fjl, eng.aabn_tid_e, eng.kvt_tekst_fjl_e, hold.holdeplads,
-                  bestil.url_serv_dkl,
+                  bestil.url_serv_dkl, bestil.support_email, bestil.support_tlf,
                   kat.url_best_blanket, kat.url_laanerstatus, kat.ncip_lookup_user,
                   kat.ncip_renew, kat.ncip_cancel, kat.ncip_update_request, kat.filial_vsn
           FROM vip v, vip_vsn vsn, vip_beh vb, vip_txt txt, vip_txt_eng eng, vip_sup sup,
@@ -1401,7 +1401,7 @@ class openAgency extends webServiceServer {
                           v.bcity, v.isil, v.bib_vsn, v.url_homepage, v.url_payment, v.delete_mark,
                           vb.best_modt, vb.best_modt_luk, vb.best_modt_luk_eng,
                           txt.aabn_tid, txt.kvt_tekst_fjl, eng.aabn_tid_e, eng.kvt_tekst_fjl_e, hold.holdeplads,
-                          bestil.url_serv_dkl,
+                          bestil.url_serv_dkl, bestil.support_email, bestil.support_tlf,
                           kat.url_best_blanket, kat.url_laanerstatus, kat.ncip_lookup_user,
                           kat.ncip_renew, kat.ncip_cancel, kat.ncip_update_request, kat.filial_vsn
                   FROM vip v, vip_beh vb, vip_txt txt, vip_txt_eng eng, 
@@ -1831,6 +1831,8 @@ class openAgency extends webServiceServer {
       if ($row['URL_BEST_BLANKET']) $pickupAgency->registrationFormUrl->_value = $row['URL_BEST_BLANKET'];
       if ($row['URL_PAYMENT']) $pickupAgency->paymentUrl->_value = $row['URL_PAYMENT'];
       if ($row['URL_LAANERSTATUS']) $pickupAgency->userStatusUrl->_value = $row['URL_LAANERSTATUS'];
+      if ($row['SUPPORT_EMAIL']) $pickupAgency->librarydkSupportEmail->_value = $row['SUPPORT_EMAIL'];
+      if ($row['SUPPORT_TLF']) $pickupAgency->librarydkSupportPhone->_value = $row['SUPPORT_TLF'];
     }
     if ($row['HOLDEPLADS'])
       $pickupAgency->agencySubdivision[]->_value = $row['HOLDEPLADS'];
