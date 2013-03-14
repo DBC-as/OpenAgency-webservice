@@ -1794,21 +1794,6 @@ class openAgency extends webServiceServer {
   }
 
 
-
-  /** \brief Echos config-settings
-   *
-   */
-  public function show_info() {
-    echo '<pre>';
-    echo 'version             ' . $this->config->get_value('version', 'setup') . '<br/>';
-    echo 'logfile             ' . $this->config->get_value('logfile', 'setup') . '<br/>';
-    echo 'verbose             ' . $this->config->get_value('verbose', 'setup') . '<br/>';
-    echo 'agency_credentials  ' . $this->strip_oci_pwd($this->config->get_value('agency_credentials', 'setup')) . '<br/>';
-    echo 'aaa_credentials     ' . $this->strip_oci_pwd($this->config->get_value('aaa_credentials', 'aaa')) . '<br/>';
-    echo '</pre>';
-    die();
-  }
-
   /** \brief Fill pickupAgency with info from oracle
    *
    * used by findLibrary and pickupAgencyList to ensure identical structure
@@ -1887,14 +1872,6 @@ class openAgency extends webServiceServer {
     $ret->_attributes->language->_value = $lang;
     return $ret;
   }
-
-  private function strip_oci_pwd($cred) {
-    if (($p1 = strpos($cred, '/')) && ($p2 = strpos($cred, '@')))
-      return substr($cred, 0, $p1) . '/********' . substr($cred, $p2);
-    else
-      return $cred;
-  }
-
 
   /** \brief
    *  return libraryno - align to 6 digits
