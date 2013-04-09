@@ -41,7 +41,7 @@ class openAgency extends webServiceServer {
   }
 
 
-  /** \brief
+  /** \brief automation
    *
    * Request:
    * - agencyId
@@ -203,7 +203,8 @@ class openAgency extends webServiceServer {
     return $ret;
   }
 
-  /** \brief
+
+  /** \brief encryption
    *
    * Request:
    * - email
@@ -266,8 +267,19 @@ class openAgency extends webServiceServer {
     if (empty($res->error)) $this->cache->set($cache_key, $ret);
     return $ret;
   }
-  /** \brief
+
+
+  /** \brief endUserOrderPolicy
    *
+   * Request:
+   * - agencyId
+   * - orderMaterialType
+   * - ownedByAgency
+   * Response:
+   * - willReceive
+   * - condition
+   * or
+   * - error
    */
   public function endUserOrderPolicy($param) {
     if (!$this->aaa->has_right('netpunkt.dk', 500))
@@ -340,8 +352,113 @@ class openAgency extends webServiceServer {
     return $ret;
   }
 
-  /** \brief
+
+  /** \brief getCulrProfile
    *
+   * Request:
+   * - agencyId
+   * - profileName
+   * Response:
+   * - culrProfile (see xsd for parameters)
+   * or
+   * - error
+   */
+  public function getCulrProfile($param) {
+    if (!$this->aaa->has_right('netpunkt.dk', 500))
+      $res->error->_value = 'authentication_error';
+    else {
+      $agency = $this->strip_agency($param->agencyId->_value);
+      $profile_name = strtoupper($param->profileName->_value);
+      $cache_key = 'OA_getCP' . $this->version . $agency . $profile_name;
+      if ($ret = $this->cache->get($cache_key)) {
+        verbose::log(STAT, 'Cache hit');
+        return $ret;
+      }
+      $oci = new Oci($this->config->get_value('agency_credentials','setup'));
+      $oci->set_charset('UTF8');
+      try {
+        $oci->connect();
+      }
+      catch (ociException $e) {
+        verbose::log(FATAL, 'OpenAgency('.__LINE__.'):: OCI connect error: ' . $oci->get_error_string());
+        $res->error->_value = 'service_unavailable';
+      }
+      if (empty($res->error)) {
+        try {
+          $oci->bind('bind_agency', $agency);
+          $oci->bind('bind_profile_name', $profile_name);
+          $oci->set_query('SELECT * FROM vip_culr_profile 
+                           WHERE bib_nr = :bind_agency 
+                             AND profilename = :bind_profile_name');
+          while ($cp_row = $oci->fetch_into_assoc()) {
+            $cp->agencyId->_value = $this->normalize_agency($cp_row['BIB_NR']);
+            $cp->profileName->_value = $cp_row['PROFILENAME'];
+            $cp->typeOfClient->_value = $cp_row['TYPEOFCLIENT'];
+            $cp->contactTechName->_value = $cp_row['CONTACT_TECH_NAME'];
+            $cp->contactTechMail->_value = $cp_row['CONTACT_TECH_EMAIL'];
+            $cp->contactTechPhone->_value = $cp_row['CONTACT_TECH_PHONE'];
+            $cp->contactAdmName->_value = $cp_row['CONTACT_ADM_NAME'];
+            $cp->contactAdmMail->_value = $cp_row['CONTACT_ADM_EMAIL'];
+            $cp->contactAdmPhone->_value = $cp_row['CONTACT_ADM_PHONE'];
+            $cp->createAccountId->_value = $this->J_is_true($cp_row['CREATEACCOUNTID']);
+            $cp->createPatronId->_value = $this->J_is_true($cp_row['CREATEPATRONID']);
+            $cp->deleteAccountId->_value = $this->J_is_true($cp_row['DELETEACCOUNTID']);
+            $cp->deletePatronId->_value = $this->J_is_true($cp_row['DELETEPATRONID']);
+            $cp->getAccountIdsByAccountId->_value = $this->J_is_true($cp_row['GETACCOUNTIDSBYACCOUNTID']);
+            $cp->getAccountsByPatronId->_value = $this->J_is_true($cp_row['GETACCOUNTIDSBYPATRONID']);
+            $cp->getAccountIdsByProviderId->_value = $this->J_is_true($cp_row['GETACCOUNTIDSBYPROVIDERID']);
+            $cp->getMunicipalityNoByAccountId->_value = $this->J_is_true($cp_row['GETMUNICIPALITYNOBYACCOUNTID']);
+            $cp->getMunicipalityNoByPatronId->_value = $this->J_is_true($cp_row['GETMUNICIPALITYNOBYPATRONID']);
+            $cp->getPatronIdsByAccountId->_value = $this->J_is_true($cp_row['GETPATRONIDSBYACCOUNTID']);
+            $cp->getPatronIdsByProviderId->_value = $this->J_is_true($cp_row['GETPATRONIDSBYPROVIDERID']);
+            $cp->getProviderIdsByAccountId->_value = $this->J_is_true($cp_row['GETPROVIDERIDSBYACCOUNTID']);
+            $cp->getProviderIdsByPatronId->_value = $this->J_is_true($cp_row['GETPROVIDERIDSBYPATRONID']);
+            $cp->mergePatronIds->_value = $this->J_is_true($cp_row['MERGEPATRONIDS']);
+            $cp->unrelatePatronIdAndAccountId->_value = $this->J_is_true($cp_row['UNRELATEPATRONIDANDACCOUNTID']);
+            $cp->updateAccountId->_value = $this->J_is_true($cp_row['UPDATEACCOUNTID']);
+            $res->culrProfile[]->_value = $cp;
+            unset($cp);
+          }
+        }
+        catch (ociException $e) {
+          verbose::log(FATAL, 'OpenAgency('.__LINE__.'):: OCI select error: ' . $oci->get_error_string());
+          $res->error->_value = 'service_unavailable';
+        }
+      }
+    }
+    //var_dump($res); var_dump($param); die();
+    $ret->getCulrProfileResponse->_value = $res;
+    $ret = $this->objconvert->set_obj_namespace($ret, $this->xmlns['oa']);
+    if (empty($res->error)) $this->cache->set($cache_key, $ret);
+    return $ret;
+  }
+
+
+  /** \brief service
+   *
+   * Request:
+   * - agencyId
+   * - service
+   * Response (depending on service):
+   * -  serverInformation - see xsd for parameters
+   * or information - see xsd for parameters
+   * or orsAnswer - see xsd for parameters
+   * or orsCancel - see xsd for parameters
+   * or orsCancelReply - see xsd for parameters
+   * or orsCancelRequestUser - see xsd for parameters
+   * or orsEndUserRequest - see xsd for parameters
+   * or orsEndUserIllRequest - see xsd for parameters
+   * or orsItemRequest - see xsd for parameters
+   * or orsLookupUser - see xsd for parameters
+   * or orsRecall - see xsd for parameters
+   * or orsReceipt - see xsd for parameters
+   * or orsRenew - see xsd for parameters
+   * or orsRenewAnswer - see xsd for parameters
+   * or orsRenewItemUser - see xsd for parameters
+   * or orsShipping - see xsd for parameters
+   * or userOrderParameters - see xsd for parameters
+   * or userParameters - see xsd for parameters
+   * or error
    */
   public function service($param) {
     if (!$this->aaa->has_right('netpunkt.dk', 500))
@@ -900,7 +1017,8 @@ class openAgency extends webServiceServer {
     return $ret;
   }
 
-  /** \brief
+
+  /** \brief findLibrary
    *
    * Request:
    * - agencyId
@@ -1122,8 +1240,16 @@ class openAgency extends webServiceServer {
     if (empty($res->error)) $this->cache->set($cache_key, $ret);
     return $ret;
   }
-  /** \brief
+
+
+  /** \brief nameList
    *
+   * Request:
+   * - libraryType
+   * Response:
+   * - agency (see xsd for parameters)
+   * or
+   * - error
    */
   public function nameList($param) {
     if (!$this->aaa->has_right('netpunkt.dk', 500))
@@ -1183,7 +1309,8 @@ class openAgency extends webServiceServer {
     return $ret;
   }
 
-  /** \brief
+
+  /** \brief pickupAgencyList
    *
    * Request:
    * - agencyId
@@ -1257,9 +1384,6 @@ class openAgency extends webServiceServer {
           }
         }
       }
-//var_dump($ora_par);
-//var_dump($param_agencies);
-//die();
       $cache_key = 'OA_picAL_' . 
                    $this->version . 
                    (is_array($ora_par['agencyId']) ? implode('', $ora_par['agencyId']) : '') . 
@@ -1331,7 +1455,6 @@ class openAgency extends webServiceServer {
               $filter_bib_type .= ' bib_type = :bind_bib_type';
               $oci->bind('bind_bib_type', $param->libraryType->_value);
             }
-//var_dump($filter_bib_type);
 // 2do vip_beh.best_modt = $param->pickupAllowed->_value
             if ($param->libraryStatus->_value == 'alle') {
               $filter_delete_vsn = '';
@@ -1483,7 +1606,8 @@ class openAgency extends webServiceServer {
     return $ret;
   }
 
-  /** \brief
+
+  /** \brief openSearchProfile
    *
    * Request:
    * - agencyId
@@ -1635,7 +1759,7 @@ class openAgency extends webServiceServer {
   }
 
 
-  /** \brief
+  /** \brief remoteAccess
    *
    * Request:
    * - agencyId
@@ -1733,7 +1857,7 @@ class openAgency extends webServiceServer {
   }
 
 
-  /** \brief
+  /** \brief requestOrder
    *
    * Request:
    * - agencyId
@@ -1865,6 +1989,10 @@ class openAgency extends webServiceServer {
     }
 
     return;
+  }
+
+  private function J_is_true($ch) {
+    return ($ch === 'J' ? 1 : 0);
   }
 
   private function value_and_language($val, $lang) {
