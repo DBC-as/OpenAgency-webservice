@@ -368,7 +368,7 @@ class openAgency extends webServiceServer {
       $res->error->_value = 'authentication_error';
     else {
       $agency = $this->strip_agency($param->agencyId->_value);
-      $profile_name = strtoupper($param->profileName->_value);
+      $profile_name = $param->profileName->_value;
       $cache_key = 'OA_getCP' . $this->version . $agency . $profile_name;
       if ($ret = $this->cache->get($cache_key)) {
         verbose::log(STAT, 'Cache hit');
