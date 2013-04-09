@@ -2,6 +2,6 @@
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://oss.dbc.dk/ns/openagency"><SOAP-ENV:Body>
 <ns1:getCulrProfileRequest>
   <ns1:agencyId>100451</ns1:agencyId>
-  <ns1:profileName>Test</ns1:profileName>
+  <ns1:profileName>provider test</ns1:profileName>
 </ns1:getCulrProfileRequest>
 </SOAP-ENV:Body></SOAP-ENV:Envelope>
