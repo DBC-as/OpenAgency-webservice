@@ -105,6 +105,25 @@ You should have received a copy of the GNU Affero General Public License along w
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="getCulrProfileRequest">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="oa:authentication" minOccurs="0"/>
+				<xs:element ref="oa:agencyId"/>
+				<xs:element ref="oa:profileName"/>
+				<xs:element ref="oa:callback" minOccurs="0"/>
+				<xs:element ref="oa:outputType" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="getCulrProfileResponse">
+		<xs:complexType>
+			<xs:choice>
+				<xs:element ref="oa:culrProfile"/>
+				<xs:element ref="oa:error"/>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="nameListRequest">
 		<xs:complexType>
 			<xs:sequence>
@@ -387,6 +406,45 @@ You should have received a copy of the GNU Affero General Public License along w
 			</xs:simpleContent>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="contactTechName" type="xs:string"/>
+	<xs:element name="contactTechMail" type="xs:string"/>
+	<xs:element name="contactTechPhone" type="xs:string"/>
+	<xs:element name="contactAdmName" type="xs:string"/>
+	<xs:element name="contactAdmMail" type="xs:string"/>
+	<xs:element name="contactAdmPhone" type="xs:string"/>
+	<xs:element name="createAccountId" type="xs:boolean"/>
+	<xs:element name="createPatronId" type="xs:boolean"/>
+	<xs:element name="culrProfile">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="oa:agencyId"/>
+				<xs:element ref="oa:profileName"/>
+	            <xs:element ref="oa:typeOfClient"/>
+	            <xs:element ref="oa:contactTechName"/>
+	            <xs:element ref="oa:contactTechMail"/>
+	            <xs:element ref="oa:contactTechPhone"/>
+	            <xs:element ref="oa:contactAdmName"/>
+	            <xs:element ref="oa:contactAdmMail"/>
+	            <xs:element ref="oa:contactAdmPhone"/>
+	            <xs:element ref="oa:createAccountId"/>
+	            <xs:element ref="oa:createPatronId"/>
+	            <xs:element ref="oa:deleteAccountId"/>
+	            <xs:element ref="oa:deletePatronId"/>
+                <xs:element ref="oa:getAccountIdsByAccountId"/>
+                <xs:element ref="oa:getAccountsByPatronId"/>
+                <xs:element ref="oa:getAccountIdsByProviderId"/>
+                <xs:element ref="oa:getMunicipalityNoByAccountId"/>
+                <xs:element ref="oa:getMunicipalityNoByPatronId"/>
+                <xs:element ref="oa:getPatronIdsByAccountId"/>
+                <xs:element ref="oa:getPatronIdsByProviderId"/>
+                <xs:element ref="oa:getProviderIdsByAccountId"/>
+                <xs:element ref="oa:getProviderIdsByPatronId"/>
+                <xs:element ref="oa:mergePatronIds"/>
+                <xs:element ref="oa:unrelatePatronIdAndAccountId"/>
+                <xs:element ref="oa:updateAccountId"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="customIdTxt">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">Label text for userParameterType=customId (for use in end user interface)</xs:documentation>
@@ -400,6 +458,8 @@ You should have received a copy of the GNU Affero General Public License along w
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="date" type="xs:string"/>
+	<xs:element name="deleteAccountId" type="xs:boolean"/>
+	<xs:element name="deletePatronId" type="xs:boolean"/>
 	<xs:element name="dropOffAgency" type="xs:string"/>
 	<xs:element name="email" type="xs:string"/>
 	<xs:element name="encrypt" type="xs:string"/>
@@ -417,6 +477,15 @@ You should have received a copy of the GNU Affero General Public License along w
 	</xs:element>
 	<xs:element name="error" type="oa:errorType"/>
 	<xs:element name="format" type="xs:string"/>
+	<xs:element name="getAccountIdsByAccountId" type="xs:boolean"/>
+	<xs:element name="getAccountsByPatronId" type="xs:boolean"/>
+	<xs:element name="getAccountIdsByProviderId" type="xs:boolean"/>
+	<xs:element name="getMunicipalityNoByAccountId" type="xs:boolean"/>
+	<xs:element name="getMunicipalityNoByPatronId" type="xs:boolean"/>
+	<xs:element name="getPatronIdsByAccountId" type="xs:boolean"/>
+	<xs:element name="getPatronIdsByProviderId" type="xs:boolean"/>
+	<xs:element name="getProviderIdsByAccountId" type="xs:boolean"/>
+	<xs:element name="getProviderIdsByPatronId" type="xs:boolean"/>
 	<xs:element name="groupId" type="xs:string"/>
 	<xs:element name="groupIdAut" type="xs:string">
 		<xs:annotation>
@@ -506,6 +575,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="libraryType" type="oa:libraryTypeType"/>
 	<xs:element name="lookupUrl" type="xs:string"/>
 	<xs:element name="materialType" type="xs:integer"/>
+	<xs:element name="mergePatronIds" type="xs:boolean"/>
 	<xs:element name="name" type="xs:string"/>
 	<xs:element name="ncipCancelOrder" type="xs:boolean"/>
 	<xs:element name="ncipLookupUser" type="xs:boolean"/>
@@ -706,6 +776,9 @@ You should have received a copy of the GNU Affero General Public License along w
 			</xs:simpleContent>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="typeOfClient" type="xs:string"/>
+	<xs:element name="unrelatePatronIdAndAccountId" type="xs:boolean"/>
+	<xs:element name="updateAccountId" type="xs:boolean"/>
 	<xs:element name="url" type="xs:string"/>
 	<xs:element name="userId" type="xs:string"/>
 	<xs:element name="userIdType" type="oa:userIdTypeType"/>

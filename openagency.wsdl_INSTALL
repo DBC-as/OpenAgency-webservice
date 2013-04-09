@@ -37,6 +37,12 @@ You should have received a copy of the GNU Affero General Public License along w
 	<wsdl:message name="findLibraryResponse">
 		<wsdl:part name="body" element="oa:findLibraryResponse"/>
 	</wsdl:message>
+	<wsdl:message name="getCulrProfileRequest">
+		<wsdl:part name="body" element="oa:getCulrProfileRequest"/>
+	</wsdl:message>
+	<wsdl:message name="getCulrProfileResponse">
+		<wsdl:part name="body" element="oa:getCulrProfileResponse"/>
+	</wsdl:message>
 	<wsdl:message name="nameListRequest">
 		<wsdl:part name="body" element="oa:nameListRequest"/>
 	</wsdl:message>
@@ -95,6 +101,12 @@ You should have received a copy of the GNU Affero General Public License along w
 		<wsdl:operation name="findLibrary">
 			<wsdl:input message="oaw:findLibraryRequest"/>
 			<wsdl:output message="oaw:findLibraryResponse"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:portType name="getCulrProfilePortType">
+		<wsdl:operation name="getCulrProfile">
+			<wsdl:input message="oaw:getCulrProfileRequest"/>
+			<wsdl:output message="oaw:getCulrProfileResponse"/>
 		</wsdl:operation>
 	</wsdl:portType>
 	<wsdl:portType name="nameListPortType">
@@ -181,6 +193,18 @@ You should have received a copy of the GNU Affero General Public License along w
 			</wsdl:output>
 		</wsdl:operation>
 	</wsdl:binding>
+	<wsdl:binding name="getCulrProfileBinding" type="oaw:getCulrProfilePortType">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="getCulrProfile">
+			<soap:operation soapAction="http://openagency.addi.dk"/>
+			<wsdl:input name="getCulrProfileRequest">
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output name="getCulrProfileResponse">
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
 	<wsdl:binding name="nameListBinding" type="oaw:nameListPortType">
 		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
 		<wsdl:operation name="nameList">
@@ -255,34 +279,37 @@ You should have received a copy of the GNU Affero General Public License along w
 	</wsdl:binding>
 	<wsdl:service name="openAgencyService">
 		<wsdl:port binding="oaw:automationBinding" name="automationPortType">
-			<soap:address location="http://openagency.addi.dk/2.2/"/>
+			<soap:address location="http://openagency.addi.dk/2.3/"/>
 		</wsdl:port>
 		<wsdl:port binding="oaw:encryptionBinding" name="encryptionPortType">
-			<soap:address location="http://openagency.addi.dk/2.2/"/>
+			<soap:address location="http://openagency.addi.dk/2.3/"/>
 		</wsdl:port>
 		<wsdl:port binding="oaw:endUserOrderPolicyBinding" name="endUserOrderPolicyPortType">
-			<soap:address location="http://openagency.addi.dk/2.2/"/>
+			<soap:address location="http://openagency.addi.dk/2.3/"/>
 		</wsdl:port>
 		<wsdl:port binding="oaw:findLibraryBinding" name="findLibraryPortType">
-			<soap:address location="http://openagency.addi.dk/2.2/"/>
+			<soap:address location="http://openagency.addi.dk/2.3/"/>
+		</wsdl:port>
+		<wsdl:port binding="oaw:getCulrProfileBinding" name="getCulrProfilePortType">
+			<soap:address location="http://openagency.addi.dk/2.3/"/>
 		</wsdl:port>
 		<wsdl:port binding="oaw:nameListBinding" name="nameListPortType">
-			<soap:address location="http://openagency.addi.dk/2.2/"/>
+			<soap:address location="http://openagency.addi.dk/2.3/"/>
 		</wsdl:port>
 		<wsdl:port binding="oaw:pickupAgencyListBinding" name="pickupAgencyListPortType">
-			<soap:address location="http://openagency.addi.dk/2.2/"/>
+			<soap:address location="http://openagency.addi.dk/2.3/"/>
 		</wsdl:port>
 		<wsdl:port binding="oaw:openSearchProfileBinding" name="openSearchProfilePortType">
-			<soap:address location="http://openagency.addi.dk/2.2/"/>
+			<soap:address location="http://openagency.addi.dk/2.3/"/>
 		</wsdl:port>
 		<wsdl:port binding="oaw:remoteAccessBinding" name="remoteAccessPortType">
-			<soap:address location="http://openagency.addi.dk/2.2/"/>
+			<soap:address location="http://openagency.addi.dk/2.3/"/>
 		</wsdl:port>
 		<wsdl:port binding="oaw:requestOrderBinding" name="requestOrderPortType">
-			<soap:address location="http://openagency.addi.dk/2.2/"/>
+			<soap:address location="http://openagency.addi.dk/2.3/"/>
 		</wsdl:port>
 		<wsdl:port binding="oaw:serviceBinding" name="servicePortType">
-			<soap:address location="http://openagency.addi.dk/2.2/"/>
+			<soap:address location="http://openagency.addi.dk/2.3/"/>
 		</wsdl:port>
 	</wsdl:service>
 </wsdl:definitions>
