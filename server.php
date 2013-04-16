@@ -364,7 +364,7 @@ class openAgency extends webServiceServer {
    * - error
    */
   public function getCulrProfile($param) {
-    if (!$this->aaa->has_right('netpunkt.dk', 500))
+    if (!$this->aaa->has_right('netpunkt.dk', 551))
       $res->error->_value = 'authentication_error';
     else {
       $agency = $this->strip_agency($param->agencyId->_value);
