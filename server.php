@@ -1193,7 +1193,7 @@ class openAgency extends webServiceServer {
 
     $sql ='SELECT v.bib_nr, v.navn, v.type, v.tlf_nr, v.email, v.badr, v.bpostnr, 
                   v.bcity, v.isil, v.bib_vsn, v.url_homepage, v.url_payment, v.delete_mark,
-                  vsn.navn vsn_navn, vsn.bib_nr vsn_bib_nr,
+                  vsn.navn vsn_navn, vsn.bib_nr vsn_bib_nr, vsn.bib_type vsn_bib_type,
                   vb.best_modt, vb.best_modt_luk, vb.best_modt_luk_eng,
                   txt.aabn_tid, txt.kvt_tekst_fjl, eng.aabn_tid_e, eng.kvt_tekst_fjl_e, hold.holdeplads,
                   bestil.url_serv_dkl, bestil.support_email, bestil.support_tlf,
@@ -1927,6 +1927,7 @@ class openAgency extends webServiceServer {
     if (empty($pickupAgency)) {
       if (isset($row['VSN_NAVN'])) $pickupAgency->agencyName->_value = $row['VSN_NAVN'];
       if (isset($row['VSN_BIB_NR'])) $pickupAgency->agencyId->_value = $row['VSN_BIB_NR'];
+      if (isset($row['VSN_BIB_TYPE'])) $pickupAgency->agencyType->_value = $row['VSN_BIB_TYPE'];
       $pickupAgency->branchId->_value = $row['BIB_NR'];
       $pickupAgency->branchType->_value = $row['TYPE'];
       $pickupAgency->branchPhone->_value = $row['TLF_NR'];
