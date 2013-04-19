@@ -406,7 +406,7 @@ class openAgency extends webServiceServer {
             $cp->deleteAccountId->_value = $this->J_is_true($cp_row['DELETEACCOUNTID']);
             $cp->deletePatronId->_value = $this->J_is_true($cp_row['DELETEPATRONID']);
             $cp->getAccountIdsByAccountId->_value = $this->J_is_true($cp_row['GETACCOUNTIDSBYACCOUNTID']);
-            $cp->getAccountsByPatronId->_value = $this->J_is_true($cp_row['GETACCOUNTIDSBYPATRONID']);
+            $cp->getAccountIdsByPatronId->_value = $this->J_is_true($cp_row['GETACCOUNTIDSBYPATRONID']);
             $cp->getAccountIdsByProviderId->_value = $this->J_is_true($cp_row['GETACCOUNTIDSBYPROVIDERID']);
             $cp->getMunicipalityNoByAccountId->_value = $this->J_is_true($cp_row['GETMUNICIPALITYNOBYACCOUNTID']);
             $cp->getMunicipalityNoByPatronId->_value = $this->J_is_true($cp_row['GETMUNICIPALITYNOBYPATRONID']);

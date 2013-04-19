@@ -432,7 +432,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	            <xs:element ref="oa:deleteAccountId"/>
 	            <xs:element ref="oa:deletePatronId"/>
                 <xs:element ref="oa:getAccountIdsByAccountId"/>
-                <xs:element ref="oa:getAccountsByPatronId"/>
+                <xs:element ref="oa:getAccountIdsByPatronId"/>
                 <xs:element ref="oa:getAccountIdsByProviderId"/>
                 <xs:element ref="oa:getMunicipalityNoByAccountId"/>
                 <xs:element ref="oa:getMunicipalityNoByPatronId"/>
@@ -479,7 +479,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="error" type="oa:errorType"/>
 	<xs:element name="format" type="xs:string"/>
 	<xs:element name="getAccountIdsByAccountId" type="xs:boolean"/>
-	<xs:element name="getAccountsByPatronId" type="xs:boolean"/>
+	<xs:element name="getAccountIdsByPatronId" type="xs:boolean"/>
 	<xs:element name="getAccountIdsByProviderId" type="xs:boolean"/>
 	<xs:element name="getMunicipalityNoByAccountId" type="xs:boolean"/>
 	<xs:element name="getMunicipalityNoByPatronId" type="xs:boolean"/>
