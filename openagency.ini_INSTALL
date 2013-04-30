@@ -8,7 +8,7 @@
 ;service_http_error = HTTP/1.0 503 Service Unavailable
 
 ;version
-version = 2.3
+version = 2.4
 
 ; wsdl for service
 wsdl = openagency.wsdl
@@ -152,6 +152,7 @@ action[findLibrary][] = outputType
 
 action[getCulrProfile][] = agencyId
 action[getCulrProfile][] = profileName
+action[getCulrProfile][] = requesterIp
 action[getCulrProfile][] = callback
 action[getCulrProfile][] = outputType
 
