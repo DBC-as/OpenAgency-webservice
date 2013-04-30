@@ -83,9 +83,10 @@ agency_credentials = some_user/some_pwd@some.server.dbc.dk
 ; Rights for service operations:
 ; remoteAccess: 550:
 ; getCulrProfile: 551
+; getCulrProfile: 552: createProviderId and deleteProviderId
 ; all other: 500
 aaa_ip_rights[dbc][ip_list] = 172.16.0.0-172.31.255.255;193.111.162.0-193.111.162.255
-aaa_ip_rights[dbc][ressource]['netpunkt.dk'] = 500,550,551
+aaa_ip_rights[dbc][ressource]['netpunkt.dk'] = 500,550,551,552
 ;
 ; if not found in aaa_ip_rights the authentication object is created from the FORS
 ; either by using the WS specified by aaa_fors_rights or by OCI specified by aaa_credentials
