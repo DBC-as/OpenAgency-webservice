@@ -111,6 +111,7 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="oa:authentication" minOccurs="0"/>
 				<xs:element ref="oa:agencyId"/>
 				<xs:element ref="oa:profileName"/>
+				<xs:element ref="oa:requesterIp" minOccurs="0"/>
 				<xs:element ref="oa:callback" minOccurs="0"/>
 				<xs:element ref="oa:outputType" minOccurs="0"/>
 			</xs:sequence>
@@ -431,6 +432,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	            <xs:element ref="oa:createPatronId"/>
 	            <xs:element ref="oa:deleteAccountId"/>
 	            <xs:element ref="oa:deletePatronId"/>
+	            <xs:element ref="oa:deleteProviderId"/>
                 <xs:element ref="oa:getAccountIdsByAccountId"/>
                 <xs:element ref="oa:getAccountIdsByPatronId"/>
                 <xs:element ref="oa:getAccountIdsByProviderId"/>
@@ -461,6 +463,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="date" type="xs:string"/>
 	<xs:element name="deleteAccountId" type="xs:boolean"/>
 	<xs:element name="deletePatronId" type="xs:boolean"/>
+	<xs:element name="deleteProviderId" type="xs:boolean"/>
 	<xs:element name="dropOffAgency" type="xs:string"/>
 	<xs:element name="email" type="xs:string"/>
 	<xs:element name="encrypt" type="xs:string"/>
@@ -719,6 +722,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	</xs:element>
 	<xs:element name="replyToEmail" type="xs:string"/>
 	<xs:element name="requester" type="xs:string"/>
+	<xs:element name="requesterIp" type="xs:string"/>
 	<xs:element name="requestOrder" type="xs:string"/>
 	<xs:element name="responder" type="xs:string"/>
 	<xs:element name="sender" type="xs:string"/>
