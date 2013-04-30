@@ -358,6 +358,7 @@ class openAgency extends webServiceServer {
    * Request:
    * - agencyId
    * - profileName
+   * - requesterIp
    * Response:
    * - culrProfile (see xsd for parameters)
    * or
@@ -369,6 +370,7 @@ class openAgency extends webServiceServer {
     else {
       $agency = $this->strip_agency($param->agencyId->_value);
       $profile_name = $param->profileName->_value;
+      $trusted_ip = $this->trusted_culr_ip($param->authentication->_value, $param->requesterIp->_value);
       $cache_key = 'OA_getCP' . $this->version . $agency . $profile_name;
       if ($ret = $this->cache->get($cache_key)) {
         verbose::log(STAT, 'Cache hit');
@@ -402,9 +404,10 @@ class openAgency extends webServiceServer {
             $cp->contactAdmPhone->_value = $cp_row['CONTACT_ADM_PHONE'];
             $cp->createAccountId->_value = $this->J_is_true($cp_row['CREATEACCOUNTID']);
             $cp->createPatronId->_value = $this->J_is_true($cp_row['CREATEPATRONID']);
-            $cp->createProviderId->_value = $this->J_is_true($cp_row['CREATEPROVIDERID']);
+            $cp->createProviderId->_value = $trusted_ip ? $this->J_is_true($cp_row['CREATEPROVIDERID']) : '0';
             $cp->deleteAccountId->_value = $this->J_is_true($cp_row['DELETEACCOUNTID']);
             $cp->deletePatronId->_value = $this->J_is_true($cp_row['DELETEPATRONID']);
+            $cp->deleteProviderId->_value = $trusted_ip ? $this->J_is_true($cp_row['DELETEPROVIDERID']) : '0';
             $cp->getAccountIdsByAccountId->_value = $this->J_is_true($cp_row['GETACCOUNTIDSBYACCOUNTID']);
             $cp->getAccountIdsByPatronId->_value = $this->J_is_true($cp_row['GETACCOUNTIDSBYPATRONID']);
             $cp->getAccountIdsByProviderId->_value = $this->J_is_true($cp_row['GETACCOUNTIDSBYPROVIDERID']);
@@ -1993,10 +1996,25 @@ class openAgency extends webServiceServer {
     return;
   }
 
+  /** \brief return an xs:boolean 
+   *
+   */
   private function J_is_true($ch) {
     return ($ch === 'J' ? 1 : 0);
   }
 
+  /** \brief Check if a given requester (auth and ip) is a trusted server/client
+   *
+   */
+  private function trusted_culr_ip($auth, $ip) {
+    $fors = new aaa($this->config->get_section('aaa'));
+    $fors->init_rights($auth->userIdAut->_value, $auth->groupIdAut->_value, $auth->passwordAut->_value, $ip);
+    return $fors->has_right('netpunkt.dk', 552);
+  }
+
+  /** \brief set a node and its language attribute
+   *
+   */
   private function value_and_language($val, $lang) {
     $ret->_value = $val;
     $ret->_attributes->language->_value = $lang;
