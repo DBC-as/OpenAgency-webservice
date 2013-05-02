@@ -417,6 +417,9 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="CreatePatronId" type="xs:boolean"/>
 	<xs:element name="CreateProviderId" type="xs:boolean"/>
 	<xs:element name="culrProfile">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">The CULR functions are named as defined by the CULR API</xs:documentation>
+		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="oa:agencyId"/>
