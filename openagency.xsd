@@ -413,9 +413,9 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="contactAdmName" type="xs:string"/>
 	<xs:element name="contactAdmMail" type="xs:string"/>
 	<xs:element name="contactAdmPhone" type="xs:string"/>
-	<xs:element name="createAccountId" type="xs:boolean"/>
-	<xs:element name="createPatronId" type="xs:boolean"/>
-	<xs:element name="createProviderId" type="xs:boolean"/>
+	<xs:element name="CreateAccountId" type="xs:boolean"/>
+	<xs:element name="CreatePatronId" type="xs:boolean"/>
+	<xs:element name="CreateProviderId" type="xs:boolean"/>
 	<xs:element name="culrProfile">
 		<xs:complexType>
 			<xs:sequence>
@@ -428,23 +428,24 @@ You should have received a copy of the GNU Affero General Public License along w
 	            <xs:element ref="oa:contactAdmName"/>
 	            <xs:element ref="oa:contactAdmMail"/>
 	            <xs:element ref="oa:contactAdmPhone"/>
-	            <xs:element ref="oa:createAccountId"/>
-	            <xs:element ref="oa:createPatronId"/>
-	            <xs:element ref="oa:deleteAccountId"/>
-	            <xs:element ref="oa:deletePatronId"/>
-	            <xs:element ref="oa:deleteProviderId"/>
-                <xs:element ref="oa:getAccountIdsByAccountId"/>
-                <xs:element ref="oa:getAccountIdsByPatronId"/>
-                <xs:element ref="oa:getAccountIdsByProviderId"/>
-                <xs:element ref="oa:getMunicipalityNoByAccountId"/>
-                <xs:element ref="oa:getMunicipalityNoByPatronId"/>
-                <xs:element ref="oa:getPatronIdsByAccountId"/>
-                <xs:element ref="oa:getPatronIdsByProviderId"/>
-                <xs:element ref="oa:getProviderIdsByAccountId"/>
-                <xs:element ref="oa:getProviderIdsByPatronId"/>
-                <xs:element ref="oa:mergePatronIds"/>
-                <xs:element ref="oa:unrelatePatronIdAndAccountId"/>
-                <xs:element ref="oa:updateAccountId"/>
+	            <xs:element ref="oa:CreateAccountId"/>
+	            <xs:element ref="oa:CreatePatronId"/>
+	            <xs:element ref="oa:CreateProviderId"/>
+	            <xs:element ref="oa:DeleteAccountId"/>
+	            <xs:element ref="oa:DeletePatronId"/>
+	            <xs:element ref="oa:DeleteProviderId"/>
+                <xs:element ref="oa:GetAccountIdsByAccountId"/>
+                <xs:element ref="oa:GetAccountIdsByPatronId"/>
+                <xs:element ref="oa:GetAccountIdsByProviderId"/>
+                <xs:element ref="oa:GetMunicipalityNoByAccountId"/>
+                <xs:element ref="oa:GetMunicipalityNoByPatronId"/>
+                <xs:element ref="oa:GetPatronIdsByAccountId"/>
+                <xs:element ref="oa:GetPatronIdsByProviderId"/>
+                <xs:element ref="oa:GetProviderIdsByAccountId"/>
+                <xs:element ref="oa:GetProviderIdsByPatronId"/>
+                <xs:element ref="oa:MergePatronIds"/>
+                <xs:element ref="oa:UnrelatePatronIdAndAccountId"/>
+                <xs:element ref="oa:UpdateAccountId"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -461,9 +462,9 @@ You should have received a copy of the GNU Affero General Public License along w
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="date" type="xs:string"/>
-	<xs:element name="deleteAccountId" type="xs:boolean"/>
-	<xs:element name="deletePatronId" type="xs:boolean"/>
-	<xs:element name="deleteProviderId" type="xs:boolean"/>
+	<xs:element name="DeleteAccountId" type="xs:boolean"/>
+	<xs:element name="DeletePatronId" type="xs:boolean"/>
+	<xs:element name="DeleteProviderId" type="xs:boolean"/>
 	<xs:element name="dropOffAgency" type="xs:string"/>
 	<xs:element name="email" type="xs:string"/>
 	<xs:element name="encrypt" type="xs:string"/>
@@ -481,15 +482,15 @@ You should have received a copy of the GNU Affero General Public License along w
 	</xs:element>
 	<xs:element name="error" type="oa:errorType"/>
 	<xs:element name="format" type="xs:string"/>
-	<xs:element name="getAccountIdsByAccountId" type="xs:boolean"/>
-	<xs:element name="getAccountIdsByPatronId" type="xs:boolean"/>
-	<xs:element name="getAccountIdsByProviderId" type="xs:boolean"/>
-	<xs:element name="getMunicipalityNoByAccountId" type="xs:boolean"/>
-	<xs:element name="getMunicipalityNoByPatronId" type="xs:boolean"/>
-	<xs:element name="getPatronIdsByAccountId" type="xs:boolean"/>
-	<xs:element name="getPatronIdsByProviderId" type="xs:boolean"/>
-	<xs:element name="getProviderIdsByAccountId" type="xs:boolean"/>
-	<xs:element name="getProviderIdsByPatronId" type="xs:boolean"/>
+	<xs:element name="GetAccountIdsByAccountId" type="xs:boolean"/>
+	<xs:element name="GetAccountIdsByPatronId" type="xs:boolean"/>
+	<xs:element name="GetAccountIdsByProviderId" type="xs:boolean"/>
+	<xs:element name="GetMunicipalityNoByAccountId" type="xs:boolean"/>
+	<xs:element name="GetMunicipalityNoByPatronId" type="xs:boolean"/>
+	<xs:element name="GetPatronIdsByAccountId" type="xs:boolean"/>
+	<xs:element name="GetPatronIdsByProviderId" type="xs:boolean"/>
+	<xs:element name="GetProviderIdsByAccountId" type="xs:boolean"/>
+	<xs:element name="GetProviderIdsByPatronId" type="xs:boolean"/>
 	<xs:element name="groupId" type="xs:string"/>
 	<xs:element name="groupIdAut" type="xs:string">
 		<xs:annotation>
@@ -579,7 +580,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="libraryType" type="oa:libraryTypeType"/>
 	<xs:element name="lookupUrl" type="xs:string"/>
 	<xs:element name="materialType" type="xs:integer"/>
-	<xs:element name="mergePatronIds" type="xs:boolean"/>
+	<xs:element name="MergePatronIds" type="xs:boolean"/>
 	<xs:element name="name" type="xs:string"/>
 	<xs:element name="ncipCancelOrder" type="xs:boolean"/>
 	<xs:element name="ncipLookupUser" type="xs:boolean"/>
@@ -783,8 +784,8 @@ You should have received a copy of the GNU Affero General Public License along w
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="typeOfClient" type="xs:string"/>
-	<xs:element name="unrelatePatronIdAndAccountId" type="xs:boolean"/>
-	<xs:element name="updateAccountId" type="xs:boolean"/>
+	<xs:element name="UnrelatePatronIdAndAccountId" type="xs:boolean"/>
+	<xs:element name="UpdateAccountId" type="xs:boolean"/>
 	<xs:element name="url" type="xs:string"/>
 	<xs:element name="userId" type="xs:string"/>
 	<xs:element name="userIdType" type="oa:userIdTypeType"/>
